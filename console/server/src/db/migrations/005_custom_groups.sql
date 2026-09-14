@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS custom_groups (
+  id VARCHAR(64) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  created_by VARCHAR(255),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

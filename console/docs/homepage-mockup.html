@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incidara Agent Mesh — Homepage</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .sidebar-link { transition: all 0.15s; }
+  .sidebar-link:hover { background: #f4f4f5; }
+  .sidebar-link.active { background: #f4f4f5; color: #18181b; font-weight: 500; }
+  .agent-card { transition: all 0.2s; }
+  .agent-card:hover { border-color: #d4d4d8; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: translateY(-1px); }
+  .pulse-dot { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .activity-bar { transition: height 0.3s ease; border-radius: 2px; }
+  /* Chip colors — matches homepage-proposal pills */
+  .chip-emerald { color: #059669; background: #d1fae5; }
+  .chip-amber   { color: #d97706; background: #fef3c7; }
+  .chip-blue    { color: #2563eb; background: #dbeafe; }
+  .chip-violet  { color: #7c3aed; background: #ede9fe; }
+  .chip-rose    { color: #dc2626; background: #fee2e2; }
+  .chip-zinc    { color: #57534e; background: #e7e5e4; }
+</style>
+</head>
+<body class="bg-zinc-50 text-zinc-900 h-screen flex flex-col overflow-hidden">
+
+<!-- TOP HEADER -->
+<header class="bg-white border-b border-zinc-200 px-5 py-2.5 flex items-center justify-between flex-shrink-0">
+  <div class="flex items-center gap-3">
+    <div class="w-7 h-7 rounded-lg bg-indigo-500 flex items-center justify-center">
+      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    </div>
+    <h1 class="text-sm font-bold tracking-tight text-zinc-900">Incidara Agent Mesh</h1>
+    <span class="text-[10px] font-medium text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded">v1.0</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white rounded-lg bg-indigo-500 hover:bg-indigo-400 transition-colors">
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      New task
+      <kbd class="text-[10px] text-indigo-200 bg-indigo-400/50 px-1.5 py-0.5 rounded font-mono ml-1">⌘N</kbd>
+    </button>
+    <div class="w-px h-5 bg-zinc-200"></div>
+    <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-500 bg-zinc-50 border border-zinc-200 rounded-lg hover:bg-zinc-100 transition-colors">
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      Search
+      <kbd class="text-[10px] text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded font-mono ml-2">⌘K</kbd>
+    </button>
+    <div class="w-px h-5 bg-zinc-200"></div>
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-[10px] font-semibold text-white">Y</div>
+      <span class="text-xs text-zinc-600 font-medium">Yuting</span>
+    </div>
+  </div>
+</header>
+
+<!-- Body row -->
+<div class="flex flex-1 overflow-hidden">
+
+<!-- SIDEBAR -->
+<aside class="w-56 h-full border-r border-zinc-200 bg-white flex flex-col flex-shrink-0">
+  <nav class="px-3 pt-4 space-y-0.5">
+    <a href="#" class="sidebar-link active flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-zinc-700">
+      <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Overview
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-zinc-500">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      Tasks
+      <span class="ml-auto text-[10px] font-medium text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded-full">284</span>
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-zinc-500">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Schedules
+    </a>
+  </nav>
+
+  <div class="px-3 pt-5">
+    <p class="px-3 mb-2 text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">Agents</p>
+    <nav class="space-y-0.5">
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot flex-shrink-0"></span>Triage<span class="ml-auto text-[10px] font-semibold chip-emerald px-1.5 py-0.5 rounded-full">2</span></a>
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-amber-500 pulse-dot flex-shrink-0"></span>Feedback<span class="ml-auto text-[10px] font-semibold chip-amber px-1.5 py-0.5 rounded-full">1</span></a>
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>Repair</a>
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-stone-400 flex-shrink-0"></span>Repair Draft</a>
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-stone-400 flex-shrink-0"></span>Recycler</a>
+      <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm text-zinc-500"><span class="w-2 h-2 rounded-full bg-stone-400 flex-shrink-0"></span>Test Agent</a>
+    </nav>
+  </div>
+
+  <div class="flex-1"></div>
+
+  <div class="px-3 pb-2">
+    <a href="#" class="sidebar-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-zinc-500">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      Admin
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 overflow-y-auto">
+  <div class="max-w-6xl mx-auto px-6 py-6">
+
+    <!-- Page header -->
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-zinc-900">Dashboard</h1>
+      <p class="text-sm text-zinc-500 mt-0.5">Welcome back, Yuting</p>
+    </div>
+
+    <!-- Signal cards (proposal-style chips) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div class="bg-white rounded-2xl border border-zinc-200/80 p-4 cursor-pointer hover:border-zinc-300 transition-colors">
+        <div class="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">Agents</div>
+        <div class="mt-2 text-[28px] font-bold leading-none text-zinc-900">6</div>
+        <div class="mt-2"><span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full chip-emerald">3 active now</span></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-zinc-200/80 p-4 cursor-pointer hover:border-zinc-300 transition-colors">
+        <div class="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">Running</div>
+        <div class="mt-2 text-[28px] font-bold leading-none text-zinc-900">3</div>
+        <div class="mt-2"><span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full chip-blue">2 runs active</span></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-zinc-200/80 p-4 cursor-pointer hover:border-zinc-300 transition-colors">
+        <div class="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">Needs input</div>
+        <div class="mt-2 text-[28px] font-bold leading-none text-zinc-900">2</div>
+        <div class="mt-2"><span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full chip-amber">12 min oldest wait</span></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-zinc-200/80 p-4 cursor-pointer hover:border-zinc-300 transition-colors">
+        <div class="text-[11px] uppercase tracking-wider font-semibold text-zinc-400">Done today</div>
+        <div class="mt-2 text-[28px] font-bold leading-none text-zinc-900">47</div>
+        <div class="mt-2"><span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full chip-emerald">Healthy overall</span></div>
+      </div>
+    </div>
+
+    <!-- Two-column -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Agents grid -->
+      <div class="lg:col-span-2">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold text-zinc-700">Your Agents</h2>
+          <button class="text-xs text-zinc-400 hover:text-zinc-600 transition-colors">View all →</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Triage -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center"><span class="text-base">🔍</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Triage</h3><p class="text-[10px] text-zinc-400">triage-unknown</p></div>
+                </div>
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full chip-emerald"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>2 running</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Triage unknown and hardware-flagged nodes — investigate, categorize, and resolve.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-blue-200" style="height:40%"></div>
+                <div class="flex-1 activity-bar bg-blue-200" style="height:55%"></div>
+                <div class="flex-1 activity-bar bg-blue-300" style="height:70%"></div>
+                <div class="flex-1 activity-bar bg-blue-300" style="height:90%"></div>
+                <div class="flex-1 activity-bar bg-blue-400" style="height:100%"></div>
+                <div class="flex-1 activity-bar bg-blue-400" style="height:85%"></div>
+                <div class="flex-1 activity-bar bg-blue-500" style="height:60%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>991 tasks</span><span>687M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+          <!-- Feedback -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-violet-50 flex items-center justify-center"><span class="text-base">📊</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Feedback</h3><p class="text-[10px] text-zinc-400">feedback-agent</p></div>
+                </div>
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full chip-amber"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 pulse-dot"></span>1 waiting</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Analyze completed RMA cases for misclassification patterns and feedback loops.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-violet-200" style="height:30%"></div>
+                <div class="flex-1 activity-bar bg-violet-200" style="height:45%"></div>
+                <div class="flex-1 activity-bar bg-violet-300" style="height:20%"></div>
+                <div class="flex-1 activity-bar bg-violet-300" style="height:60%"></div>
+                <div class="flex-1 activity-bar bg-violet-400" style="height:80%"></div>
+                <div class="flex-1 activity-bar bg-violet-400" style="height:50%"></div>
+                <div class="flex-1 activity-bar bg-violet-500" style="height:35%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>92 tasks</span><span>56M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+          <!-- Repair -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center"><span class="text-base">🔧</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Repair</h3><p class="text-[10px] text-zinc-400">repair-agent</p></div>
+                </div>
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full chip-emerald"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>1 running</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Automated repair execution for diagnosed hardware and software issues.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-amber-200" style="height:50%"></div>
+                <div class="flex-1 activity-bar bg-amber-200" style="height:65%"></div>
+                <div class="flex-1 activity-bar bg-amber-200" style="height:40%"></div>
+                <div class="flex-1 activity-bar bg-amber-300" style="height:80%"></div>
+                <div class="flex-1 activity-bar bg-amber-300" style="height:55%"></div>
+                <div class="flex-1 activity-bar bg-amber-400" style="height:70%"></div>
+                <div class="flex-1 activity-bar bg-amber-500" style="height:45%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>427 tasks</span><span>312M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+          <!-- Recycler -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center"><span class="text-base">♻️</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Recycler</h3><p class="text-[10px] text-zinc-400">recycler-agent</p></div>
+                </div>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full chip-zinc">Idle</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Node reallocation and ticket verification for data center resource management.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-emerald-200" style="height:60%"></div>
+                <div class="flex-1 activity-bar bg-emerald-200" style="height:75%"></div>
+                <div class="flex-1 activity-bar bg-emerald-300" style="height:90%"></div>
+                <div class="flex-1 activity-bar bg-emerald-300" style="height:45%"></div>
+                <div class="flex-1 activity-bar bg-emerald-400" style="height:30%"></div>
+                <div class="flex-1 activity-bar bg-emerald-400" style="height:15%"></div>
+                <div class="flex-1 activity-bar bg-emerald-500" style="height:10%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>632 tasks</span><span>89M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+          <!-- Repair Draft -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center"><span class="text-base">📝</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Repair Draft</h3><p class="text-[10px] text-zinc-400">repair-draft</p></div>
+                </div>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full chip-zinc">Idle</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Draft repair plans and procedures for complex multi-step remediation.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-rose-200" style="height:30%"></div>
+                <div class="flex-1 activity-bar bg-rose-200" style="height:45%"></div>
+                <div class="flex-1 activity-bar bg-rose-200" style="height:60%"></div>
+                <div class="flex-1 activity-bar bg-rose-300" style="height:40%"></div>
+                <div class="flex-1 activity-bar bg-rose-300" style="height:25%"></div>
+                <div class="flex-1 activity-bar bg-rose-300" style="height:15%"></div>
+                <div class="flex-1 activity-bar bg-rose-400" style="height:10%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>34 tasks</span><span>1.2M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+          <!-- Test Agent -->
+          <div class="agent-card bg-white rounded-2xl border border-zinc-200/80 cursor-pointer">
+            <div class="p-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center"><span class="text-base">🧪</span></div>
+                  <div><h3 class="text-sm font-semibold text-zinc-900">Test Agent</h3><p class="text-[10px] text-zinc-400">test-agent</p></div>
+                </div>
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full chip-zinc">Idle</span>
+              </div>
+              <p class="text-xs text-zinc-500 mb-3 line-clamp-2">Development and testing agent for experimenting with new features and workflows.</p>
+              <div class="flex items-end gap-[2px] h-8 mb-3">
+                <div class="flex-1 activity-bar bg-zinc-200" style="height:20%"></div>
+                <div class="flex-1 activity-bar bg-zinc-200" style="height:35%"></div>
+                <div class="flex-1 activity-bar bg-zinc-300" style="height:50%"></div>
+                <div class="flex-1 activity-bar bg-zinc-300" style="height:25%"></div>
+                <div class="flex-1 activity-bar bg-zinc-300" style="height:10%"></div>
+                <div class="flex-1 activity-bar bg-zinc-400" style="height:5%"></div>
+                <div class="flex-1 activity-bar bg-zinc-400" style="height:3%"></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3 text-[10px] text-zinc-400"><span>24 tasks</span><span>5.7M tokens</span></div>
+                <button class="text-xs font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 px-2 py-1 rounded-lg transition-colors">New task</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right sidebar -->
+      <div class="space-y-4">
+        <!-- Needs attention -->
+        <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden">
+          <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-zinc-700">Needs Attention</h3>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full chip-amber">2</span>
+          </div>
+          <div>
+            <a href="#" class="flex items-start gap-3 px-4 py-3 hover:bg-zinc-50 transition-colors border-b border-zinc-50">
+              <span class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span>
+              <div class="min-w-0 flex-1"><p class="text-xs font-medium text-zinc-800 truncate">Problem #11: NvidiaSmiLatencyTooLarge</p><p class="text-[10px] text-zinc-400 mt-0.5">Feedback · 12 min ago</p></div>
+            </a>
+            <a href="#" class="flex items-start gap-3 px-4 py-3 hover:bg-zinc-50 transition-colors">
+              <span class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0"></span>
+              <div class="min-w-0 flex-1"><p class="text-xs font-medium text-zinc-800 truncate">test deploy run</p><p class="text-[10px] text-zinc-400 mt-0.5">Feedback · 34 min ago</p></div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="bg-white rounded-2xl border border-zinc-200/80 overflow-hidden">
+          <div class="px-4 py-3 border-b border-zinc-100"><h3 class="text-sm font-semibold text-zinc-700">Recent Activity</h3></div>
+          <div class="divide-y divide-zinc-50">
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-emerald flex items-center justify-center text-[10px]">✓</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Triage node h200-000812</p><p class="text-[10px] text-zinc-400">Triage · 2 min ago</p></div></div>
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-emerald flex items-center justify-center text-[10px]">✓</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Repair GPU isolation check</p><p class="text-[10px] text-zinc-400">Repair · 5 min ago</p></div></div>
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-blue flex items-center justify-center text-[10px]">▶</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Triage node h200-000923</p><p class="text-[10px] text-zinc-400">Triage · 8 min ago</p></div></div>
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-rose flex items-center justify-center text-[10px]">✗</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Analyze RMA pattern #87</p><p class="text-[10px] text-zinc-400">Feedback · 15 min ago</p></div></div>
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-emerald flex items-center justify-center text-[10px]">✓</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Recycler node reallocation</p><p class="text-[10px] text-zinc-400">Recycler · 22 min ago</p></div></div>
+            <div class="px-4 py-2.5 flex items-center gap-2.5"><span class="w-5 h-5 rounded-md chip-emerald flex items-center justify-center text-[10px]">✓</span><div class="min-w-0 flex-1"><p class="text-[11px] text-zinc-700 truncate">Triage node h200-000710</p><p class="text-[10px] text-zinc-400">Triage · 30 min ago</p></div></div>
+          </div>
+          <div class="px-4 py-2 border-t border-zinc-100"><a href="#" class="text-[10px] text-zinc-400 hover:text-zinc-600 transition-colors">View all tasks →</a></div>
+        </div>
+
+        <!-- Daily tokens -->
+        <div class="bg-white rounded-2xl border border-zinc-200/80 p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-zinc-700">Tokens Today</h3>
+            <span class="text-xs font-bold text-zinc-900">4.8M</span>
+          </div>
+          <div class="flex items-end gap-[2px] h-10">
+            <div class="flex-1 activity-bar bg-emerald-200" style="height:40%"></div>
+            <div class="flex-1 activity-bar bg-emerald-200" style="height:55%"></div>
+            <div class="flex-1 activity-bar bg-emerald-300" style="height:70%"></div>
+            <div class="flex-1 activity-bar bg-emerald-300" style="height:85%"></div>
+            <div class="flex-1 activity-bar bg-emerald-400" style="height:100%"></div>
+            <div class="flex-1 activity-bar bg-emerald-500" style="height:65%"></div>
+            <div class="flex-1 activity-bar bg-emerald-500" style="height:30%"></div>
+          </div>
+          <div class="flex justify-between mt-1.5">
+            <span class="text-[9px] text-zinc-400">Mon</span><span class="text-[9px] text-zinc-400">Tue</span><span class="text-[9px] text-zinc-400">Wed</span><span class="text-[9px] text-zinc-400">Thu</span><span class="text-[9px] text-zinc-900 font-medium">Fri</span><span class="text-[9px] text-zinc-400">Sat</span><span class="text-[9px] text-zinc-400">Sun</span>
+          </div>
+          <p class="text-[10px] text-zinc-400 mt-2">Last 7 days · <a href="#" class="text-blue-500 hover:underline">See usage →</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</div>
+</body>
+</html>

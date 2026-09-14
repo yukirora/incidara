@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-feedback"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "psycopg2-binary>=2.9.0",
+]
+
+[project.optional-dependencies]
+mcp = ["fastmcp>=3.0.0"]
+all = ["agent-feedback[mcp]"]
+
+[tool.setuptools.packages.find]
+include = ["agent_feedback*"]

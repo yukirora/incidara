@@ -1,0 +1,39 @@
+PNPM ?= npx --yes pnpm@10.33.0
+PYTHON ?= python3.12
+VENV_PY := $(CURDIR)/.venv/bin/python
+RUNTIME := $(CURDIR)/incidara_agents/agents/claude-agent
+MCP := $(CURDIR)/incidara_agents/mcp_servers
+
+.PHONY: install test build check verify up down
+
+install:
+	cd console && $(PNPM) install --frozen-lockfile
+	cd $(RUNTIME) && npm ci
+	test -x $(VENV_PY) || $(PYTHON) -m venv .venv
+	$(VENV_PY) -m pip install -q --upgrade pip
+	$(VENV_PY) -m pip install -q pytest psycopg2-binary pexpect requests 'fastmcp>=3.0.0' paramiko pyyaml pandas joblib sqlalchemy
+
+test:
+	cd console && $(PNPM) test
+	cd $(RUNTIME) && npm test
+	cd $(MCP)/agent-evidence && $(VENV_PY) -m pytest tests/test_db.py -q
+	cd $(MCP)/agent-feedback && $(VENV_PY) -m pytest tests/test_db.py tests/test_reconciliation_db.py -q
+	cd $(MCP)/node-operations && $(VENV_PY) -m pytest tests --ignore=tests/test_smoke.py --ignore=tests/integration -q
+	cd $(MCP)/patrol-cron && $(VENV_PY) -m pytest tests --ignore=tests/test_smoke.py --ignore=tests/test_feedback_scenarios_integration.py --ignore=tests/test_feedback_workflow_integration.py -q
+	$(PYTHON) -m compileall -q incidara_agents
+
+build:
+	cd console && $(PNPM) --filter client build && $(PNPM) --filter server build
+	cd $(RUNTIME) && npm run build
+
+check:
+	bash scripts/check-public.sh
+	POSTGRES_PASSWORD=test-only SESSION_SECRET=0123456789abcdef0123456789abcdef docker compose config -q
+
+verify: check test build
+
+up:
+	docker compose up --build -d
+
+down:
+	docker compose down

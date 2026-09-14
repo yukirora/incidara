@@ -1,0 +1,19 @@
+[project]
+name = "patrol-cron"
+version = "0.1.0"
+description = "Patrol cron MCP server — rule/collector CRUD, cron sync, collector execution"
+requires-python = ">=3.9"
+dependencies = [
+    "psycopg2-binary",
+    "paramiko",
+    "pexpect",
+    "pyyaml",
+    "requests",
+    "pandas",
+    "joblib",
+    "fastmcp>=3.0.0",
+    "pytest",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]

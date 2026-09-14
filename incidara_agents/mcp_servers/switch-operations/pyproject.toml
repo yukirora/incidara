@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "switch-operations"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = [
+    "fastmcp>=3.0.0",
+    "psycopg2-binary>=2.9",
+    "pexpect>=4.8",
+]
+
+[tool.setuptools.packages.find]
+include = ["switch_operations*"]

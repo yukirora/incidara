@@ -1,0 +1,16 @@
+[project]
+name = "feishu-bitable"
+version = "0.1.0"
+description = "MCP server for Feishu Bitable (multidimensional table) access"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp>=3.0.0",
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0.0"]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

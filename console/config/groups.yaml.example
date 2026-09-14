@@ -1,0 +1,6 @@
+- id: admins
+  name: Administrators
+  members: [admin@example.com]
+- id: sre-team
+  name: SRE Team
+  members: [admin@example.com]

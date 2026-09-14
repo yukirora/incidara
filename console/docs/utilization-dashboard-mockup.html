@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incidara — Utilization Dashboard Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fafafa; color: #18181b; }
+  
+  .header { background: #fff; border-bottom: 1px solid #e4e4e7; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .header .logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; }
+  .header .user { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #52525b; }
+  .header .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #6366f1); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+
+  .layout { display: flex; min-height: calc(100vh - 49px); }
+  .sidebar { width: 220px; background: #fff; border-right: 1px solid #e4e4e7; padding: 12px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .sidebar .nav-item { padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #71717a; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .sidebar .nav-item:hover { background: #f4f4f5; }
+  .sidebar .nav-item.active { background: #f4f4f5; color: #18181b; font-weight: 500; }
+  .sidebar .nav-section { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #a1a1aa; padding: 12px 12px 4px; }
+  .sidebar .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .main { flex: 1; padding: 24px; overflow-y: auto; }
+  .main h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
+  .filters { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+  .filters label { font-size: 12px; color: #52525b; display: flex; align-items: center; gap: 4px; }
+  .filters input, .filters select { border: 1px solid #d4d4d8; border-radius: 8px; padding: 6px 10px; font-size: 12px; }
+  .live-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: #16a34a; background: #f0fdf4; padding: 2px 8px; border-radius: 9999px; font-weight: 600; }
+  .live-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .kpi-card { background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; padding: 16px; }
+  .kpi-card .label { font-size: 12px; color: #71717a; margin-bottom: 4px; }
+  .kpi-card .value { font-size: 28px; font-weight: 700; color: #18181b; }
+  .kpi-card .sub { font-size: 11px; color: #a1a1aa; margin-top: 2px; }
+  .kpi-card .bar { height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; background: #f4f4f5; }
+  .kpi-card .bar-fill { height: 100%; border-radius: 2px; }
+
+  .chart-card { background: #fff; border: 1px solid #e4e4e7; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+  .chart-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #27272a; }
+  .chart-card .legend { display: flex; gap: 16px; margin-bottom: 8px; }
+  .chart-card .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #71717a; }
+  .chart-card .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* Stacked area chart mock */
+  .stacked-chart { height: 200px; display: flex; align-items: flex-end; gap: 4px; padding: 0 8px 20px; border-bottom: 1px solid #e4e4e7; border-left: 1px solid #e4e4e7; position: relative; }
+  .stacked-bar { flex: 1; display: flex; flex-direction: column-reverse; min-width: 30px; }
+  .stack-segment { width: 100%; transition: height 0.3s; }
+  .seg-active { background: #22c55e; }
+  .seg-idle { background: #f59e0b; }
+  .seg-unalloc { background: #d4d4d8; }
+  .x-label { position: absolute; bottom: 2px; font-size: 8px; color: #a1a1aa; text-align: center; }
+
+  /* Line chart mock */
+  .line-chart { height: 160px; position: relative; padding: 0 8px 20px; border-bottom: 1px solid #e4e4e7; border-left: 1px solid #e4e4e7; }
+  .line-chart svg { width: 100%; height: 100%; overflow: visible; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table th { text-align: left; padding: 8px 12px; color: #71717a; border-bottom: 1px solid #e4e4e7; font-weight: 600; font-size: 11px; }
+  table td { padding: 8px 12px; border-bottom: 1px solid #f4f4f5; }
+  table tr:hover { background: #fafafa; }
+  .util-bar { display: inline-block; width: 60px; height: 6px; border-radius: 3px; background: #f4f4f5; overflow: hidden; vertical-align: middle; margin-left: 4px; }
+  .util-fill { height: 100%; border-radius: 3px; }
+  .green { color: #16a34a; } .amber { color: #d97706; } .red { color: #dc2626; }
+
+  .summary-bar { height: 24px; border-radius: 12px; overflow: hidden; display: flex; margin-top: 8px; }
+  .summary-bar > div { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span class="logo">⚡</span> Incidara</h1>
+  <div class="user">
+    <span>Admin Test</span>
+    <span class="avatar">A</span>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="nav-item">📊 Overview</div>
+    <div class="nav-item">✓ Tasks</div>
+    <div class="nav-item">🕒 Schedules</div>
+    <div class="nav-section">Cluster</div>
+    <div class="nav-item">📊 Availability</div>
+    <div class="nav-item">🔧 Reliability</div>
+    <div class="nav-item">⚙️ Job Metrics</div>
+    <div class="nav-item active">📈 Utilization</div>
+    <div class="nav-section">Agent</div>
+    <div class="nav-item">💰 Usage & Cost</div>
+    <div class="nav-section">Admin</div>
+    <div class="nav-item">⚙️ Admin Settings</div>
+  </div>
+
+  <div class="main">
+    <h2>Utilization</h2>
+
+    <div class="filters">
+      <label>From <input type="date" value="2026-06-16"></label>
+      <label>To <input type="date" value="2026-06-23"></label>
+      <label>SKU <select><option>h200</option><option>b300</option><option>cpu</option><option>all</option></select></label>
+      <span class="live-badge">LIVE</span>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="label">Total GPUs</div>
+        <div class="value">10,224</div>
+        <div class="sub">h200 SKU</div>
+        <div class="bar"><div class="bar-fill" style="width: 100%; background: #6366f1;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Active GPUs</div>
+        <div class="value">8,280</div>
+        <div class="sub">81.0% of total · utilization > 0%</div>
+        <div class="bar"><div class="bar-fill" style="width: 81%; background: #22c55e;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Idle GPUs</div>
+        <div class="value">2,297</div>
+        <div class="sub">22.5% of total · allocated but 0% util</div>
+        <div class="bar"><div class="bar-fill" style="width: 22.5%; background: #f59e0b;"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Avg Utilization</div>
+        <div class="value">92.5%</div>
+        <div class="sub">across active GPUs</div>
+        <div class="bar"><div class="bar-fill" style="width: 92.5%; background: #22c55e;"></div></div>
+      </div>
+    </div>
+
+    <!-- Stacked Area Chart: GPU-Hours Trend -->
+    <div class="chart-card">
+      <h3>GPU Allocation Trend (daily GPU-hours)</h3>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background: #22c55e;"></div> Active (utilized)</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Idle (allocated, 0% util)</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #d4d4d8;"></div> Unallocated</div>
+      </div>
+      <div class="stacked-chart" id="stackedChart"></div>
+    </div>
+
+    <!-- Line Chart: Avg Utilization % -->
+    <div class="chart-card">
+      <h3>Avg GPU Utilization % (daily)</h3>
+      <div class="line-chart">
+        <svg viewBox="0 0 700 140" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+          <!-- gridlines -->
+          <line x1="0" y1="0" x2="700" y2="0" stroke="#f4f4f5" stroke-width="0.5"/>
+          <line x1="0" y1="35" x2="700" y2="35" stroke="#f4f4f5" stroke-width="0.5"/>
+          <line x1="0" y1="70" x2="700" y2="70" stroke="#f4f4f5" stroke-width="0.5"/>
+          <line x1="0" y1="105" x2="700" y2="105" stroke="#f4f4f5" stroke-width="0.5"/>
+          <line x1="0" y1="140" x2="700" y2="140" stroke="#e4e4e7" stroke-width="1"/>
+          <!-- 100% line label -->
+          <text x="2" y="4" font-size="8" fill="#a1a1aa">100%</text>
+          <text x="2" y="39" font-size="8" fill="#a1a1aa">75%</text>
+          <text x="2" y="74" font-size="8" fill="#a1a1aa">50%</text>
+          <text x="2" y="109" font-size="8" fill="#a1a1aa">25%</text>
+          <!-- line -->
+          <polyline points="50,14 150,10 250,18 350,8 450,22 550,12 650,6" fill="none" stroke="#f97316" stroke-width="2"/>
+          <!-- dots -->
+          <circle cx="50" cy="14" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="150" cy="10" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="250" cy="18" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="350" cy="8" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="450" cy="22" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="550" cy="12" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <circle cx="650" cy="6" r="3" fill="#f97316" stroke="#fff" stroke-width="1"/>
+          <!-- x labels -->
+          <text x="50" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/16</text>
+          <text x="150" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/17</text>
+          <text x="250" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/18</text>
+          <text x="350" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/19</text>
+          <text x="450" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/20</text>
+          <text x="550" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/21</text>
+          <text x="650" y="135" font-size="8" fill="#a1a1aa" text-anchor="middle">06/22</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Per-VC Table -->
+    <div class="chart-card">
+      <h3>Per Virtual Cluster Breakdown <span style="font-size:10px;color:#22c55e;margin-left:8px;">● LIVE</span></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Virtual Cluster</th>
+            <th style="text-align:right;">Total GPUs</th>
+            <th style="text-align:right;">Active</th>
+            <th style="text-align:right;">Idle</th>
+            <th>Avg Utilization</th>
+            <th style="text-align:right;">GPU-Hours Today</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>h200pretraining</td>
+            <td style="text-align:right;">4,248</td>
+            <td style="text-align:right;" class="green">3,800</td>
+            <td style="text-align:right;" class="amber">448</td>
+            <td>93.2% <span class="util-bar"><span class="util-fill" style="width:93%;background:#22c55e;"></span></span></td>
+            <td style="text-align:right;">98,034</td>
+          </tr>
+          <tr>
+            <td>h200pretraining2</td>
+            <td style="text-align:right;">2,128</td>
+            <td style="text-align:right;" class="green">1,900</td>
+            <td style="text-align:right;" class="amber">228</td>
+            <td>91.5% <span class="util-bar"><span class="util-fill" style="width:91%;background:#22c55e;"></span></span></td>
+            <td style="text-align:right;">49,064</td>
+          </tr>
+          <tr>
+            <td>h200agentic</td>
+            <td style="text-align:right;">1,072</td>
+            <td style="text-align:right;" class="green">1,052</td>
+            <td style="text-align:right;" class="amber">20</td>
+            <td>94.8% <span class="util-bar"><span class="util-fill" style="width:95%;background:#22c55e;"></span></span></td>
+            <td style="text-align:right;">24,710</td>
+          </tr>
+          <tr>
+            <td>h200shared</td>
+            <td style="text-align:right;">1,064</td>
+            <td style="text-align:right;" class="green">1,027</td>
+            <td style="text-align:right;" class="amber">37</td>
+            <td>88.2% <span class="util-bar"><span class="util-fill" style="width:88%;background:#f59e0b;"></span></span></td>
+            <td style="text-align:right;">23,730</td>
+          </tr>
+          <tr>
+            <td>h200posttraining</td>
+            <td style="text-align:right;">1,072</td>
+            <td style="text-align:right;" class="green">1,072</td>
+            <td style="text-align:right;">0</td>
+            <td>95.1% <span class="util-bar"><span class="util-fill" style="width:95%;background:#22c55e;"></span></span></td>
+            <td style="text-align:right;">25,662</td>
+          </tr>
+          <tr>
+            <td>h200backboneanddata</td>
+            <td style="text-align:right;">512</td>
+            <td style="text-align:right;" class="green">496</td>
+            <td style="text-align:right;" class="amber">16</td>
+            <td>89.3% <span class="util-bar"><span class="util-fill" style="width:89%;background:#f59e0b;"></span></span></td>
+            <td style="text-align:right;">11,950</td>
+          </tr>
+          <tr>
+            <td>h200dev</td>
+            <td style="text-align:right;">128</td>
+            <td style="text-align:right;" class="amber">119</td>
+            <td style="text-align:right;" class="amber">9</td>
+            <td>76.5% <span class="util-bar"><span class="util-fill" style="width:77%;background:#f59e0b;"></span></span></td>
+            <td style="text-align:right;">2,298</td>
+          </tr>
+          <tr>
+            <td>b300anaiandinferhub</td>
+            <td style="text-align:right;">496</td>
+            <td style="text-align:right;" class="green">452</td>
+            <td style="text-align:right;" class="amber">44</td>
+            <td>85.7% <span class="util-bar"><span class="util-fill" style="width:86%;background:#f59e0b;"></span></span></td>
+            <td style="text-align:right;">10,546</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GPU-Hours Summary -->
+    <div class="chart-card">
+      <h3>GPU-Hours Summary (2026-06-16 to 2026-06-23)</h3>
+      <div style="display:flex;gap:24px;align-items:center;">
+        <div>
+          <div style="font-size:12px;color:#71717a;">Total GPU-Hours</div>
+          <div style="font-size:24px;font-weight:700;">1,702,464</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#71717a;">Utilized</div>
+          <div style="font-size:24px;font-weight:700;color:#16a34a;">1,402,033 (82.4%)</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#71717a;">Idle</div>
+          <div style="font-size:24px;font-weight:700;color:#d97706;">200,831 (11.8%)</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#71717a;">Unallocated</div>
+          <div style="font-size:24px;font-weight:700;color:#71717a;">99,600 (5.8%)</div>
+        </div>
+      </div>
+      <div class="summary-bar" style="margin-top:16px;">
+        <div style="width:82.4%;background:#22c55e;">82.4%</div>
+        <div style="width:11.8%;background:#f59e0b;">11.8%</div>
+        <div style="width:5.8%;background:#d4d4d8;">5.8%</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Generate stacked bar chart
+  const days = ['06/16', '06/17', '06/18', '06/19', '06/20', '06/21', '06/22'];
+  // Active %, Idle %, Unallocated %
+  const data = [
+    [78, 15, 7],
+    [80, 13, 7],
+    [82, 12, 6],
+    [81, 14, 5],
+    [83, 11, 6],
+    [82, 13, 5],
+    [81, 12, 7],
+  ];
+
+  const chart = document.getElementById('stackedChart');
+  days.forEach((day, i) => {
+    const [active, idle, unalloc] = data[i];
+    const bar = document.createElement('div');
+    bar.className = 'stacked-bar';
+    bar.innerHTML = `
+      <div class="stack-segment seg-unalloc" style="height: ${unalloc * 2}px;"></div>
+      <div class="stack-segment seg-idle" style="height: ${idle * 2}px;"></div>
+      <div class="stack-segment seg-active" style="height: ${active * 2}px;"></div>
+    `;
+    chart.appendChild(bar);
+  });
+
+  // Add x-axis labels
+  days.forEach((day, i) => {
+    const label = document.createElement('div');
+    label.className = 'x-label';
+    label.textContent = day;
+    label.style.left = `${5 + i * (100 / days.length)}%`;
+    label.style.width = `${100 / days.length}%`;
+    label.style.position = 'absolute';
+    label.style.bottom = '2px';
+    label.style.fontSize = '8px';
+    label.style.color = '#a1a1aa';
+    label.style.textAlign = 'center';
+    chart.appendChild(label);
+  });
+</script>
+
+</body>
+</html>

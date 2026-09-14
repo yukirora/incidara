@@ -1,0 +1,36 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+**/auth.json
+**/models.json
+**/settings.json
+**/authorized_keys
+
+# Dependencies and environments
+node_modules/
+.venv/
+venv/
+*.egg-info/
+
+# Generated output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.log
+
+# Runtime state
+**/sessions/
+**/db/data/
+**/.bg-shell/
+**/.pi-glla/
+**/.gsd/
+.DS_Store
+
+# Console runtime configuration
+console/config/agents.yaml
+console/config/groups.yaml

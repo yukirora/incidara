@@ -1,0 +1,14 @@
+{
+  "name": "incidara-console",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "build:server": "pnpm --filter server build",
+    "test": "pnpm -r test"
+  }
+}

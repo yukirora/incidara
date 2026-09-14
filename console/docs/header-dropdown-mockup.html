@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Header — User Dropdown</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f4f5; padding: 0; }
+
+  /* ── Header ── */
+  header { background: white; border-bottom: 1px solid #e4e4e7; padding: 0 20px; height: 52px; display: flex; align-items: center; justify-content: space-between; }
+
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 30px; height: 30px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(99,102,241,0.3); }
+  .logo svg { width: 15px; height: 15px; color: white; }
+  .brand { font-size: 13px; font-weight: 700; color: #18181b; letter-spacing: -0.01em; }
+
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  .btn-new-task { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: #6366f1; color: white; border: none; border-radius: 7px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .btn-new-task:hover { background: #4f46e5; }
+  .btn-new-task svg { width: 13px; height: 13px; }
+  .kbd { font-size: 9px; background: rgba(255,255,255,0.2); padding: 1px 4px; border-radius: 3px; font-family: monospace; margin-left: 2px; }
+
+  .btn-search { display: flex; align-items: center; gap: 5px; padding: 5px 10px; background: #f4f4f5; color: #71717a; border: 1px solid #e4e4e7; border-radius: 7px; font-size: 11px; font-weight: 500; cursor: pointer; }
+  .btn-search svg { width: 13px; height: 13px; }
+
+  .divider { width: 1px; height: 20px; background: #e4e4e7; }
+
+  /* ── User avatar + dropdown ── */
+  .user-wrap { position: relative; }
+
+  .avatar-btn { display: flex; align-items: center; gap: 7px; padding: 4px 8px 4px 4px; background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+  .avatar-btn:hover { background: #f4f4f5; border-color: #e4e4e7; }
+  .avatar-btn.open { background: #f4f4f5; border-color: #d4d4d8; }
+
+  .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; flex-shrink: 0; }
+  .avatar-initials { }
+  .user-name { font-size: 12px; font-weight: 500; color: #3f3f46; }
+  .dropdown-arrow { width: 12px; height: 12px; color: #a1a1aa; transition: transform 0.15s; }
+  .avatar-btn.open .dropdown-arrow { transform: rotate(180deg); }
+
+  /* ── Dropdown menu ── */
+  .dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: white; border: 1px solid #e4e4e7; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06); min-width: 220px; z-index: 200; overflow: hidden; display: none; }
+  .dropdown.show { display: block; }
+
+  .dropdown-header { padding: 12px 14px 10px; border-bottom: 1px solid #f4f4f5; }
+  .dropdown-email { font-size: 12px; font-weight: 600; color: #18181b; }
+  .dropdown-name { font-size: 11px; color: #71717a; margin-top: 1px; }
+  .dropdown-level { margin-top: 5px; display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+  .dropdown-level.interactive { background: #f0fdf4; color: #15803d; }
+  .dropdown-level.readonly { background: #eff6ff; color: #1d4ed8; }
+  .dropdown-level.readonly_summary { background: #faf5ff; color: #7e22ce; }
+  .dropdown-level.readonly_input { background: #fff7ed; color: #c2410c; }
+
+  .dropdown-section { padding: 4px 0; }
+  .dropdown-item { display: flex; align-items: center; gap: 9px; padding: 7px 14px; font-size: 12px; color: #3f3f46; cursor: pointer; transition: background 0.1s; width: 100%; background: none; border: none; text-align: left; }
+  .dropdown-item:hover { background: #f4f4f5; }
+  .dropdown-item svg { width: 14px; height: 14px; color: #71717a; flex-shrink: 0; }
+  .dropdown-item.danger { color: #dc2626; }
+  .dropdown-item.danger svg { color: #dc2626; }
+
+  .dropdown-divider { height: 1px; background: #f4f4f5; margin: 4px 0; }
+
+  /* ── Modal overlay ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; z-index: 300; backdrop-filter: blur(2px); }
+  .modal { background: white; border-radius: 12px; box-shadow: 0 24px 48px rgba(0,0,0,0.18); width: 380px; max-width: 95vw; overflow: hidden; }
+  .modal-header { padding: 18px 20px 0; }
+  .modal-title { font-size: 15px; font-weight: 700; color: #18181b; }
+  .modal-desc { font-size: 12px; color: #71717a; margin-top: 2px; }
+  .modal-body { padding: 16px 20px; }
+  .modal-footer { padding: 0 20px 18px; display: flex; gap: 8px; justify-content: flex-end; }
+
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; color: #3f3f46; margin-bottom: 5px; }
+  .form-input { width: 100%; border: 1px solid #d4d4d8; border-radius: 7px; padding: 8px 11px; font-size: 13px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  .form-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+  .form-hint { font-size: 11px; color: #a1a1aa; margin-top: 4px; }
+  .form-error { font-size: 11px; color: #dc2626; margin-top: 4px; }
+
+  .strength-bar { height: 3px; border-radius: 2px; background: #e4e4e7; margin-top: 5px; overflow: hidden; }
+  .strength-fill { height: 100%; border-radius: 2px; transition: width 0.2s, background 0.2s; }
+  .strength-fill.weak { width: 30%; background: #dc2626; }
+  .strength-fill.fair { width: 60%; background: #f59e0b; }
+  .strength-fill.good { width: 85%; background: #22c55e; }
+  .strength-fill.strong { width: 100%; background: #15803d; }
+
+  .btn-cancel { padding: 7px 14px; background: #f4f4f5; border: 1px solid #d4d4d8; border-radius: 7px; font-size: 12px; font-weight: 500; color: #3f3f46; cursor: pointer; }
+  .btn-cancel:hover { background: #e4e4e7; }
+  .btn-save { padding: 7px 14px; background: #18181b; border: none; border-radius: 7px; font-size: 12px; font-weight: 600; color: white; cursor: pointer; }
+  .btn-save:hover { background: #27272a; }
+  .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .success-icon { width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .success-icon svg { width: 22px; height: 22px; color: #16a34a; }
+  .success-title { font-size: 15px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+  .success-desc { font-size: 12px; color: #71717a; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ── Simulated page background ── -->
+<div style="height:100vh;padding-top:52px;background:#f4f4f5">
+  <div style="padding:24px;max-width:700px;margin:0 auto">
+    <div style="background:white;border:1px solid #e4e4e7;border-radius:8px;padding:16px;margin-bottom:12px">
+      <div style="font-size:12px;color:#71717a;margin-bottom:6px">SESSION WORKSPACE (placeholder)</div>
+      <div style="font-size:13px;font-weight:600;color:#18181b">Triage — lg-cmc-demo-r01u01</div>
+      <div style="font-size:11px;color:#a1a1aa;margin-top:4px">Session #8058 · 8 tool calls · Running</div>
+    </div>
+    <div style="background:white;border:1px solid #e4e4e7;border-radius:8px;padding:16px;color:#a1a1aa;font-size:12px">
+      Timeline, composer, sidebar… (rest of UI)
+    </div>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-left">
+    <div class="logo">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    </div>
+    <span class="brand">Incidara Agent Mesh</span>
+  </div>
+
+  <div class="header-right">
+    <!-- New task -->
+    <button class="btn-new-task">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+      </svg>
+      New task
+      <span class="kbd">⌘N</span>
+    </button>
+
+    <!-- Search -->
+    <button class="btn-search">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      Search
+      <span class="kbd">⌘K</span>
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- User dropdown -->
+    <div class="user-wrap">
+      <button class="avatar-btn" id="avatarBtn" onclick="toggleDropdown()">
+        <div class="avatar">
+          <span class="avatar-initials">Y</span>
+        </div>
+        <span class="user-name">demo.user</span>
+        <svg class="dropdown-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      <div class="dropdown" id="userDropdown">
+        <!-- User info -->
+        <div class="dropdown-header">
+          <div class="dropdown-email">demo.user@example.com</div>
+          <div class="dropdown-name">Yuting Jiang</div>
+          <div style="margin-top:6px">
+            <span class="dropdown-level interactive">● interactive</span>
+          </div>
+        </div>
+
+        <div class="dropdown-section">
+          <button class="dropdown-item" onclick="showChangePassword()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            Change password
+          </button>
+          <button class="dropdown-item" onclick="showAccount()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Account settings
+          </button>
+        </div>
+
+        <div class="dropdown-divider"></div>
+
+        <div class="dropdown-section">
+          <button class="dropdown-item danger" onclick="signOut()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── CHANGE PASSWORD MODAL ── -->
+<div id="modal-changePassword" style="display:none">
+  <div class="modal-overlay" onclick="if(event.target===this)closeChangePassword()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Change password</div>
+        <div class="modal-desc">Update your account password</div>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Current password</label>
+          <input type="password" class="form-input" id="cp-current" placeholder="Enter your current password" autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New password</label>
+          <input type="password" class="form-input" id="cp-new" placeholder="Min. 8 characters" autocomplete="new-password" oninput="updateStrength(this.value)">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <div class="form-hint" id="strengthHint">Use 8+ characters with letters, numbers &amp; symbols</div>
+          <div class="form-error" id="cp-new-error" style="display:none"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm new password</label>
+          <input type="password" class="form-input" id="cp-confirm" placeholder="Repeat new password" autocomplete="new-password">
+          <div class="form-error" id="cp-confirm-error" style="display:none"></div>
+        </div>
+        <div id="cp-api-error" class="form-error" style="display:none;margin-bottom:0"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeChangePassword()">Cancel</button>
+        <button class="btn-save" id="cp-save-btn" onclick="savePassword()">Save password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SUCCESS MODAL ── -->
+<div id="modal-success" style="display:none">
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header" style="padding-top:24px">
+        <div class="success-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <div class="success-title">Password updated</div>
+        <div class="success-desc">Your password has been changed successfully.</div>
+      </div>
+      <div class="modal-body" style="padding-top:12px">
+        <button class="btn-save" style="width:100%;padding:9px" onclick="closeSuccessModal()">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Dropdown ─────────────────────────────────────────────────
+  function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    const btn = document.getElementById('avatarBtn');
+    const isOpen = dropdown.classList.contains('show');
+
+    if (isOpen) {
+      dropdown.classList.remove('show');
+      btn.classList.remove('open');
+    } else {
+      dropdown.classList.add('show');
+      btn.classList.add('open');
+    }
+  }
+
+  // Close when clicking outside
+  document.addEventListener('click', function(e) {
+    const btn = document.getElementById('avatarBtn');
+    const dropdown = document.getElementById('userDropdown');
+    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('show');
+      btn.classList.remove('open');
+    }
+  });
+
+  // ── Password strength ──────────────────────────────────────────
+  function updateStrength(password) {
+    const fill = document.getElementById('strengthFill');
+    const hint = document.getElementById('strengthHint');
+    const classes = ['weak', 'fair', 'good', 'strong'];
+    const hints = [
+      'Too short — add more characters',
+      'Fair — add numbers or symbols',
+      'Good — add special characters',
+      'Strong password',
+    ];
+
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    fill.className = 'strength-fill ' + classes[score - 1];
+    hint.textContent = hints[score - 1];
+  }
+
+  // ── Change password ────────────────────────────────────────────
+  function showChangePassword() {
+    toggleDropdown();
+    document.getElementById('modal-changePassword').style.display = 'block';
+    document.getElementById('cp-current').value = '';
+    document.getElementById('cp-new').value = '';
+    document.getElementById('cp-confirm').value = '';
+    document.getElementById('cp-api-error').style.display = 'none';
+    document.getElementById('cp-new-error').style.display = 'none';
+    document.getElementById('cp-confirm-error').style.display = 'none';
+    updateStrength('');
+    setTimeout(() => document.getElementById('cp-current').focus(), 100);
+  }
+
+  function closeChangePassword() {
+    document.getElementById('modal-changePassword').style.display = 'none';
+  }
+
+  async function savePassword() {
+    const current = document.getElementById('cp-current').value;
+    const npassword = document.getElementById('cp-new').value;
+    const confirm = document.getElementById('cp-confirm').value;
+    const apiErr = document.getElementById('cp-api-error');
+    const newErr = document.getElementById('cp-new-error');
+    const confirmErr = document.getElementById('cp-confirm-error');
+    const btn = document.getElementById('cp-save-btn');
+
+    apiErr.style.display = 'none';
+    newErr.style.display = 'none';
+    confirmErr.style.display = 'none';
+
+    if (!current) { newErr.textContent = 'Current password is required'; newErr.style.display = 'block'; return; }
+    if (npassword.length < 8) { newErr.textContent = 'Password must be at least 8 characters'; newErr.style.display = 'block'; return; }
+    if (npassword !== confirm) { confirmErr.textContent = 'Passwords do not match'; confirmErr.style.display = 'block'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: current, newPassword: npassword }),
+        credentials: 'include',
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to change password');
+
+      closeChangePassword();
+      document.getElementById('modal-success').style.display = 'block';
+    } catch (e) {
+      apiErr.textContent = e.message;
+      apiErr.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save password';
+    }
+  }
+
+  function closeSuccessModal() {
+    document.getElementById('modal-success').style.display = 'none';
+  }
+
+  // ── Sign out ───────────────────────────────────────────────────
+  function signOut() {
+    toggleDropdown();
+    fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+      .finally(() => { window.location.href = '/login'; });
+  }
+
+  // ── Account ────────────────────────────────────────────────────
+  function showAccount() {
+    toggleDropdown();
+    window.location.href = '/admin';
+  }
+
+  // Demo: auto-open dropdown after 1s
+  setTimeout(() => toggleDropdown(), 1000);
+</script>
+
+</body>
+</html>

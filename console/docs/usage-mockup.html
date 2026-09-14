@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incidara Console — Usage Dashboard Mockups v3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  .bar-hover:hover { filter: brightness(0.85); }
+</style>
+</head>
+<body class="bg-zinc-50 text-zinc-900">
+
+<!--
+  ═══════════════════════════════════════════════════════════════════
+  MOCKUP 1: Agent Detail — Usage Tab
+  Time range: Last 7 days (default), Last 30 days, All time + custom
+  Per-task usage (not per-session)
+  ═══════════════════════════════════════════════════════════════════
+-->
+<div class="max-w-5xl mx-auto py-6 px-4">
+  <p class="text-xs text-zinc-400 mb-2 font-mono">MOCKUP 1 — Agent Detail → Usage Tab</p>
+
+  <div class="flex border border-zinc-200 rounded-lg overflow-hidden bg-white" style="min-height:800px">
+
+    <!-- Mini sidebar -->
+    <div class="w-56 border-r border-zinc-200 bg-white flex-shrink-0 p-3">
+      <div class="p-2 border-b border-zinc-200 mb-2 flex items-center gap-2">
+        <span class="text-lg">&#9776;</span>
+        <button class="flex-1 text-xs bg-zinc-900 text-white rounded px-2 py-1.5 font-medium">+ New task</button>
+      </div>
+      <nav class="space-y-0.5 text-sm">
+        <div class="flex items-center gap-2 px-3 py-2 rounded text-zinc-600 hover:bg-zinc-50">&#127968; Overview</div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded text-zinc-600 hover:bg-zinc-50">&#10003; Tasks</div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded text-zinc-600 hover:bg-zinc-50">&#9201; Schedules</div>
+      </nav>
+      <p class="px-3 mt-4 mb-1 text-xs font-semibold text-zinc-400 uppercase tracking-wider">Agents</p>
+      <nav class="space-y-0.5 text-sm">
+        <div class="flex items-center gap-2 px-3 py-2 rounded bg-zinc-100 text-zinc-900 font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Feedback
+        </div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded text-zinc-600 hover:bg-zinc-50">
+          <span class="w-2 h-2 rounded-full bg-zinc-300"></span> Triage
+        </div>
+        <div class="flex items-center gap-2 px-3 py-2 rounded text-zinc-600 hover:bg-zinc-50">
+          <span class="w-2 h-2 rounded-full bg-zinc-300"></span> Repair
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 overflow-y-auto p-6 bg-zinc-50">
+
+      <!-- Agent header -->
+      <div class="mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-zinc-200 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <h1 class="text-lg font-semibold">Feedback</h1>
+                <span class="text-xs font-semibold px-1.5 py-0.5 rounded bg-zinc-900 text-white">OWNER</span>
+              </div>
+              <p class="text-xs text-zinc-500">RMA classification &amp; skill optimization</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <div class="flex gap-3 text-xs">
+                <span class="text-emerald-600 font-medium">2 running</span>
+                <span class="text-amber-600 font-medium">1 waiting</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs: Tasks | Usage -->
+      <div class="flex items-center gap-1 mb-4 border-b border-zinc-200">
+        <button class="px-4 py-2 text-sm text-zinc-500 hover:text-zinc-700">Tasks</button>
+        <button class="px-4 py-2 text-sm font-medium text-zinc-900 border-b-2 border-zinc-900">Usage</button>
+      </div>
+
+      <!-- ═══ TIME RANGE PICKER ═══ -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <button class="text-xs px-3 py-1.5 rounded-md bg-zinc-900 text-white font-medium">Last 7 days</button>
+          <button class="text-xs px-3 py-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 border border-zinc-200">Last 30 days</button>
+          <button class="text-xs px-3 py-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 border border-zinc-200">All time</button>
+          <!-- Custom range -->
+          <div class="flex items-center gap-1 ml-2 text-xs border-l border-zinc-200 pl-3">
+            <input type="date" value="2026-05-18" class="px-2 py-1.5 rounded-md border border-zinc-200 text-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400" style="font-size:12px">
+            <span class="text-zinc-400">→</span>
+            <input type="date" value="2026-05-24" class="px-2 py-1.5 rounded-md border border-zinc-200 text-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400" style="font-size:12px">
+            <button class="px-2 py-1.5 rounded-md bg-zinc-100 text-zinc-700 hover:bg-zinc-200 font-medium" style="font-size:12px">Apply</button>
+          </div>
+        </div>
+        <button class="text-xs px-3 py-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 border border-zinc-200">↻ Refresh</button>
+      </div>
+
+      <!-- Top summary cards -->
+      <div class="grid grid-cols-4 gap-3 mb-6">
+        <div class="bg-white rounded-lg border border-zinc-200 p-4">
+          <p class="text-xs text-zinc-500 mb-1">Total Spend</p>
+          <p class="text-2xl font-bold text-zinc-900">$1,234.56</p>
+          <p class="text-xs text-zinc-400 mt-1">May 18 – May 24</p>
+        </div>
+        <div class="bg-white rounded-lg border border-zinc-200 p-4">
+          <p class="text-xs text-zinc-500 mb-1">Total Tokens</p>
+          <p class="text-2xl font-bold text-zinc-900">29.2M</p>
+          <p class="text-xs text-zinc-400 mt-1">3,638 turns</p>
+        </div>
+        <div class="bg-white rounded-lg border border-zinc-200 p-4">
+          <p class="text-xs text-zinc-500 mb-1">Tasks</p>
+          <p class="text-2xl font-bold text-zinc-900">109</p>
+          <p class="text-xs text-emerald-600 mt-1">101 mapped · 8 unmapped</p>
+        </div>
+        <div class="bg-white rounded-lg border border-zinc-200 p-4">
+          <p class="text-xs text-zinc-500 mb-1">Avg / Task</p>
+          <p class="text-2xl font-bold text-zinc-900">$11.32</p>
+          <p class="text-xs text-zinc-400 mt-1">268K tokens avg</p>
+        </div>
+      </div>
+
+      <!-- Token breakdown -->
+      <div class="bg-white rounded-lg border border-zinc-200 p-4 mb-6">
+        <h3 class="text-sm font-semibold text-zinc-700 mb-3">Token Breakdown</h3>
+        <div class="grid grid-cols-5 gap-4">
+          <div>
+            <p class="text-xs text-zinc-400 mb-0.5">Input</p>
+            <p class="text-sm font-semibold">500</p>
+            <div class="mt-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div class="h-full bg-blue-400 rounded-full" style="width:0.002%"></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 mb-0.5">Output</p>
+            <p class="text-sm font-semibold">153K</p>
+            <div class="mt-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div class="h-full bg-emerald-500 rounded-full" style="width:3%"></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 mb-0.5">Cache Create</p>
+            <p class="text-sm font-semibold">4.0M</p>
+            <div class="mt-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div class="h-full bg-violet-500 rounded-full" style="width:15%"></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 mb-0.5">Cache Read</p>
+            <p class="text-sm font-semibold">25.0M</p>
+            <div class="mt-1 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+              <div class="h-full bg-amber-400 rounded-full" style="width:82%"></div>
+            </div>
+          </div>
+          <div>
+            <p class="text-xs text-zinc-400 mb-0.5">Total</p>
+            <p class="text-sm font-bold">29.2M</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model breakdown table (multi-model per task) -->
+      <div class="bg-white rounded-lg border border-zinc-200 mb-6 overflow-hidden">
+        <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-zinc-700">By Model</h3>
+          <span class="text-xs text-zinc-400">A task may span multiple models</span>
+        </div>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-100 text-xs text-zinc-500">
+              <th class="text-left px-4 py-2 font-medium">Model</th>
+              <th class="text-right px-4 py-2 font-medium">Tasks</th>
+              <th class="text-right px-4 py-2 font-medium">Turns</th>
+              <th class="text-right px-4 py-2 font-medium">Tokens</th>
+              <th class="text-right px-4 py-2 font-medium">Input</th>
+              <th class="text-right px-4 py-2 font-medium">Output</th>
+              <th class="text-right px-4 py-2 font-medium">Cache Create</th>
+              <th class="text-right px-4 py-2 font-medium">Cache Read</th>
+              <th class="text-right px-4 py-2 font-medium">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50">
+              <td class="px-4 py-2.5 font-medium text-zinc-900">claude-opus-4-7</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">72</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">1,847</td>
+              <td class="text-right px-4 py-2.5 font-medium">20.0M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">300</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">95K</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">3.2M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">16.7M</td>
+              <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$987.65</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50">
+              <td class="px-4 py-2.5 font-medium text-zinc-900">claude-sonnet-4-6</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">37</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">400</td>
+              <td class="text-right px-4 py-2.5 font-medium">9.2M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">200</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">58K</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">0.8M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-500">8.3M</td>
+              <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$246.91</td>
+            </tr>
+            <tr class="bg-zinc-50 font-medium">
+              <td class="px-4 py-2.5 text-zinc-900">Total</td>
+              <td class="text-right px-4 py-2.5 text-zinc-700">109*</td>
+              <td class="text-right px-4 py-2.5 text-zinc-700">2,247</td>
+              <td class="text-right px-4 py-2.5 text-zinc-900">29.2M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">500</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">153K</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">4.0M</td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">25.0M</td>
+              <td class="text-right px-4 py-2.5 font-bold text-zinc-900">$1,234.56</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="px-4 py-2 bg-zinc-50 border-t border-zinc-100">
+          <p class="text-xs text-zinc-400">* Tasks column shows unique tasks per model. Some tasks used multiple models, so model-level tasks sum exceeds total (109).</p>
+        </div>
+      </div>
+
+      <!-- Daily spend chart -->
+      <div class="bg-white rounded-lg border border-zinc-200 p-4 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-zinc-700">Daily Spend</h3>
+        </div>
+        <div class="flex items-end gap-1.5 h-32">
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-400 bar-hover" style="height:40%"></div>
+              <div class="bg-emerald-400 bar-hover" style="height:25%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">May 18</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-400 bar-hover" style="height:35%"></div>
+              <div class="bg-emerald-400 bar-hover" style="height:20%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">19</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-400 bar-hover" style="height:55%"></div>
+              <div class="bg-emerald-400 bar-hover" style="height:15%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">20</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-400 bar-hover" style="height:45%"></div>
+              <div class="bg-emerald-400 bar-hover" style="height:10%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">21</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-400 bar-hover" style="height:25%"></div>
+              <div class="bg-emerald-400 bar-hover" style="height:8%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">22</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-500 bar-hover" style="height:90%"></div>
+              <div class="bg-emerald-500 bar-hover" style="height:10%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">23</span>
+          </div>
+          <div class="flex-1 flex flex-col items-center">
+            <div class="w-full rounded-t overflow-hidden flex flex-col justify-end" style="height:100%">
+              <div class="bg-violet-300 bar-hover" style="height:15%"></div>
+              <div class="bg-emerald-300 bar-hover" style="height:5%"></div>
+            </div>
+            <span class="text-xs text-zinc-400 mt-1">24</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 mt-3">
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-sm bg-violet-400"></span>
+            <span class="text-xs text-zinc-500">claude-opus-4-7</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-sm bg-emerald-400"></span>
+            <span class="text-xs text-zinc-500">claude-sonnet-4-6</span>
+          </div>
+          <span class="text-xs text-zinc-400 ml-auto">Stacked by model · High: $312.80 (May 23)</span>
+        </div>
+      </div>
+
+      <!-- All tasks with usage, searchable + paginated -->
+      <div class="bg-white rounded-lg border border-zinc-200 overflow-hidden">
+        <div class="px-4 py-3 border-b border-zinc-100 flex items-center justify-between gap-3">
+          <h3 class="text-sm font-semibold text-zinc-700">Tasks</h3>
+          <div class="flex items-center gap-2">
+            <input type="text" placeholder="Search tasks…" class="text-xs px-2.5 py-1.5 border border-zinc-200 rounded-md w-48 focus:outline-none focus:ring-1 focus:ring-zinc-400" value="">
+            <select class="text-xs px-2 py-1.5 border border-zinc-200 rounded-md text-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400">
+              <option>Sort: Cost ↓</option>
+              <option>Sort: Cost ↑</option>
+              <option>Sort: Tokens ↓</option>
+              <option>Sort: Newest</option>
+              <option>Sort: Oldest</option>
+            </select>
+          </div>
+        </div>
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-zinc-100 text-xs text-zinc-500">
+              <th class="text-left px-4 py-2 font-medium">Task</th>
+              <th class="text-left px-4 py-2 font-medium">Status</th>
+              <th class="text-left px-4 py-2 font-medium">Models</th>
+              <th class="text-right px-4 py-2 font-medium">Turns</th>
+              <th class="text-right px-4 py-2 font-medium">Tokens</th>
+              <th class="text-right px-4 py-2 font-medium">Cost</th>
+              <th class="text-left px-4 py-2 font-medium">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3936</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Run analyze-rma-cases --days 3</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">opus-4-7</span>
+                  <span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">sonnet-4-6</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">312</td>
+              <td class="text-right px-4 py-2.5">4.2M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$287.40</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 18</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3941</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Skill-optimize Problem #31</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">opus-4-7</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">247</td>
+              <td class="text-right px-4 py-2.5">3.8M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$253.10</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 21</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3810</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Collect RMA cases --days 3</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">sonnet-4-6</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">89</td>
+              <td class="text-right px-4 py-2.5">1.6M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$86.20</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 20</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3750</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Analyze NVLink failures</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">error</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">opus-4-7</span>
+                  <span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">sonnet-4-6</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">56</td>
+              <td class="text-right px-4 py-2.5">0.9M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$62.10</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 19</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3702</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Triage unknown nodes batch 12</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">opus-4-7</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">45</td>
+              <td class="text-right px-4 py-2.5">0.7M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$48.90</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 18</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3650</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Check monitoring for node-001</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">waiting_input</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">sonnet-4-6</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">12</td>
+              <td class="text-right px-4 py-2.5">0.3M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$18.50</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 22</td>
+            </tr>
+            <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+              <td class="px-4 py-2.5">
+                <a href="#" class="text-blue-600 hover:underline text-xs">#3589</a>
+                <p class="text-xs text-zinc-500 truncate max-w-[200px]">Review RMA case #435</p>
+              </td>
+              <td class="px-4 py-2.5"><span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span></td>
+              <td class="px-4 py-2.5">
+                <div class="flex gap-1 flex-wrap">
+                  <span class="text-xs bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">opus-4-7</span>
+                </div>
+              </td>
+              <td class="text-right px-4 py-2.5 text-zinc-600">8</td>
+              <td class="text-right px-4 py-2.5">0.1M</td>
+              <td class="text-right px-4 py-2.5 font-semibold">$12.30</td>
+              <td class="px-4 py-2.5 text-zinc-500">May 20</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Pagination -->
+        <div class="px-4 py-3 border-t border-zinc-100 flex items-center justify-between">
+          <span class="text-xs text-zinc-500">Showing 1–7 of 109 tasks</span>
+          <div class="flex items-center gap-1">
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs text-zinc-400 cursor-not-allowed">‹</button>
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs bg-zinc-900 text-white font-medium">1</button>
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs text-zinc-600 hover:bg-zinc-100">2</button>
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs text-zinc-600 hover:bg-zinc-100">3</button>
+            <span class="text-xs text-zinc-400 px-1">…</span>
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs text-zinc-600 hover:bg-zinc-100">16</button>
+            <button class="w-7 h-7 flex items-center justify-center rounded text-xs text-zinc-600 hover:bg-zinc-100">›</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!--
+  ═══════════════════════════════════════════════════════════════════
+  MOCKUP 2: Task Chat Page — Usage expandable at bottom
+  Per-task usage in the task card area
+  ═══════════════════════════════════════════════════════════════════
+-->
+<div class="max-w-4xl mx-auto py-6 px-4">
+  <p class="text-xs text-zinc-400 mb-2 font-mono">MOCKUP 2 — Task Chat Page → Usage at bottom of task</p>
+
+  <div class="bg-white rounded-lg border border-zinc-200 overflow-hidden">
+
+    <!-- Session header -->
+    <div class="px-4 py-3 border-b border-zinc-200 flex items-center gap-3 bg-white sticky top-0 z-10">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span class="text-sm font-medium text-zinc-900">Session #4310</span>
+      <span class="text-xs text-zinc-400">· Feedback</span>
+    </div>
+
+    <div class="p-4 space-y-4">
+
+      <!-- Task card area -->
+      <div class="border border-zinc-200 rounded-lg overflow-hidden">
+        <!-- Task header -->
+        <div class="px-4 py-3 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3">
+          <span class="text-xs bg-zinc-100 text-zinc-600 px-1.5 py-0.5 rounded">completed</span>
+          <span class="text-sm font-medium text-zinc-900">Task #3936</span>
+          <span class="text-xs text-zinc-400">· Run analyze-rma-cases --days 3</span>
+        </div>
+
+        <!-- Chat messages (simplified) -->
+        <div class="p-4 space-y-3">
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold flex-shrink-0">Y</div>
+            <div class="flex-1">
+              <p class="text-xs text-zinc-400 mb-1">demo.user · May 18 11:19</p>
+              <div class="bg-zinc-50 rounded-lg p-3 text-sm text-zinc-700">Run analyze-rma-cases with --days 3</div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-xs font-bold flex-shrink-0">F</div>
+            <div class="flex-1">
+              <p class="text-xs text-zinc-400 mb-1">Feedback · May 18 11:20</p>
+              <div class="text-sm text-zinc-700">I'll run the analyze-rma-cases skill...</div>
+            </div>
+          </div>
+          <div class="pl-10 space-y-2">
+            <div class="bg-zinc-50 rounded p-2.5 text-xs text-zinc-600 flex items-center gap-2">
+              <span class="text-zinc-400">🔧</span>
+              <span class="font-medium">mcp__agent-feedback__get_problems</span>
+              <span class="text-emerald-600 ml-auto">completed</span>
+            </div>
+            <div class="bg-zinc-50 rounded p-2.5 text-xs text-zinc-600 flex items-center gap-2">
+              <span class="text-zinc-400">🔧</span>
+              <span class="font-medium">mcp__node-ops__delegate_to_agent</span>
+              <span class="text-emerald-600 ml-auto">completed</span>
+              <span class="text-zinc-400 ml-2">→ 5 sub-agents</span>
+            </div>
+          </div>
+          <div class="text-center text-xs text-zinc-400 py-2">· · ·</div>
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-xs font-bold flex-shrink-0">F</div>
+            <div class="flex-1">
+              <p class="text-xs text-zinc-400 mb-1">Feedback · May 23 14:32</p>
+              <div class="text-sm text-zinc-700">Analysis complete. Processed 27 RMA cases...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ TASK USAGE — lazy load on expand ═══ -->
+        <div class="border-t border-zinc-200">
+          <!-- Collapsed state: click to load -->
+          <button class="w-full px-4 py-2.5 flex items-center gap-2 text-xs text-zinc-500 hover:bg-zinc-50 transition-colors">
+            <span class="transform transition-transform">&#9654;</span>
+            <span class="font-medium">Task Usage</span>
+            <span class="ml-auto text-zinc-400">Click to load</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Second task — loading state after expand -->
+      <div class="border border-zinc-200 rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3">
+          <span class="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">waiting_input</span>
+          <span class="text-sm font-medium text-zinc-900">Task #3945</span>
+          <span class="text-xs text-zinc-400">· Skill-optimize Problem #14</span>
+        </div>
+        <div class="p-4">
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold flex-shrink-0">Y</div>
+            <div class="flex-1">
+              <p class="text-xs text-zinc-400 mb-1">demo.user · May 23 15:01</p>
+              <div class="bg-zinc-50 rounded-lg p-3 text-sm text-zinc-700">Run skill-optimize on Problem #14</div>
+            </div>
+          </div>
+        </div>
+        <!-- Expanded but loading -->
+        <div class="border-t border-zinc-200">
+          <button class="w-full px-4 py-2.5 flex items-center gap-2 text-xs text-zinc-500 hover:bg-zinc-50 transition-colors">
+            <span class="transform transition-transform rotate-90">&#9654;</span>
+            <span class="font-medium">Task Usage</span>
+            <span class="ml-auto flex items-center gap-2">
+              <span class="inline-block w-3 h-3 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin"></span>
+              <span>Calculating…</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Third task — expanded with loaded data -->
+      <div class="border border-zinc-200 rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-zinc-50 border-b border-zinc-200 flex items-center gap-3">
+          <span class="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">completed</span>
+          <span class="text-sm font-medium text-zinc-900">Task #3936</span>
+          <span class="text-xs text-zinc-400">· Run analyze-rma-cases --days 3</span>
+        </div>
+        <div class="p-4 space-y-3">
+          <div class="flex gap-3">
+            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold flex-shrink-0">Y</div>
+            <div class="flex-1">
+              <p class="text-xs text-zinc-400 mb-1">demo.user · May 18 11:19</p>
+              <div class="bg-zinc-50 rounded-lg p-3 text-sm text-zinc-700">Run analyze-rma-cases with --days 3</div>
+            </div>
+          </div>
+        </div>
+        <!-- Expanded with loaded usage data -->
+        <div class="border-t border-zinc-200">
+          <button class="w-full px-4 py-2.5 flex items-center gap-2 text-xs text-zinc-500 hover:bg-zinc-50 transition-colors">
+            <span class="transform transition-transform rotate-90">&#9654;</span>
+            <span class="font-medium">Task Usage</span>
+            <span class="ml-auto flex items-center gap-3">
+              <span class="font-semibold text-zinc-700">$287.40</span>
+              <span class="text-zinc-300">·</span>
+              <span>4.2M tokens</span>
+              <span class="text-zinc-300">·</span>
+              <span>312 turns</span>
+            </span>
+          </button>
+
+          <!-- Expanded content -->
+          <div class="px-4 pb-4 bg-zinc-50 border-t border-zinc-100">
+            <div class="grid grid-cols-2 gap-4 mt-3">
+              <div>
+                <h4 class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Token Breakdown</h4>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-white rounded p-2.5 border border-zinc-200">
+                    <p class="text-xs text-zinc-400">Input</p>
+                    <p class="text-sm font-semibold">12</p>
+                  </div>
+                  <div class="bg-white rounded p-2.5 border border-zinc-200">
+                    <p class="text-xs text-zinc-400">Output</p>
+                    <p class="text-sm font-semibold">48.5K</p>
+                  </div>
+                  <div class="bg-white rounded p-2.5 border border-zinc-200">
+                    <p class="text-xs text-zinc-400">Cache Create</p>
+                    <p class="text-sm font-semibold">680K</p>
+                  </div>
+                  <div class="bg-white rounded p-2.5 border border-zinc-200">
+                    <p class="text-xs text-zinc-400">Cache Read</p>
+                    <p class="text-sm font-semibold">3.5M</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">By Model</h4>
+                <table class="w-full text-xs">
+                  <thead>
+                    <tr class="text-zinc-400">
+                      <th class="text-left font-medium pb-1">Model</th>
+                      <th class="text-right font-medium pb-1">Turns</th>
+                      <th class="text-right font-medium pb-1">Tokens</th>
+                      <th class="text-right font-medium pb-1">Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-t border-zinc-100">
+                      <td class="py-1.5"><span class="bg-violet-100 text-violet-700 px-1 py-0.5 rounded font-medium">opus-4-7</span></td>
+                      <td class="text-right py-1.5 text-zinc-600">245</td>
+                      <td class="text-right py-1.5">3.1M</td>
+                      <td class="text-right py-1.5 font-semibold">$265.10</td>
+                    </tr>
+                    <tr class="border-t border-zinc-100">
+                      <td class="py-1.5"><span class="bg-emerald-100 text-emerald-700 px-1 py-0.5 rounded font-medium">sonnet-4-6</span></td>
+                      <td class="text-right py-1.5 text-zinc-600">67</td>
+                      <td class="text-right py-1.5">1.1M</td>
+                      <td class="text-right py-1.5 font-semibold">$22.30</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr class="border-t border-zinc-200 font-medium">
+                      <td class="py-1.5">Total</td>
+                      <td class="text-right py-1.5">312</td>
+                      <td class="text-right py-1.5">4.2M</td>
+                      <td class="text-right py-1.5 font-bold">$287.40</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-zinc-200 flex items-center gap-2 text-xs text-zinc-400">
+              <span>Includes 5 sub-agents</span>
+              <span class="text-zinc-300">·</span>
+              <span>312K tokens</span>
+              <span class="text-zinc-300">·</span>
+              <span>$21.30 sub-agent cost included in totals above</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Composer -->
+    <div class="border-t border-zinc-200 p-3 bg-white">
+      <div class="flex items-center gap-2">
+        <div class="flex-1 px-3 py-2 border border-zinc-200 rounded-lg text-sm text-zinc-400">Type a message...</div>
+        <button class="px-4 py-2 bg-zinc-900 text-white rounded-lg text-sm font-medium hover:bg-zinc-700">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--
+  ═══════════════════════════════════════════════════════════════════
+  MOCKUP 3: Admin → Usage Overview
+  ═══════════════════════════════════════════════════════════════════
+-->
+<div class="max-w-5xl mx-auto py-6 px-4">
+  <p class="text-xs text-zinc-400 mb-2 font-mono">MOCKUP 3 — Admin → Usage Overview</p>
+
+  <h1 class="text-xl font-semibold text-zinc-900 mb-4">Admin</h1>
+
+  <div class="flex items-center gap-1 mb-4 border-b border-zinc-200">
+    <button class="px-4 py-2 text-sm text-zinc-500 hover:text-zinc-700">Users</button>
+    <button class="px-4 py-2 text-sm font-medium text-zinc-900 border-b-2 border-zinc-900">Usage</button>
+  </div>
+
+  <!-- Time range + backfill -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-2">
+      <button class="text-xs px-3 py-1.5 rounded-md bg-zinc-900 text-white font-medium">Last 7 days</button>
+      <button class="text-xs px-3 py-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 border border-zinc-200">Last 30 days</button>
+      <button class="text-xs px-3 py-1.5 rounded-md text-zinc-500 hover:bg-zinc-100 border border-zinc-200">All time</button>
+      <div class="flex items-center gap-1 ml-2 text-xs border-l border-zinc-200 pl-3">
+        <input type="date" value="2026-05-18" class="px-2 py-1.5 rounded-md border border-zinc-200 text-zinc-600" style="font-size:12px">
+        <span class="text-zinc-400">→</span>
+        <input type="date" value="2026-05-24" class="px-2 py-1.5 rounded-md border border-zinc-200 text-zinc-600" style="font-size:12px">
+        <button class="px-2 py-1.5 rounded-md bg-zinc-100 text-zinc-700 hover:bg-zinc-200 font-medium" style="font-size:12px">Apply</button>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-xs text-zinc-400">Backfilled: May 24 08:30</span>
+      <button class="px-3 py-1.5 text-xs bg-zinc-900 text-white rounded-md hover:bg-zinc-700 font-medium">↻ Backfill Now</button>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-lg border border-zinc-200 p-4">
+      <p class="text-xs text-zinc-500 mb-1">Total Spend</p>
+      <p class="text-2xl font-bold text-zinc-900">$2,870.42</p>
+    </div>
+    <div class="bg-white rounded-lg border border-zinc-200 p-4">
+      <p class="text-xs text-zinc-500 mb-1">Total Tokens</p>
+      <p class="text-2xl font-bold text-zinc-900">56.2M</p>
+    </div>
+    <div class="bg-white rounded-lg border border-zinc-200 p-4">
+      <p class="text-xs text-zinc-500 mb-1">Total Tasks</p>
+      <p class="text-2xl font-bold text-zinc-900">282</p>
+      <p class="text-xs text-zinc-400 mt-1">12 unmapped</p>
+    </div>
+    <div class="bg-white rounded-lg border border-zinc-200 p-4">
+      <p class="text-xs text-zinc-500 mb-1">Total Turns</p>
+      <p class="text-2xl font-bold text-zinc-900">5,891</p>
+    </div>
+  </div>
+
+  <!-- Agent comparison table -->
+  <div class="bg-white rounded-lg border border-zinc-200 mb-6 overflow-hidden">
+    <div class="px-4 py-3 border-b border-zinc-100">
+      <h3 class="text-sm font-semibold text-zinc-700">Per-Agent Breakdown</h3>
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-zinc-100 text-xs text-zinc-500">
+          <th class="text-left px-4 py-2 font-medium">Agent</th>
+          <th class="text-right px-4 py-2 font-medium">Tasks</th>
+          <th class="text-right px-4 py-2 font-medium">Turns</th>
+          <th class="text-right px-4 py-2 font-medium">Tokens</th>
+          <th class="text-right px-4 py-2 font-medium">Avg / Task</th>
+          <th class="text-right px-4 py-2 font-medium">Cost</th>
+          <th class="text-right px-4 py-2 font-medium">% of Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+          <td class="px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <a href="#" class="font-medium text-blue-600 hover:underline">Feedback</a>
+            </div>
+          </td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">109</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">2,247</td>
+          <td class="text-right px-4 py-2.5 font-medium">29.2M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">$11.32</td>
+          <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$1,234.56</td>
+          <td class="text-right px-4 py-2.5">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div class="h-full bg-emerald-500 rounded-full" style="width:43%"></div>
+              </div>
+              <span class="text-xs text-zinc-500">43%</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+          <td class="px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-zinc-300"></span>
+              <a href="#" class="font-medium text-blue-600 hover:underline">Triage</a>
+            </div>
+          </td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">87</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">1,423</td>
+          <td class="text-right px-4 py-2.5 font-medium">15.1M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">$10.23</td>
+          <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$890.12</td>
+          <td class="text-right px-4 py-2.5">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div class="h-full bg-blue-500 rounded-full" style="width:31%"></div>
+              </div>
+              <span class="text-xs text-zinc-500">31%</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+          <td class="px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <a href="#" class="font-medium text-blue-600 hover:underline">Repair</a>
+            </div>
+          </td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">45</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">987</td>
+          <td class="text-right px-4 py-2.5 font-medium">8.3M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">$11.56</td>
+          <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$520.40</td>
+          <td class="text-right px-4 py-2.5">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div class="h-full bg-amber-400 rounded-full" style="width:18%"></div>
+              </div>
+              <span class="text-xs text-zinc-500">18%</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+          <td class="px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-zinc-300"></span>
+              <a href="#" class="font-medium text-blue-600 hover:underline">Recycler</a>
+            </div>
+          </td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">23</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">412</td>
+          <td class="text-right px-4 py-2.5 font-medium">2.1M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">$5.66</td>
+          <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$130.25</td>
+          <td class="text-right px-4 py-2.5">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div class="h-full bg-violet-400 rounded-full" style="width:5%"></div>
+              </div>
+              <span class="text-xs text-zinc-500">5%</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="border-b border-zinc-50 hover:bg-zinc-50 cursor-pointer">
+          <td class="px-4 py-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <a href="#" class="font-medium text-blue-600 hover:underline">Repair Draft</a>
+            </div>
+          </td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">18</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">822</td>
+          <td class="text-right px-4 py-2.5 font-medium">1.5M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">$5.28</td>
+          <td class="text-right px-4 py-2.5 font-semibold text-zinc-900">$95.09</td>
+          <td class="text-right px-4 py-2.5">
+            <div class="flex items-center justify-end gap-2">
+              <div class="w-16 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                <div class="h-full bg-rose-400 rounded-full" style="width:3%"></div>
+              </div>
+              <span class="text-xs text-zinc-500">3%</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="bg-zinc-50 font-medium">
+          <td class="px-4 py-2.5 text-zinc-900">Total</td>
+          <td class="text-right px-4 py-2.5 text-zinc-700">282</td>
+          <td class="text-right px-4 py-2.5 text-zinc-700">5,891</td>
+          <td class="text-right px-4 py-2.5 text-zinc-900 font-bold">56.2M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-700">$10.18</td>
+          <td class="text-right px-4 py-2.5 font-bold text-zinc-900">$2,870.42</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">100%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Model breakdown -->
+  <div class="bg-white rounded-lg border border-zinc-200 overflow-hidden">
+    <div class="px-4 py-3 border-b border-zinc-100">
+      <h3 class="text-sm font-semibold text-zinc-700">By Model (All Agents)</h3>
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-zinc-100 text-xs text-zinc-500">
+          <th class="text-left px-4 py-2 font-medium">Model</th>
+          <th class="text-right px-4 py-2 font-medium">Turns</th>
+          <th class="text-right px-4 py-2 font-medium">Tokens</th>
+          <th class="text-right px-4 py-2 font-medium">Input</th>
+          <th class="text-right px-4 py-2 font-medium">Output</th>
+          <th class="text-right px-4 py-2 font-medium">Cache Create</th>
+          <th class="text-right px-4 py-2 font-medium">Cache Read</th>
+          <th class="text-right px-4 py-2 font-medium">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-zinc-50">
+          <td class="px-4 py-2.5 font-medium">claude-opus-4-7</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">3,694</td>
+          <td class="text-right px-4 py-2.5 font-medium">38.2M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">800</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">180K</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">6.1M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">31.9M</td>
+          <td class="text-right px-4 py-2.5 font-semibold">$2,540.20</td>
+        </tr>
+        <tr class="border-b border-zinc-50">
+          <td class="px-4 py-2.5 font-medium">claude-sonnet-4-6</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">2,197</td>
+          <td class="text-right px-4 py-2.5 font-medium">18.0M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">1,200</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">120K</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">1.5M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-500">16.4M</td>
+          <td class="text-right px-4 py-2.5 font-semibold">$330.22</td>
+        </tr>
+        <tr class="bg-zinc-50 font-medium">
+          <td class="px-4 py-2.5">Total</td>
+          <td class="text-right px-4 py-2.5 text-zinc-700">5,891</td>
+          <td class="text-right px-4 py-2.5 font-bold">56.2M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">2,000</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">300K</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">7.6M</td>
+          <td class="text-right px-4 py-2.5 text-zinc-600">48.3M</td>
+          <td class="text-right px-4 py-2.5 font-bold">$2,870.42</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>

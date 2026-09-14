@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incidara Console - Homepage Proposal</title>
+  <style>
+    :root {
+      --paper: #f6f0e5;
+      --paper-strong: #efe5d5;
+      --ink: #1c1b1a;
+      --muted: #6d675f;
+      --line: rgba(28, 27, 26, 0.12);
+      --panel: rgba(255, 252, 247, 0.84);
+      --shadow: 0 18px 50px rgba(63, 44, 16, 0.08);
+      --blue: #2563eb;
+      --blue-soft: #dbeafe;
+      --emerald: #059669;
+      --emerald-soft: #d1fae5;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --rose: #dc2626;
+      --rose-soft: #fee2e2;
+      --violet: #7c3aed;
+      --violet-soft: #ede9fe;
+      --zinc-soft: #e7e5e4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 24%),
+        radial-gradient(circle at 86% 16%, rgba(124, 58, 237, 0.08), transparent 24%),
+        linear-gradient(180deg, #fbf6ee 0%, var(--paper) 38%, #f3ecdf 100%);
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .frame {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      overflow: hidden;
+      background: rgba(255, 250, 242, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #18181b 0%, #44403c 100%);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow,
+    .section-kicker,
+    .muted {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .brand h1,
+    .hero h2,
+    .section-title,
+    .metric-value,
+    .priority-big {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      line-height: 1.05;
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill,
+    .ghost-button,
+    .solid-button,
+    .status-pill {
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+    }
+
+    .ghost-button,
+    .solid-button {
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .ghost-button {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .solid-button {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, #111827 0%, #3f3f46 100%);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      min-height: calc(100vh - 96px);
+    }
+
+    .sidebar {
+      padding: 22px 18px;
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.18));
+    }
+
+    .sidebar-group + .sidebar-group {
+      margin-top: 28px;
+    }
+
+    .sidebar nav {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 12px;
+      border-radius: 16px;
+      color: #3f3a35;
+      text-decoration: none;
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .nav-item.active {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: var(--line);
+      box-shadow: 0 10px 24px rgba(63, 44, 16, 0.06);
+    }
+
+    .nav-meta {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(28, 27, 26, 0.05);
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .main {
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--panel);
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(73, 53, 19, 0.05);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.46), rgba(255, 255, 255, 0));
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      padding: 26px;
+    }
+
+    .hero h2 {
+      font-size: clamp(38px, 5vw, 64px);
+      line-height: 0.96;
+      max-width: 10ch;
+    }
+
+    .hero-copy {
+      max-width: 62ch;
+      margin: 18px 0 22px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4c463f;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-band {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .signal {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(28, 27, 26, 0.08);
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    .signal-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+    }
+
+    .signal-value {
+      margin-top: 6px;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .signal-note {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #57514a;
+    }
+
+    .status-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      margin-bottom: 14px;
+    }
+
+    .status-pill .dot {
+      margin-right: 0;
+      width: 8px;
+      height: 8px;
+    }
+
+    .priority-card {
+      display: grid;
+      gap: 14px;
+      padding: 18px 0;
+      border-top: 1px dashed rgba(28, 27, 26, 0.12);
+    }
+
+    .priority-card:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .priority-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .priority-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .priority-copy {
+      margin: 6px 0 0;
+      color: #544d46;
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .priority-big {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .metric-value {
+      margin-top: 14px;
+      font-size: 42px;
+      line-height: 0.95;
+    }
+
+    .metric-footer {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #57514a;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .agent-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .agent-top,
+    .feed-item,
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .agent-name {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .agent-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .agent-copy {
+      margin: 14px 0;
+      color: #514b45;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 42px;
+    }
+
+    .bars {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: end;
+      gap: 4px;
+      height: 58px;
+      margin: 12px 0 14px;
+    }
+
+    .bar {
+      border-radius: 999px 999px 8px 8px;
+      opacity: 0.95;
+    }
+
+    .meta-pair {
+      display: flex;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .column-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .feed-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .feed-item {
+      padding-bottom: 14px;
+      border-bottom: 1px dashed rgba(28, 27, 26, 0.12);
+      align-items: start;
+    }
+
+    .feed-item:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .feed-main {
+      display: flex;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .feed-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .feed-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .feed-sub {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .trend-box {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .trend-line {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      height: 92px;
+      padding-top: 8px;
+    }
+
+    .trend-segment {
+      flex: 1;
+      border-radius: 16px 16px 6px 6px;
+      background: linear-gradient(180deg, rgba(37, 99, 235, 0.2), rgba(37, 99, 235, 0.72));
+    }
+
+    .brief-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr 0.9fr;
+      gap: 14px;
+    }
+
+    .brief-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.68);
+    }
+
+    .brief-card ul {
+      padding-left: 18px;
+      margin: 12px 0 0;
+      color: #514b45;
+      line-height: 1.65;
+      font-size: 13px;
+    }
+
+    .mini-row {
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(28, 27, 26, 0.1);
+      font-size: 13px;
+    }
+
+    .mini-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .blue { color: var(--blue); background: var(--blue-soft); }
+    .emerald { color: var(--emerald); background: var(--emerald-soft); }
+    .amber { color: var(--amber); background: var(--amber-soft); }
+    .rose { color: var(--rose); background: var(--rose-soft); }
+    .violet { color: var(--violet); background: var(--violet-soft); }
+    .neutral { color: #57534e; background: #f5f5f4; }
+
+    .bar.blue { background: linear-gradient(180deg, #bfdbfe 0%, #60a5fa 100%); }
+    .bar.emerald { background: linear-gradient(180deg, #a7f3d0 0%, #34d399 100%); }
+    .bar.amber { background: linear-gradient(180deg, #fde68a 0%, #f59e0b 100%); }
+    .bar.rose { background: linear-gradient(180deg, #fecdd3 0%, #fb7185 100%); }
+    .bar.violet { background: linear-gradient(180deg, #ddd6fe 0%, #8b5cf6 100%); }
+    .bar.neutral { background: linear-gradient(180deg, #e7e5e4 0%, #a8a29e 100%); }
+
+    @media (max-width: 1200px) {
+      .layout,
+      .hero,
+      .board,
+      .brief-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      .page,
+      .main {
+        padding: 16px;
+      }
+
+      .topbar {
+        padding: 16px;
+        align-items: start;
+        gap: 12px;
+        flex-direction: column;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metrics,
+      .hero-band,
+      .agents-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="frame">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">LT</div>
+          <div>
+            <div class="eyebrow">Operations brief</div>
+            <h1 class="brand-title">LTP Chat</h1>
+            <div class="brand-subtitle">A homepage proposal for mixed operator and lead workflows</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="pill">Friday · May 22</div>
+          <div class="pill">09:42 CST</div>
+          <button class="ghost-button">Search</button>
+          <button class="solid-button">New task</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-group">
+            <div class="section-kicker">Primary</div>
+            <nav>
+              <a class="nav-item active" href="#"><span>Overview</span><span class="nav-meta">Home</span></a>
+              <a class="nav-item" href="#"><span>Tasks</span><span class="nav-meta">284</span></a>
+              <a class="nav-item" href="#"><span>Schedules</span><span class="nav-meta">7</span></a>
+              <a class="nav-item" href="#"><span>Reports</span><span class="nav-meta">12</span></a>
+            </nav>
+          </div>
+
+          <div class="sidebar-group">
+            <div class="section-kicker">Agents</div>
+            <nav>
+              <a class="nav-item" href="#"><span><span class="dot" style="background: var(--blue);"></span>Triage</span><span class="nav-meta">2</span></a>
+              <a class="nav-item" href="#"><span><span class="dot" style="background: var(--amber);"></span>Feedback</span><span class="nav-meta">1</span></a>
+              <a class="nav-item" href="#"><span><span class="dot" style="background: var(--emerald);"></span>Repair</span><span class="nav-meta">Run</span></a>
+              <a class="nav-item" href="#"><span><span class="dot" style="background: var(--violet);"></span>Recycler</span><span class="nav-meta">Idle</span></a>
+              <a class="nav-item" href="#"><span><span class="dot" style="background: var(--rose);"></span>Repair Draft</span><span class="nav-meta">Idle</span></a>
+            </nav>
+          </div>
+
+          <div class="sidebar-group">
+            <div class="section-kicker">Account</div>
+            <nav>
+              <a class="nav-item" href="#"><span>Admin</span><span class="nav-meta">Ops</span></a>
+              <a class="nav-item" href="#"><span>Yuting Jiang</span><span class="nav-meta">Profile</span></a>
+            </nav>
+          </div>
+        </aside>
+
+        <main class="main">
+          <section class="hero">
+            <div class="panel">
+              <div class="panel-inner">
+                <div class="eyebrow">System posture</div>
+                <h2>Stable overall. Three queues need a human decision.</h2>
+                <p class="hero-copy">
+                  This homepage opens like an operating brief instead of a generic dashboard: one sentence for current posture, one glance at throughput and attention states, then a clean drop into active agents and task movement.
+                </p>
+                <div class="hero-actions">
+                  <button class="solid-button">Review waiting queues</button>
+                  <button class="ghost-button">Open triage board</button>
+                </div>
+
+                <div class="hero-band">
+                  <div class="signal">
+                    <div class="signal-label">Tasks closed today</div>
+                    <div class="signal-value">47</div>
+                    <div class="signal-note">Up 16% from yesterday</div>
+                  </div>
+                  <div class="signal">
+                    <div class="signal-label">Pending human input</div>
+                    <div class="signal-value">3</div>
+                    <div class="signal-note">Feedback and test deploy flows</div>
+                  </div>
+                  <div class="signal">
+                    <div class="signal-label">Spend today</div>
+                    <div class="signal-value">$1,061</div>
+                    <div class="signal-note">Within daily operating band</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-inner">
+                <div class="status-stack">
+                  <div>
+                    <div class="status-pill emerald"><span class="dot" style="background: var(--emerald);"></span>Healthy overall</div>
+                    <div class="section-title" style="font-size: 36px;">Needs attention now</div>
+                  </div>
+
+                  <div class="priority-card">
+                    <div class="priority-head">
+                      <div>
+                        <p class="priority-title">Feedback queue is waiting on classification review</p>
+                        <p class="priority-copy">Two cases are blocked behind operator judgment, including `NvidiaSmiLatencyTooLarge` and a test deploy run.</p>
+                      </div>
+                      <div class="priority-big">02</div>
+                    </div>
+                    <div class="chip amber"><span class="dot" style="background: var(--amber);"></span>12 min oldest wait</div>
+                  </div>
+
+                  <div class="priority-card">
+                    <div class="priority-head">
+                      <div>
+                        <p class="priority-title">Triage is carrying the day’s heaviest volume</p>
+                        <p class="priority-copy">High throughput is healthy, but the queue should be watched for spillover into repair drafting this afternoon.</p>
+                      </div>
+                      <div class="priority-big">991</div>
+                    </div>
+                    <div class="chip blue"><span class="dot" style="background: var(--blue);"></span>2 runs active</div>
+                  </div>
+
+                  <div class="priority-card">
+                    <div class="priority-head">
+                      <div>
+                        <p class="priority-title">Recycler capacity is available for overflow work</p>
+                        <p class="priority-copy">Use idle inventory to absorb reallocation tasks if repair queue variance increases.</p>
+                      </div>
+                      <div class="priority-big">Idle</div>
+                    </div>
+                    <div class="chip violet"><span class="dot" style="background: var(--violet);"></span>Ready to assign</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="metrics">
+            <div class="metric">
+              <div class="section-kicker">Agents in system</div>
+              <div class="metric-value">6</div>
+              <div class="metric-footer"><span>3 active now</span><span class="blue">Live</span></div>
+            </div>
+            <div class="metric">
+              <div class="section-kicker">Interventions needed</div>
+              <div class="metric-value">3</div>
+              <div class="metric-footer"><span>Human decision points</span><span class="amber">Watch</span></div>
+            </div>
+            <div class="metric">
+              <div class="section-kicker">Completed today</div>
+              <div class="metric-value">47</div>
+              <div class="metric-footer"><span>Across all agent lines</span><span class="emerald">On pace</span></div>
+            </div>
+            <div class="metric">
+              <div class="section-kicker">Total run cost</div>
+              <div class="metric-value">$3.09k</div>
+              <div class="metric-footer"><span>Cross-agent aggregate</span><span class="violet">Tracked</span></div>
+            </div>
+          </section>
+
+          <section class="board">
+            <div class="panel">
+              <div class="panel-inner">
+                <div class="section-header">
+                  <div>
+                    <div class="section-kicker">Operations band</div>
+                    <div class="section-title">Agent lanes</div>
+                  </div>
+                  <div class="muted">Designed for action first, scan second</div>
+                </div>
+
+                <div class="agents-grid">
+                  <article class="agent-card">
+                    <div class="agent-top">
+                      <div>
+                        <p class="agent-name">Triage</p>
+                        <div class="agent-sub">triage-unknown</div>
+                      </div>
+                      <div class="chip blue"><span class="dot" style="background: var(--blue);"></span>2 running</div>
+                    </div>
+                    <p class="agent-copy">Investigates unknown and hardware-flagged nodes, then routes them into repair or feedback pathways.</p>
+                    <div class="bars">
+                      <div class="bar blue" style="height: 38%;"></div>
+                      <div class="bar blue" style="height: 54%;"></div>
+                      <div class="bar blue" style="height: 72%;"></div>
+                      <div class="bar blue" style="height: 88%;"></div>
+                      <div class="bar blue" style="height: 100%;"></div>
+                      <div class="bar blue" style="height: 82%;"></div>
+                      <div class="bar blue" style="height: 60%;"></div>
+                    </div>
+                    <div class="mini-row"><span>991 tasks</span><span>$1,061</span></div>
+                  </article>
+
+                  <article class="agent-card">
+                    <div class="agent-top">
+                      <div>
+                        <p class="agent-name">Feedback</p>
+                        <div class="agent-sub">feedback-agent</div>
+                      </div>
+                      <div class="chip amber"><span class="dot" style="background: var(--amber);"></span>1 waiting</div>
+                    </div>
+                    <p class="agent-copy">Reviews completed RMA cases and surfaces pattern drift, misclassification, and operator review loops.</p>
+                    <div class="bars">
+                      <div class="bar violet" style="height: 28%;"></div>
+                      <div class="bar violet" style="height: 44%;"></div>
+                      <div class="bar violet" style="height: 22%;"></div>
+                      <div class="bar violet" style="height: 58%;"></div>
+                      <div class="bar violet" style="height: 78%;"></div>
+                      <div class="bar violet" style="height: 48%;"></div>
+                      <div class="bar violet" style="height: 34%;"></div>
+                    </div>
+                    <div class="mini-row"><span>92 tasks</span><span>$484</span></div>
+                  </article>
+
+                  <article class="agent-card">
+                    <div class="agent-top">
+                      <div>
+                        <p class="agent-name">Repair</p>
+                        <div class="agent-sub">repair-agent</div>
+                      </div>
+                      <div class="chip emerald"><span class="dot" style="background: var(--emerald);"></span>1 running</div>
+                    </div>
+                    <p class="agent-copy">Executes repair plans and checks post-remediation health for hardware and software incidents.</p>
+                    <div class="bars">
+                      <div class="bar amber" style="height: 50%;"></div>
+                      <div class="bar amber" style="height: 64%;"></div>
+                      <div class="bar amber" style="height: 42%;"></div>
+                      <div class="bar amber" style="height: 80%;"></div>
+                      <div class="bar amber" style="height: 58%;"></div>
+                      <div class="bar amber" style="height: 70%;"></div>
+                      <div class="bar amber" style="height: 46%;"></div>
+                    </div>
+                    <div class="mini-row"><span>427 tasks</span><span>$1,130</span></div>
+                  </article>
+
+                  <article class="agent-card">
+                    <div class="agent-top">
+                      <div>
+                        <p class="agent-name">Recycler</p>
+                        <div class="agent-sub">recycler-agent</div>
+                      </div>
+                      <div class="chip neutral"><span class="dot" style="background: #a8a29e;"></span>Idle</div>
+                    </div>
+                    <p class="agent-copy">Handles node reallocation and ticket verification when broader system load needs balancing.</p>
+                    <div class="bars">
+                      <div class="bar emerald" style="height: 62%;"></div>
+                      <div class="bar emerald" style="height: 74%;"></div>
+                      <div class="bar emerald" style="height: 88%;"></div>
+                      <div class="bar emerald" style="height: 42%;"></div>
+                      <div class="bar emerald" style="height: 28%;"></div>
+                      <div class="bar emerald" style="height: 14%;"></div>
+                      <div class="bar emerald" style="height: 10%;"></div>
+                    </div>
+                    <div class="mini-row"><span>632 tasks</span><span>$389</span></div>
+                  </article>
+                </div>
+              </div>
+            </div>
+
+            <div class="column-stack">
+              <section class="panel">
+                <div class="panel-inner">
+                  <div class="section-kicker">Decision rail</div>
+                  <div class="section-title" style="font-size: 28px;">Needs attention</div>
+                  <div class="feed-list" style="margin-top: 18px;">
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon amber">!</div>
+                        <div>
+                          <p class="feed-title">Problem #11: NvidiaSmiLatencyTooLarge</p>
+                          <p class="feed-sub">Feedback · waiting 12 min · needs classification decision</p>
+                        </div>
+                      </div>
+                      <div class="chip amber">Review</div>
+                    </div>
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon amber">!</div>
+                        <div>
+                          <p class="feed-title">Test deploy run needs operator confirmation</p>
+                          <p class="feed-sub">Feedback · waiting 34 min · blocked by human input</p>
+                        </div>
+                      </div>
+                      <div class="chip amber">Open</div>
+                    </div>
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon blue">↗</div>
+                        <div>
+                          <p class="feed-title">Triage volume trending above afternoon baseline</p>
+                          <p class="feed-sub">Monitor spillover to repair draft queue in the next hour</p>
+                        </div>
+                      </div>
+                      <div class="chip blue">Watch</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="panel">
+                <div class="panel-inner">
+                  <div class="section-kicker">Throughput trend</div>
+                  <div class="section-title" style="font-size: 28px;">Momentum</div>
+                  <div class="trend-box">
+                    <div class="trend-line">
+                      <div class="trend-segment" style="height: 30%;"></div>
+                      <div class="trend-segment" style="height: 42%;"></div>
+                      <div class="trend-segment" style="height: 38%;"></div>
+                      <div class="trend-segment" style="height: 58%;"></div>
+                      <div class="trend-segment" style="height: 74%;"></div>
+                      <div class="trend-segment" style="height: 88%;"></div>
+                      <div class="trend-segment" style="height: 68%;"></div>
+                    </div>
+                    <div class="mini-row"><span>Peak throughput window</span><span class="blue">13:00-15:00</span></div>
+                    <div class="mini-row"><span>Average task completion</span><span class="emerald">14.2 min</span></div>
+                    <div class="mini-row"><span>Escalation ratio</span><span class="rose">2.8%</span></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-inner">
+              <div class="section-header">
+                <div>
+                  <div class="section-kicker">Context band</div>
+                  <div class="section-title">Briefing notes</div>
+                </div>
+                <div class="muted">Leadership scan and operator context in one row</div>
+              </div>
+
+              <div class="brief-grid">
+                <div class="brief-card">
+                  <div class="section-kicker">Today’s narrative</div>
+                  <p style="margin: 12px 0 0; line-height: 1.75; color: #514b45; font-size: 14px;">
+                    The system is productive and largely stable. Current risk is concentrated in feedback review latency rather than broad agent health. Triage is performing well, but its volume should be watched for secondary queue pressure later in the day.
+                  </p>
+                </div>
+
+                <div class="brief-card">
+                  <div class="section-kicker">Recommended next moves</div>
+                  <ul>
+                    <li>Resolve the two waiting feedback items before noon to prevent avoidable queue aging.</li>
+                    <li>Keep Recycler available as overflow capacity instead of assigning low-priority work immediately.</li>
+                    <li>Review repair draft utilization if triage remains above baseline after the next throughput window.</li>
+                  </ul>
+                </div>
+
+                <div class="brief-card">
+                  <div class="section-kicker">Recent activity</div>
+                  <div class="feed-list" style="margin-top: 12px;">
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon emerald">✓</div>
+                        <div>
+                          <p class="feed-title">Triage node h200-000812</p>
+                          <p class="feed-sub">Completed 2 min ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon emerald">✓</div>
+                        <div>
+                          <p class="feed-title">Repair GPU isolation check</p>
+                          <p class="feed-sub">Completed 5 min ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon blue">▶</div>
+                        <div>
+                          <p class="feed-title">Triage node h200-000923</p>
+                          <p class="feed-sub">Running 8 min ago</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="feed-item">
+                      <div class="feed-main">
+                        <div class="feed-icon rose">✕</div>
+                        <div>
+                          <p class="feed-title">Analyze RMA pattern #87</p>
+                          <p class="feed-sub">Escalated 15 min ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
