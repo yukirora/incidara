@@ -337,6 +337,7 @@ detected
 - Idempotency key for every state-changing operation.
 - Timeout, retry budget, cancellation, and compensation rules.
 - Explicit terminal and reopen semantics.
+- A deterministic risk/approval calculator that evaluates fault confidence, evidence completeness, action scope, workload impact, reversibility, rollback, and verification readiness, then outputs `AUTO_APPROVE`, `HUMAN_APPROVAL`, or `DENY`.
 
 #### Typed handoffs
 
