@@ -4,7 +4,7 @@
 
 ## Abstract
 
-We present Incidara, a production multi-agent AI system for site reliability engineering (SRE) on a fleet of 1,278 NVIDIA H200 GPU nodes (152 racks). The system decomposes the node-failure lifecycle across five specialized agents—detection, triage, repair, recycler, and feedback—plus a dedicated job-incident agent for training-job failure diagnosis and recovery. Each agent is backed by a shared evidence database, role-scoped tool access, and a skill library that the system itself can evolve. A staged rollout over 145,860.5 observed node-days compared four operational phases: pre-agent operations, initial AI triage, multi-agent triage and repair, and proactive AI detection. Time-weighted operational availability increased from 91.393% (pre-agent) to 99.661% (proactive-agent). The qualifying cordon incident rate decreased from 18.564 to 4.217 incidents per 1,000 node-days—an incidence-rate ratio (IRR) of 0.227 (95% CI 0.185–0.280), a 77.3% rate reduction—and P90 recovery time decreased from 150.4 to 33.1 hours. Triage coverage before recovery reached 100%, while the unknown-classification share fell from 56.1% to 4.1%. Because rollout was not randomized and incident-to-agent-action attribution is incomplete, these changes are reported as observational associations rather than causal effects.
+We present Incidara, a production multi-agent AI system for site reliability engineering (SRE) on a production fleet of more than 1,000 GPU nodes across more than 100 racks. The system decomposes the node-failure lifecycle across five specialized agents—detection, triage, repair, recycler, and feedback—plus a dedicated job-incident agent for training-job failure diagnosis and recovery. Each agent is backed by a shared evidence database, role-scoped tool access, and a skill library that the system itself can evolve. A staged rollout over more than 145,000 observed node-days compared four operational phases: pre-agent operations, initial AI triage, multi-agent triage and repair, and proactive AI detection. Time-weighted operational availability increased from 91.393% (pre-agent) to 99.661% (proactive-agent). The qualifying cordon incident rate decreased from 18.564 to 4.217 incidents per 1,000 node-days—an incidence-rate ratio (IRR) of 0.227 (95% CI 0.185–0.280), a 77.3% rate reduction—and P90 recovery time decreased from 150.4 to 33.1 hours. Triage coverage before recovery reached 100%, while the unknown-classification share fell from 56.1% to 4.1%. Because rollout was not randomized and incident-to-agent-action attribution is incomplete, these changes are reported as observational associations rather than causal effects.
 
 ---
 
@@ -12,7 +12,7 @@ We present Incidara, a production multi-agent AI system for site reliability eng
 
 ### 1.1 Problem statement
 
-Large-scale AI training infrastructure faces a fundamental operational scaling problem. As GPU fleets grow from hundreds to thousands of nodes, hardware failures become a daily statistical certainty rather than an exceptional event. On the studied H200 fleet, the pre-agent baseline recorded 18.564 qualifying incidents per 1,000 node-days—roughly one cordon event every 77 node-days per node, or over 16 events per day fleet-wide at the baseline rate. Synchronous, gang-scheduled training workloads amplify each incident: a single degraded node can stall or corrupt an entire multi-node job.
+Large-scale AI training infrastructure faces a fundamental operational scaling problem. As GPU fleets grow from hundreds to thousands of nodes, hardware failures become a daily statistical certainty rather than an exceptional event. On the evaluated production fleet, the pre-agent baseline recorded 18.564 qualifying incidents per 1,000 node-days—roughly one cordon event every 77 node-days per node, or over 16 events per day fleet-wide at the baseline rate. Synchronous, gang-scheduled training workloads amplify each incident: a single degraded node can stall or corrupt an entire multi-node job.
 
 Traditional SRE practice addresses this with human-run playbooks, threshold alerts, and manual triage. Three structural limits emerge at production scale:
 
@@ -41,7 +41,7 @@ The design philosophy is *policy-bounded autonomy*: agents execute known, low-bl
 ### 1.3 Contributions
 
 1. A production architecture for lifecycle-decomposed multi-agent SRE with role-scoped tool access, evidence handoff, and skill self-evolution.
-2. A staged 131-day rollout across 1,278 H200 nodes with pre-registered metric definitions and honest attribution boundaries.
+2. A staged 131-day rollout across more than 1,000 production GPU nodes with pre-registered metric definitions and honest attribution boundaries.
 3. Observational evidence that the proactive-agent phase was associated with 99.661% operational availability, a 77.3% lower incident rate, and a 78.0% reduction in P90 recovery time relative to the pre-agent baseline.
 
 ---
@@ -236,16 +236,16 @@ The design principle: **agents handle known, repeatable, verifiable work; humans
 
 ### 3.1 Fleet
 
-The evaluated fleet comprises 1,278 NVIDIA H200 GPU nodes across 152 racks, observed for 131 days (February 15 – June 25, 2026, UTC), totaling 145,860.5 node-days (3,500,652.4 node-hours). Inventory changed during the window; all rates are normalized by observed node-time.
+The evaluated fleet comprises more than 1,000 production GPU nodes across more than 100 racks, observed for 131 days and totaling more than 145,000 node-days. Exact hardware SKU, inventory, rack count, and calendar dates are anonymized. Inventory changed during the window; all rates are normalized by observed node-time.
 
 ### 3.2 Rollout phases
 
 | Phase | Period | Capability introduced |
 |---|---|---|
-| **Pre-agent** | Feb 15 – Apr 16 | Existing platform workflow; no AI agents |
-| **Initial triage** | Apr 17 – May 6 | AI-assisted node triage and structured evidence collection |
-| **Multi-agent** | May 7 – Jun 7 | Triage delegates to specialized repair agents |
-| **Proactive detection** | Jun 8 – Jun 25 | Scheduled detection agents, proactive scanning, switch monitoring |
+| **Pre-agent** | Days 1–61 | Existing platform workflow; no AI agents |
+| **Initial triage** | Days 62–81 | AI-assisted node triage and structured evidence collection |
+| **Multi-agent** | Days 82–113 | Triage delegates to specialized repair agents |
+| **Proactive detection** | Days 114–131 | Scheduled detection agents, proactive scanning, switch monitoring |
 
 ---
 
@@ -323,11 +323,11 @@ The 2,966 unjudged findings and zero populated repair-outcome links establish th
 
 ### 4.7 Supporting workload metrics
 
-**Job outcomes (May 29 – Jun 24):** 8,325 H200 jobs, 6.204M GPU-hours; 45.18% success, 0.781% hardware-failure, 6.34% software-failure, 31.14% user-stop, 16.52% unknown.
+**Late-window job outcomes:** 8,325 production GPU jobs, 6.204M GPU-hours; 45.18% success, 0.781% hardware-failure, 6.34% software-failure, 31.14% user-stop, 16.52% unknown.
 
-**GPU utilization (May 30 – Jun 25):** 90.71% allocated; 75.58% of allocated active; 63.48% utilized-equivalent per capacity GPU-hour; 85.57% average utilization among active GPUs.
+**Late-window GPU utilization:** 90.71% allocated; 75.58% of allocated active; 63.48% utilized-equivalent per capacity GPU-hour; 85.57% average utilization among active GPUs.
 
-These are late-window supporting metrics only and do not support a February–June trend.
+These are late-window supporting metrics only and do not support a full-window trend.
 
 ---
 
@@ -363,7 +363,7 @@ From qualifying cordon timestamp to the next transition ending in `available`. E
 
 ## 7. Recommended Interpretation
 
-> In an observational staged-rollout study covering 145,860.5 H200 node-days, the proactive AI-agent phase was associated with 99.661% operational availability. Relative to the pre-agent phase, the exposure-normalized cordon incident rate decreased from 18.564 to 4.217 per 1,000 node-days (77.3% lower; IRR 0.227, 95% CI 0.185–0.280), and P90 recovery time decreased from 150.4 to 33.1 hours. Triage coverage increased from 44.6% to 100%, and unknown classifications fell from 56.1% to 4.1%. Because rollout was not randomized and action-to-outcome linkage is incomplete, these results indicate temporal association rather than causal effect.
+> In an observational staged-rollout study covering more than 145,000 production GPU node-days, the proactive AI-agent phase was associated with 99.661% operational availability. Relative to the pre-agent phase, the exposure-normalized cordon incident rate decreased from 18.564 to 4.217 per 1,000 node-days (77.3% lower; IRR 0.227, 95% CI 0.185–0.280), and P90 recovery time decreased from 150.4 to 33.1 hours. Triage coverage increased from 44.6% to 100%, and unknown classifications fell from 56.1% to 4.1%. Because rollout was not randomized and action-to-outcome linkage is incomplete, these results indicate temporal association rather than causal effect.
 
 ---
 
@@ -387,4 +387,4 @@ Incidara demonstrates that a lifecycle-decomposed multi-agent AI system can oper
 
 ---
 
-*Reproducibility: aggregate metric values are maintained in [`evaluation/metrics.csv`](evaluation/metrics.csv); figures are generated by script using only the Python standard library.*
+*Aggregate metric values are maintained in [`evaluation/metrics.csv`](evaluation/metrics.csv).*

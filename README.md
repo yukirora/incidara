@@ -50,9 +50,17 @@ The **diagnostic scope** may be a GPU, link, port, disk, component, path, or ser
 
 See the [Incidara roadmap](docs/roadmap.md) for completed foundations, active milestones, dependencies, and exit criteria.
 
+## Console demo
+
+[![Incidara Console demo](docs/demo/incidara-console.png)](docs/demo/incidara-console.mp4)
+
+[▶ Watch the 49-second Incidara Console demo](docs/demo/incidara-console.mp4)
+
+The demo was recorded from the deployed Console. User identity and internal-only test agents were masked in the capture; no production state or task was changed.
+
 ## Production results
 
-A staged 131-day rollout covered **1,278 NVIDIA H200 nodes**, **152 racks**, and **145,860.5 observed node-days**.
+A staged 131-day observational rollout covered a production fleet of **1,000+ GPU nodes** across **100+ racks**, totaling more than **145,000 observed node-days**.
 
 | Metric | Pre-agent | Proactive-agent | Change |
 |---|---:|---:|---:|
@@ -63,13 +71,9 @@ A staged 131-day rollout covered **1,278 NVIDIA H200 nodes**, **152 racks**, and
 | Triage coverage | 44.6% | **100.0%** | **+55.4 pp** |
 | Unknown classification share | 56.1% | **4.1%** | **−52.0 pp** |
 
-![Pre-agent versus proactive-agent outcomes](docs/evaluation/figures/figure-2-before-after.png)
+The incident-rate ratio was **0.227** (95% CI 0.185–0.280). The rollout was not randomized, and fleet composition, workload, staffing, and operating procedures changed during the study. These results describe temporal association rather than proving that Incidara alone caused the improvement.
 
-The incident-rate ratio was **0.227** (95% CI 0.185–0.280). The rollout was not randomized, fleet composition and workload changed over time, and incident-to-agent-action linkage was incomplete. The results therefore describe association rather than proof that agents alone caused the change.
-
-- [Full report](docs/incidara-agent-sre.md)
-- [Aggregate metrics](docs/evaluation/metrics.csv)
-- [Reproducible figure generator](docs/evaluation/generate_figures.py)
+See the [full evaluation](docs/incidara-agent-sre.md) for methodology, metric definitions, staged results, and validity limits. Aggregate values are available in [`docs/evaluation/metrics.csv`](docs/evaluation/metrics.csv).
 
 ## How it works
 

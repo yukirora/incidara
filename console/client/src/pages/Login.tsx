@@ -43,7 +43,7 @@ export function Login() {
             </svg>
           </div>
           <h1 className="text-lg font-bold text-zinc-900 tracking-tight">Incidara</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Sign in to your workspace</p>
+          <p className="text-sm text-zinc-500 mt-0.5">GPU fleet reliability control plane</p>
         </div>
 
         {error && (
@@ -55,7 +55,7 @@ export function Login() {
           </div>
         )}
 
-        {/* LTP SSO */}
+        {/* Platform SSO */}
         <button
           onClick={handleGatewayLogin}
           className="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-sm font-semibold rounded-lg hover:from-indigo-600 hover:to-violet-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all shadow-md shadow-indigo-200"
@@ -64,7 +64,7 @@ export function Login() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
-            Sign in with LTP SSO
+            Sign in with Platform SSO
           </span>
         </button>
 
