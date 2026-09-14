@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 required_agents=(claude-agent detection-agent triage-agent repair-agent recycler-agent feedback-agent attention-agent)
 required_mcp=(patrol-cron node-operations agent-evidence agent-feedback switch-operations feishu-bitable)
 required_skills=(job-incident-response job-log-triage system-evidence-diagnosis job-recovery training-reproduction rca-closeout)
-required_paths=(ci/flow.yml compose/render.py compose/config.yaml.example infra/postgresql/init.sql infra/backup/agent/agent-sync.sh incidara_agents/ltp-platform docs/incidara-agent-sre.md)
+required_paths=(ci/flow.yml compose/render.py compose/config.yaml.example infra/postgresql/init.sql infra/backup/agent/agent-sync.sh incidara_agents/ltp-platform docs/incidara-agent-sre.md docs/roadmap.md)
 excluded=(analyzer optimizer reproducer ltp-job-eva-agent tco ticket-replay-agent feedback-test-agent)
 
 for name in "${required_agents[@]}"; do

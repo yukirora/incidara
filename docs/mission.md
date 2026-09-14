@@ -1,6 +1,6 @@
 # Incidara — Mission, Value, and Design Principles
 
-> **Companion docs.** [`incidara-agent-sre.md`](incidara-agent-sre.md) describes the implemented architecture and production evaluation. [`detection-feedback-loop.md`](detection-feedback-loop.md) describes how operational outcomes improve rules and skills. This document explains the mission, value proposition, north-star metrics, and design principles.
+> **Companion docs.** [`incidara-agent-sre.md`](incidara-agent-sre.md) describes the implemented architecture and production evaluation. [`roadmap.md`](roadmap.md) separates completed foundations from active milestones. [`detection-feedback-loop.md`](detection-feedback-loop.md) describes how operational outcomes improve rules and skills. This document explains the mission, value proposition, north-star metrics, and design principles.
 
 ---
 

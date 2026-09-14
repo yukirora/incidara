@@ -3,6 +3,7 @@
 ## Start here
 
 - [System architecture and production evaluation](incidara-agent-sre.md) — the primary description of Incidara, its rollout, results, and validity limits.
+- [Roadmap](roadmap.md) — completed foundations, active milestones, dependencies, deliverables, and exit criteria.
 - [Mission and design principles](mission.md) — why the system exists and how safety, evidence, and autonomy are prioritized.
 - [Deployment](deployment.md) — configure, render, start, inspect, and incrementally deploy the stack.
 
@@ -16,7 +17,6 @@
 ## Operations
 
 - [Backup](backup.md) — agent workspace, session, and transcript backup.
-- [Publication checklist](publication.md) — gates that must pass before changing repository visibility.
 - [Incidara Console](../console/README.md) — task-control server and web application.
 
 ## Evaluation artifacts

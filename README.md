@@ -20,6 +20,8 @@ Each agent runs with scoped permissions, a curated skill library, MCP tool acces
 - **Human control plane** — the Incidara Console exposes tasks, transcripts, tool calls, approvals, schedules, metrics, and reports.
 - **Dependency-aware delivery** — CI maps changed paths to affected services, rebuilds only those images, deploys them, and checks health.
 
+See the [Incidara roadmap](docs/roadmap.md) for completed foundations, active milestones, dependencies, and exit criteria.
+
 ## Production results
 
 A staged 131-day rollout covered **1,278 NVIDIA H200 nodes**, **152 racks**, and **145,860.5 observed node-days**.
@@ -262,6 +264,7 @@ incidara/
 Start with [the documentation index](docs/README.md).
 
 - [System and production evaluation](docs/incidara-agent-sre.md)
+- [Roadmap](docs/roadmap.md)
 - [Mission and design principles](docs/mission.md)
 - [Agent workflow protocol](docs/agent-workflow-protocol.md)
 - [Detection agent](docs/detection-agent.md)
@@ -276,4 +279,6 @@ The production rollout was not randomized. Fleet size, fleet age, workload, staf
 
 ## Project status and license
 
-This repository is currently private while publication ownership, contributor approval, dependency review, and licensing are completed. No public license has been granted yet.
+The [roadmap](docs/roadmap.md) separates completed production foundations from the remaining orchestration, memory, exception-learning, reproduction, training-job, and autonomy milestones.
+
+This repository is currently private while ownership, contributor approval, dependency review, and licensing are completed. No public license has been granted yet.
