@@ -1,0 +1,31 @@
+# backup.yml.j2 — Backup sidecar containers
+# Rendered by compose/render.py from compose/config.yaml
+
+{% if cfg.get('agent-backup') and cfg['agent-backup'].get('enabled', True) %}
+services:
+  agent-backup:
+    image: agent-backup:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/infra/backup/agent
+      dockerfile: Dockerfile
+    container_name: incidara-agent-backup
+{% if not cfg["agent-backup"].get("enabled", True) %}
+    profiles: ["backup"]
+{% endif %}
+    restart: unless-stopped
+    env_file: agent-backup.env
+    volumes:
+      - {{ cfg['agent-backup']['agent_data_root'] }}:/mntsys/agents:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "test $(find /root/.cache/agent-sync -name '*.log' -mmin -120 2>/dev/null | wc -l) -ge 1 || exit 1"]
+      interval: 5m
+      timeout: 10s
+      retries: 3
+      start_period: 5m
+
+{% endif %}

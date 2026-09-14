@@ -38,7 +38,7 @@ set -euo pipefail
 # ─────────────────────── constants ────────────────────────────────
 
 CODEUP_ENDPOINT="${CODEUP_ENDPOINT:-https://openapi-rdc.aliyuncs.com}"
-CODEUP_HOST="${CODEUP_HOST:-github.com/example}"
+CODEUP_HOST="${CODEUP_HOST:-codeup.aliyun.com}"
 CODEUP_TOKENS_DIR="${HOME}/.codeup_tokens"
 CODEUP_SECRETS_DIR="${CODEUP_SECRETS_DIR:-/run/secrets/codeup}"
 
@@ -459,7 +459,7 @@ cmd_strip_audit() {
             '{status:"already_absent",branch:$b,auditPath:$p}')
     else
         local author_name="${CODEUP_GIT_AUTHOR_NAME:-pr-merge}"
-        local author_email="${CODEUP_GIT_AUTHOR_EMAIL:-pr-merge@finalsystems.local}"
+        local author_email="${CODEUP_GIT_AUTHOR_EMAIL:-pr-merge@example.com}"
 
         GIT_AUTHOR_NAME="$author_name"   GIT_AUTHOR_EMAIL="$author_email" \
         GIT_COMMITTER_NAME="$author_name" GIT_COMMITTER_EMAIL="$author_email" \

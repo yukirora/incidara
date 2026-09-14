@@ -1,0 +1,68 @@
+# chat-ui.yml.j2 — Chat UI: nginx frontend + Node API (decoupled)
+# Rendered by compose/render.py from compose/config.yaml
+#
+# Client-only redeploy (no API restart):
+#   docker compose up -d --force-recreate --no-deps incidara-console-web
+#
+# API-only redeploy:
+#   docker compose up -d --force-recreate --no-deps incidara-console-api
+
+{% if cfg.get('incidara-console') %}
+{% set chat_ui = cfg['incidara-console'] %}
+{% set common = cfg['common'] %}
+{% set port = chat_ui['_deploy']['port'] %}
+services:
+  # --- Static frontend (nginx) — fast rebuild, zero-downtime client deploys ---
+  incidara-console-web:
+    image: incidara-console-web:latest
+    build:
+      context: {{ common['chat_ui_dir'] }}
+      dockerfile: Dockerfile.web
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      incidara-console-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:{{ port }}"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # --- API server (node) — only redeploy for backend changes ---
+  incidara-console-api:
+    image: incidara-console-api:latest
+    build:
+      context: {{ common['chat_ui_dir'] }}
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    environment:
+      - PORT=3456
+    env_file: incidara-console.env
+    volumes:
+      - {{ chat_ui['_deploy']['data_dir'] }}/sessions:/app/data/sessions
+      - {{ common['chat_ui_dir'] }}/config/agents.yaml:/app/config/agents.yaml:ro
+      - {{ common['chat_ui_dir'] }}/config/groups.yaml:/app/config/groups.yaml:ro
+    depends_on:
+      chat-ui-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3456/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+{% endif %}

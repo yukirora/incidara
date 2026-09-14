@@ -1,0 +1,90 @@
+me: incidara-ci
+sources:
+  incidara_repo:
+    type: codeup
+    name: incidara
+    endpoint: https://codeup.aliyun.com/your-org/incidara.git
+    branch: main
+    triggerEvents:
+      - mergeRequestMerged
+    certificate:
+      type: serviceConnection
+      serviceConnection: CHANGE_ME
+condition: |
+  "${CI_COMMIT_REF_NAME}" == "main" || endsWith('${BUILD_MESSAGE}', '页面手动触发'))
+stages:
+  build_deploy_stage:
+    name: 增量构建部署
+    jobs:
+      build_deploy_job:
+        name: 检测变更并构建部署
+        runsOn:
+          group: private/CHANGE_ME
+          labels: Linux, amd64
+          vm: true
+        enableDockerDaemon: true
+        steps:
+          detect_step:
+            step: Command
+            name: 检测变更服务
+            with:
+              run: |
+                git fetch origin
+                # PR merge: HEAD is merge commit on main, HEAD~1 is previous main
+                # Manual trigger on PR branch: compare PR branch against origin/main
+                if [ "${CI_COMMIT_REF_NAME}" = "main" ]; then
+                  BASE="HEAD~1"
+                else
+                  BASE="origin/main"
+                fi
+                DETECT_OUTPUT=$(bash ci/detect-changed-services.sh "$BASE" 2>&1)
+                echo "$DETECT_OUTPUT"
+                CHANGED_SERVICES=$(echo "$DETECT_OUTPUT" | grep -vE '^(SKILL_CHANGED|COMPOSE_INFRA_CHANGED)=' || true)
+                echo "$CHANGED_SERVICES" | tr '\n' ' ' > changed_services.txt
+                echo "$DETECT_OUTPUT" | grep '^SKILL_CHANGED=1' && echo "1" > skill_changed.txt || echo "0" > skill_changed.txt
+                echo ">>> Changed services: $(cat changed_services.txt)"
+                echo ">>> Skill changed: $(cat skill_changed.txt)"
+          config_step:
+            step: Command
+            name: 写入config.yaml
+            with:
+              run: |
+                if [ -z "${CONFIG_YAML_B64:-}" ]; then
+                  echo ">>> ERROR: CONFIG_YAML_B64 pipeline variable not set"
+                  exit 1
+                fi
+                CONFIG_DIR="/data/agents/incidara/compose"
+                mkdir -p "$CONFIG_DIR"
+                printf '%s' "$CONFIG_YAML_B64" | tr -cd 'A-Za-z0-9+/=' | base64 -d > "$CONFIG_DIR/config.yaml"
+                echo ">>> config.yaml written ($(wc -c < "$CONFIG_DIR/config.yaml") bytes)"
+          deploy_step:
+            step: Command
+            name: 构建并部署
+            with:
+              run: |
+                export CHANGED_SERVICES=$(cat changed_services.txt)
+                export SKILL_CHANGED=$(cat skill_changed.txt)
+                bash ci/build-and-deploy.sh <<< "$CHANGED_SERVICES"
+          verify_step:
+            step: Command
+            name: 健康检查
+            with:
+              run: |
+                CHANGED=$(cat changed_services.txt | xargs)
+                SKILL=$(cat skill_changed.txt 2>/dev/null || echo "0")
+                if [ -z "$CHANGED" ] && [ "$SKILL" = "0" ]; then
+                  echo "No changes, skipping verification"
+                  exit 0
+                fi
+                if [ "$SKILL" = "1" ]; then
+                  echo ">>> Skills updated via rsync (volume-mounted, no rebuild needed)"
+                  echo ">>> New sessions will pick up changes automatically"
+                fi
+                cd /data/agents/incidara/compose/rendered
+                docker compose ps --format 'table {{.Name}}\t{{.Status}}' | head -30
+                UNHEALTHY=$(docker compose ps --format '{{.Name}} {{.Status}}' 2>/dev/null | grep -i 'unhealthy' | awk '{print $1}' | tr '\n' ' ' || true)
+                if [ -n "$UNHEALTHY" ]; then
+                  echo "ERROR: Unhealthy services: $UNHEALTHY"
+                  exit 1
+                fi
+                echo "All services healthy"

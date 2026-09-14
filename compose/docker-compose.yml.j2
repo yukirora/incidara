@@ -1,0 +1,21 @@
+# docker-compose.yml.j2 — main entry, includes sub-files
+# Rendered by compose/render.py from compose/config.yaml
+#
+# Deploy: cd compose/rendered && docker compose up -d <svc>
+
+include:
+{% if cfg.get('agent-db') or cfg.get('chat-ui-db') %}
+  - databases.yml
+{% endif %}
+{% if cfg.get('node-ops-ops') or cfg.get('node-ops-diagnosis') or cfg.get('node-ops-feedback') or cfg.get('agent-feedback') or cfg.get('agent-evidence') or cfg.get('patrol-cron') or cfg.get('switch-operations') %}
+  - mcp-servers.yml
+{% endif %}
+{% if cfg.get('triage-agent') or cfg.get('repair-agent') or cfg.get('feedback-agent') or cfg.get('detection-agent') or cfg.get('recycler-agent') or cfg.get('attention-agent') %}
+  - agents.yml
+{% endif %}
+{% if cfg.get('incidara-console') %}
+  - chat-ui.yml
+{% endif %}
+{% if cfg.get('agent-backup') %}
+  - backup.yml
+{% endif %}

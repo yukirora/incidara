@@ -1,0 +1,97 @@
+name: agent-db
+
+# Agent Database + pgBackRest
+#
+# Deploy:  cd backup && docker compose up -d
+# Backup:  docker exec incidara-agent-db gosu postgres pgbackrest --stanza=app --type=full backup
+# Restore: docker compose down && docker compose run restore && docker compose up -d
+
+services:
+  db:
+    build: .
+    container_name: incidara-agent-db
+    restart: unless-stopped
+    privileged: true
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data
+      BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET}
+      OSS_REPO_PATH: ${OSS_REPO_PATH:-/postgresql/incidara-agent}
+      OSS_BUCKET: ${OSS_BUCKET:-ltp-data}
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-oss-cn-shanghai.aliyuncs.com}
+      OSS_REGION: ${OSS_REGION:-cn-shanghai}
+      OSS_URI_STYLE: ${OSS_URI_STYLE:-host}
+      RETENTION_FULL: ${RETENTION_FULL:-4}
+      RETENTION_INCR: ${RETENTION_INCR:-30}
+      WAL_VOLUME_MAX_MB: ${WAL_VOLUME_MAX_MB:-4096}
+      PG_PORT: "5432"
+      PG_DATABASE: ${POSTGRES_DB}
+      PG_USER: ${POSTGRES_USER}
+    ports:
+      - "127.0.0.1:${HOST_PORT}:5432"
+    volumes:
+      - ${PGDATA_HOST}:/var/lib/postgresql/data
+      - ${PGWAL_HOST}:/var/lib/postgresql/wal
+      - ${PGBACKREST_HOST}:/var/lib/pgbackrest
+      - ../init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ../pricing.sql:/docker-entrypoint-initdb.d/02-pricing.sql:ro
+
+  cron:
+    build: .
+    container_name: incidara-agent-db-cron
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      BACKUP_ENABLED: ${BACKUP_ENABLED:-true}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET}
+      OSS_REPO_PATH: ${OSS_REPO_PATH:-/postgresql/incidara-agent}
+      OSS_BUCKET: ${OSS_BUCKET:-ltp-data}
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-oss-cn-shanghai.aliyuncs.com}
+      OSS_REGION: ${OSS_REGION:-cn-shanghai}
+      OSS_URI_STYLE: ${OSS_URI_STYLE:-host}
+      RETENTION_FULL: ${RETENTION_FULL:-4}
+      RETENTION_INCR: ${RETENTION_INCR:-30}
+      PGDATA: /var/lib/postgresql/data
+      PG_PORT: "5432"
+      PG_DATABASE: ${POSTGRES_DB}
+      PG_USER: ${POSTGRES_USER}
+      PGHOST: db
+      FULL_BACKUP_SCHEDULE: ${FULL_BACKUP_SCHEDULE:-0 20 * * 6}
+      INCR_BACKUP_SCHEDULE: ${INCR_BACKUP_SCHEDULE:-0 20 * * 0-5}
+      HEALTH_CHECK_SCHEDULE: ${HEALTH_CHECK_SCHEDULE:-*/5 * * * *}
+
+    volumes:
+      - ${PGDATA_HOST}:/var/lib/postgresql/data:ro
+      - ${PGWAL_HOST}:/var/lib/postgresql/wal:ro
+      - ${PGBACKREST_HOST}:/var/lib/pgbackrest
+    entrypoint: ["/usr/local/bin/run-cron.sh"]
+
+  restore:
+    build: .
+    profiles: ["restore"]
+    environment:
+      BACKUP_ENABLED: "true"
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET}
+      OSS_REPO_PATH: ${OSS_REPO_PATH:-/postgresql/incidara-agent}
+      OSS_BUCKET: ${OSS_BUCKET:-ltp-data}
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-oss-cn-shanghai.aliyuncs.com}
+      OSS_REGION: ${OSS_REGION:-cn-shanghai}
+      OSS_URI_STYLE: ${OSS_URI_STYLE:-host}
+      RETENTION_FULL: ${RETENTION_FULL:-4}
+      RETENTION_INCR: ${RETENTION_INCR:-30}
+      PGDATA: /var/lib/postgresql/data
+      PG_PORT: "5432"
+      PG_DATABASE: ${POSTGRES_DB}
+      PG_USER: ${POSTGRES_USER}
+    volumes:
+      - ${PGDATA_HOST}:/var/lib/postgresql/data
+      - ${PGWAL_HOST}:/var/lib/postgresql/wal
+    entrypoint: ["gosu", "postgres", "pgbackrest", "--stanza=app", "--type=immediate", "--delta", "restore"]

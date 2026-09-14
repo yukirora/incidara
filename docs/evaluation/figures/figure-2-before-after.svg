@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">H200 pre-agent versus proactive-agent outcomes</title>
+<desc id="desc">A before-and-after scorecard comparing availability, incident rate, recovery latency, 24-hour recovery, triage coverage, and unknown classifications.</desc>
+<rect width="1200" height="700" fill="#FFFFFF"/>
+<defs>
+<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.10"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/></marker>
+</defs>
+<text x="44.0" y="49.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="25" fill="#102A43" font-weight="800" text-anchor="start" opacity="1.0">H200 before vs. proactive-agent phase</text>
+<text x="44.0" y="76.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="13" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Pre-agent: Feb 15–Apr 16 · Proactive phase: Jun 8–25</text>
+<rect x="875" y="35" width="16" height="16" rx="4" fill="#CBD5E1"/>
+<text x="899.0" y="48.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="12" fill="#64748B" font-weight="600" text-anchor="start" opacity="1.0">Pre-agent</text>
+<rect x="1000" y="35" width="16" height="16" rx="4" fill="#2563EB"/>
+<text x="1024.0" y="48.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="12" fill="#2563EB" font-weight="600" text-anchor="start" opacity="1.0">Proactive</text>
+<text x="640.0" y="112.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#64748B" font-weight="700" text-anchor="middle" opacity="1.0">BEFORE</text>
+<text x="845.0" y="112.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle" opacity="1.0">AFTER</text>
+<text x="1075.0" y="112.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#059669" font-weight="700" text-anchor="middle" opacity="1.0">CHANGE</text>
+<rect x="38" y="121" width="1124" height="68" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+<text x="60.0" y="161.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Operational availability</text>
+<rect x="570" y="135" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="161.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">91.393%</text>
+<line x1="724" y1="155" x2="759" y2="155" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="135" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="161.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">99.661%</text>
+<text x="1075.0" y="161.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">+8.27 pp</text>
+<rect x="38" y="204" width="1124" height="68" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="60.0" y="244.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Incident rate / 1,000 node-days</text>
+<rect x="570" y="218" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="244.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">18.56</text>
+<line x1="724" y1="238" x2="759" y2="238" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="218" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="244.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">4.22</text>
+<text x="1075.0" y="244.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">−77.3%</text>
+<rect x="38" y="287" width="1124" height="68" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+<text x="60.0" y="327.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">P90 recovery time</text>
+<rect x="570" y="301" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="327.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">150.4 h</text>
+<line x1="724" y1="321" x2="759" y2="321" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="301" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="327.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">33.1 h</text>
+<text x="1075.0" y="327.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">−78.0%</text>
+<rect x="38" y="370" width="1124" height="68" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="60.0" y="410.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Recovered within 24 hours</text>
+<rect x="570" y="384" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="410.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">56.1%</text>
+<line x1="724" y1="404" x2="759" y2="404" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="384" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="410.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">70.1%</text>
+<text x="1075.0" y="410.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">+14.0 pp</text>
+<rect x="38" y="453" width="1124" height="68" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+<text x="60.0" y="493.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Triage coverage</text>
+<rect x="570" y="467" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="493.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">44.6%</text>
+<line x1="724" y1="487" x2="759" y2="487" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="467" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="493.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">100.0%</text>
+<text x="1075.0" y="493.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">+55.4 pp</text>
+<rect x="38" y="536" width="1124" height="68" rx="12" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="60.0" y="576.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Unknown classification share</text>
+<rect x="570" y="550" width="140" height="40" rx="20" fill="#E2E8F0"/>
+<text x="640.0" y="576.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#102A43" font-weight="700" text-anchor="middle" opacity="1.0">56.1%</text>
+<line x1="724" y1="570" x2="759" y2="570" stroke="#94A3B8" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="769" y="550" width="152" height="40" rx="20" fill="#DBEAFE"/>
+<text x="845.0" y="576.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#2563EB" font-weight="750" text-anchor="middle" opacity="1.0">4.1%</text>
+<text x="1075.0" y="576.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="15" fill="#059669" font-weight="800" text-anchor="middle" opacity="1.0">−52.0 pp</text>
+<rect x="38" y="630" width="1124" height="42" rx="10" fill="#EFF6FF"/>
+<text x="60.0" y="656.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="13" fill="#102A43" font-weight="650" text-anchor="start" opacity="1.0">Incident-rate ratio 0.227 (95% CI 0.185–0.280); observational comparison, not a causal estimate.</text>
+</svg>

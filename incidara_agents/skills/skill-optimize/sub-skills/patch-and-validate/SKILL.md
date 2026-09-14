@@ -14,7 +14,7 @@ Clone the repo now. Use `/tmp/repo-<problem_id>` to avoid conflicts with concurr
 
 ```bash
 GIT_SSH_COMMAND="ssh -i /root/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-  git clone git@github.com/example:finalsystems/incidara.git /tmp/repo-${PROBLEM_ID}
+  git clone git@codeup.aliyun.com:your-org/incidara.git /tmp/repo-${PROBLEM_ID}
 
 cd /tmp/repo-${PROBLEM_ID}
 

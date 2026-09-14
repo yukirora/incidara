@@ -1,0 +1,247 @@
+# mcp-servers.yml.j2 — MCP server containers
+# Rendered by compose/render.py from compose/config.yaml
+
+services:
+{% if cfg.get('node-ops-ops') %}
+  node-ops-ops:
+    image: node-operations:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: mcp_servers/node-operations/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: node-ops-ops.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${NODE_OPS_PORT:-8083}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('node-ops-diagnosis') %}
+  node-ops-diagnosis:
+    image: node-operations:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: mcp_servers/node-operations/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: node-ops-diagnosis.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${NODE_OPS_PORT:-8081}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('node-ops-feedback') %}
+  node-ops-feedback:
+    image: node-operations:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: mcp_servers/node-operations/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: node-ops-feedback.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${NODE_OPS_PORT:-8084}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('agent-feedback') %}
+  agent-feedback:
+    image: agent-feedback:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/agent-feedback
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: agent-feedback.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${AGENT_FEEDBACK_PORT:-8091}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('agent-feedback-write') %}
+  agent-feedback-write:
+    image: agent-feedback:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/agent-feedback
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: agent-feedback-write.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${AGENT_FEEDBACK_PORT:-8093}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('agent-evidence') %}
+  agent-evidence:
+    image: agent-evidence:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/agent-evidence
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: agent-evidence.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${AGENT_EVIDENCE_PORT:-8092}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('switch-operations') %}
+  switch-operations:
+    image: switch-operations:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/switch-operations
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: switch-operations.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${SWITCH_OPS_PORT:-8090}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+
+{% endif %}
+
+{% if cfg.get('patrol-cron') %}
+  patrol-cron:
+    image: patrol-cron:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/patrol-cron
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: patrol-cron.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${MCP_PORT:-8080}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['patrol-cron']['_deploy']['topology_dir'] }}:/app/workspace/topology
+      - {{ cfg['patrol-cron']['_deploy']['data_dir'] }}/logs:/tmp/patrol_cron
+    depends_on:
+      agent-db:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('job-patrol') %}
+  job-patrol:
+    image: patrol-cron:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents/mcp_servers/patrol-cron
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+    env_file: job-patrol.env
+    healthcheck:
+      test: ["CMD", "bash", "-c", "curl -sf http://127.0.0.1:$${MCP_PORT:-8082}/mcp -X POST -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"health\",\"version\":\"1.0\"}}}' -o /dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+    depends_on:
+      agent-db:
+        condition: service_healthy
+{% endif %}

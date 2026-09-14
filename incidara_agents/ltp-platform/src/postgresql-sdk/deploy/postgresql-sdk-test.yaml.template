@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgresql-sdk-test
+spec:
+  template:
+    metadata:
+      labels:
+        app: postgresql-sdk-test
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        pai-master: "true"
+      initContainers:
+      - name: wait-for-postgresql
+        image: {{ cluster_cfg["cluster"]["docker-registry"]["prefix"] }}postgresql:{{ cluster_cfg["cluster"]["docker-registry"]["tag"] }}
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          until pg_isready -h {{ cluster_cfg["postgresql"]["host"] }} -p {{ cluster_cfg["postgresql"]["port"] }} -U {{ cluster_cfg["postgresql"]["user"] }}; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+        env:
+        - name: PGPASSWORD
+          value: "{{ cluster_cfg['postgresql']['passwd'] }}"
+      containers:
+      - name: test-runner
+        image: {{ cluster_cfg["cluster"]["docker-registry"]["prefix"] }}postgresql-sdk:{{ cluster_cfg["cluster"]["docker-registry"]["tag"] }}
+        imagePullPolicy: Always
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "=== Running PostgreSQL SDK Tests ==="
+          python /app/tests/test_physical_node_onboard_simple.py
+          echo "=== Tests Complete ==="
+        env:
+        - name: POSTGRES_CONNECTION_STR
+          value: "{{ cluster_cfg['postgresql']['connection-str'] }}"
+        - name: POSTGRES_SCHEMA
+          value: "{{ cluster_cfg['postgresql-sdk']['schema-name'] }}"
+      imagePullSecrets:
+      - name: {{ cluster_cfg["cluster"]["docker-registry"]["secret-name"] }}

@@ -31,7 +31,7 @@ The older `devops.cn-hangzhou.aliyuncs.com` / `/api/v4/...` endpoints require AK
 SCRIPT=${CLAUDE_SKILL_ROOT}/scripts/pr-creation.sh
 
 # SSH key (used only for `git push`).  Populates ~/.codeup_tokens/ssh_key
-# and runs `ssh-keyscan github.com/example` to fill known_hosts.
+# and runs `ssh-keyscan codeup.aliyun.com` to fill known_hosts.
 bash $SCRIPT save-ssh-key ~/.ssh/codeup_bot_ed25519
 
 # PAT (used only for the MR API).
@@ -172,7 +172,7 @@ bash $SCRIPT create-mr \
 The script prints:
 
 ```
-webUrl:  https://github.com/example/<org>/<repo>/change/<id>
+webUrl:  https://codeup.aliyun.com/<org>/<repo>/change/<id>
 localId: <id>
 state:   TO_BE_MERGED
 ```

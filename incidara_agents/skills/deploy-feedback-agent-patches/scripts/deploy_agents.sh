@@ -32,7 +32,7 @@ if [[ -z "$BRANCH" ]]; then
     exit 1
 fi
 
-REPO_URL="git@github.com/example:finalsystems/incidara.git"
+REPO_URL="git@codeup.aliyun.com:your-org/incidara.git"
 : "${BUILD_ROOT:?BUILD_ROOT must be set (e.g. /home/operator/yutji)}"
 BUILD_CONTEXT="${BUILD_ROOT}/incidara"
 AGENTS_DIR="${BUILD_CONTEXT}/incidara_agents/agents"

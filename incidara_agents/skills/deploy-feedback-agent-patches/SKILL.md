@@ -24,7 +24,7 @@ If none, stop.
 Clone repo to a temporary directory to avoid conflicts with concurrent tasks:
 ```bash
 REPO_DIR=$(mktemp -d /tmp/repo-XXXXXX)
-git clone git@github.com/example:finalsystems/incidara.git "$REPO_DIR"
+git clone git@codeup.aliyun.com:your-org/incidara.git "$REPO_DIR"
 cd "$REPO_DIR"
 ```
 Fetch all branches.

@@ -176,7 +176,7 @@ bash "$SCRIPT" delete-branch "$INTEGRATION_BRANCH" \
 Emit a single JSON object as the **LAST line** of your response. The entrypoint parses it:
 
 ```json
-{"status":"success","integrationMrId":42,"integrationMrUrl":"https://github.com/example/.../change/42","targetBranch":"dev","mergedSourceBranches":["feat/add-alpha","feat/add-beta"],"closedSourceMrs":[15,16],"deletedBranches":["feat/add-alpha","feat/add-beta","integration/dev/20260511-130000"],"failedCleanup":[]}
+{"status":"success","integrationMrId":42,"integrationMrUrl":"https://codeup.aliyun.com/.../change/42","targetBranch":"dev","mergedSourceBranches":["feat/add-alpha","feat/add-beta"],"closedSourceMrs":[15,16],"deletedBranches":["feat/add-alpha","feat/add-beta","integration/dev/20260511-130000"],"failedCleanup":[]}
 ```
 
 Keys:

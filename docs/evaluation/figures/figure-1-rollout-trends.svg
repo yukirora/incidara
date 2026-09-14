@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="590" viewBox="0 0 1200 590" role="img" aria-labelledby="title desc">
+<title id="title">H200 reliability metrics across the staged AI-agent rollout</title>
+<desc id="desc">Three line charts show operational availability rising, incident rate falling, and P90 recovery time falling across four rollout phases.</desc>
+<rect width="1200" height="590" fill="#FFFFFF"/>
+<defs>
+<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.10"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/></marker>
+</defs>
+<text x="44.0" y="48.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="25" fill="#102A43" font-weight="800" text-anchor="start" opacity="1.0">H200 reliability across the staged AI-agent rollout</text>
+<text x="44.0" y="74.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="13" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Time-weighted node-state analysis · 2026-02-15 to 2026-06-25 (UTC)</text>
+<rect x="38" y="105" width="362" height="405" rx="16" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="60.0" y="136.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="16" fill="#102A43" font-weight="700" text-anchor="start" opacity="1.0">Operational availability</text>
+<text x="60.0" y="157.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Available + allocated / non-deallocated time</text>
+<line x1="92" y1="183.0" x2="372" y2="183.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="84.0" y="187.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">100</text>
+<line x1="92" y1="275.3" x2="372" y2="275.3" stroke="#E2E8F0" stroke-width="1"/>
+<text x="84.0" y="279.3" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">96</text>
+<line x1="92" y1="367.7" x2="372" y2="367.7" stroke="#E2E8F0" stroke-width="1"/>
+<text x="84.0" y="371.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">92</text>
+<line x1="92" y1="460.0" x2="372" y2="460.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="84.0" y="464.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">88</text>
+<polyline points="92.0,381.7 185.3,268.6 278.7,220.7 372.0,190.8" fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="92.0" cy="381.7" r="6" fill="#FFFFFF" stroke="#059669" stroke-width="3"/>
+<text x="92.0" y="368.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#059669" font-weight="700" text-anchor="middle" opacity="1.0">91.4%</text>
+<text x="92.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Pre-agent</text>
+<circle cx="185.3" cy="268.6" r="6" fill="#FFFFFF" stroke="#059669" stroke-width="3"/>
+<text x="185.3" y="255.6" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#059669" font-weight="700" text-anchor="middle" opacity="1.0">96.3%</text>
+<text x="185.3" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Triage v1</text>
+<circle cx="278.7" cy="220.7" r="6" fill="#FFFFFF" stroke="#059669" stroke-width="3"/>
+<text x="278.7" y="207.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#059669" font-weight="700" text-anchor="middle" opacity="1.0">98.4%</text>
+<text x="278.7" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Multi-agent</text>
+<circle cx="372.0" cy="190.8" r="6" fill="#FFFFFF" stroke="#059669" stroke-width="3"/>
+<text x="372.0" y="177.8" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#059669" font-weight="700" text-anchor="middle" opacity="1.0">99.7%</text>
+<text x="372.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Proactive</text>
+<rect x="419" y="105" width="362" height="405" rx="16" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="441.0" y="136.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="16" fill="#102A43" font-weight="700" text-anchor="start" opacity="1.0">Incident rate</text>
+<text x="441.0" y="157.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Qualifying cordons per 1,000 node-days</text>
+<line x1="473" y1="183.0" x2="753" y2="183.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="465.0" y="187.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">20</text>
+<line x1="473" y1="275.3" x2="753" y2="275.3" stroke="#E2E8F0" stroke-width="1"/>
+<text x="465.0" y="279.3" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">13</text>
+<line x1="473" y1="367.7" x2="753" y2="367.7" stroke="#E2E8F0" stroke-width="1"/>
+<text x="465.0" y="371.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">7</text>
+<line x1="473" y1="460.0" x2="753" y2="460.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="465.0" y="464.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">0</text>
+<polyline points="473.0,202.9 566.3,397.0 659.7,369.4 753.0,401.6" fill="none" stroke="#2563EB" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="473.0" cy="202.9" r="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="3"/>
+<text x="473.0" y="189.9" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle" opacity="1.0">18.6</text>
+<text x="473.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Pre-agent</text>
+<circle cx="566.3" cy="397.0" r="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="3"/>
+<text x="566.3" y="384.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle" opacity="1.0">4.5</text>
+<text x="566.3" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Triage v1</text>
+<circle cx="659.7" cy="369.4" r="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="3"/>
+<text x="659.7" y="356.4" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle" opacity="1.0">6.5</text>
+<text x="659.7" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Multi-agent</text>
+<circle cx="753.0" cy="401.6" r="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="3"/>
+<text x="753.0" y="388.6" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#2563EB" font-weight="700" text-anchor="middle" opacity="1.0">4.2</text>
+<text x="753.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Proactive</text>
+<rect x="800" y="105" width="362" height="405" rx="16" fill="#F8FAFC" stroke="#E2E8F0"/>
+<text x="822.0" y="136.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="16" fill="#102A43" font-weight="700" text-anchor="start" opacity="1.0">P90 recovery time</text>
+<text x="822.0" y="157.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Hours from cordon to next available state</text>
+<line x1="854" y1="183.0" x2="1134" y2="183.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="846.0" y="187.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">160</text>
+<line x1="854" y1="275.3" x2="1134" y2="275.3" stroke="#E2E8F0" stroke-width="1"/>
+<text x="846.0" y="279.3" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">107</text>
+<line x1="854" y1="367.7" x2="1134" y2="367.7" stroke="#E2E8F0" stroke-width="1"/>
+<text x="846.0" y="371.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">53</text>
+<line x1="854" y1="460.0" x2="1134" y2="460.0" stroke="#E2E8F0" stroke-width="1"/>
+<text x="846.0" y="464.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="400" text-anchor="end" opacity="1.0">0</text>
+<polyline points="854.0,199.6 947.3,211.8 1040.7,277.8 1134.0,402.7" fill="none" stroke="#D97706" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="854.0" cy="199.6" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="3"/>
+<text x="854.0" y="186.6" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#D97706" font-weight="700" text-anchor="middle" opacity="1.0">150h</text>
+<text x="854.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Pre-agent</text>
+<circle cx="947.3" cy="211.8" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="3"/>
+<text x="947.3" y="198.8" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#D97706" font-weight="700" text-anchor="middle" opacity="1.0">143h</text>
+<text x="947.3" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Triage v1</text>
+<circle cx="1040.7" cy="277.8" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="3"/>
+<text x="1040.7" y="264.8" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#D97706" font-weight="700" text-anchor="middle" opacity="1.0">105h</text>
+<text x="1040.7" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Multi-agent</text>
+<circle cx="1134.0" cy="402.7" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="3"/>
+<text x="1134.0" y="389.7" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="11" fill="#D97706" font-weight="700" text-anchor="middle" opacity="1.0">33h</text>
+<text x="1134.0" y="485.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="10" fill="#64748B" font-weight="600" text-anchor="middle" opacity="1.0">Proactive</text>
+<text x="44.0" y="555.0" font-family="Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif" font-size="12" fill="#64748B" font-weight="400" text-anchor="start" opacity="1.0">Rollout landmarks: initial triage (Apr 17), repair delegation (May 7), proactive detection (Jun 8).</text>
+</svg>

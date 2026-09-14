@@ -1,0 +1,212 @@
+# agents.yml.j2 — Claude Code agent containers
+# Rendered by compose/render.py from compose/config.yaml
+#
+# All agent Dockerfiles use FROM claude-agent:latest + COPY from repo root.
+# Build context = repo_dir/incidara_agents (where mcp_servers/, agents/, ltp-platform/ live).
+
+services:
+{% if cfg.get('feedback-agent') %}
+  feedback-agent:
+    image: claude-agent:feedback
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/feedback-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: feedback-agent.env
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['feedback-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['feedback-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/feedback-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+      - {{ cfg['feedback-agent']['_deploy']['ssh_key'] }}:/root/.ssh/deploy_key:ro
+      - {{ cfg['triage-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/triage:ro
+      - {{ cfg['repair-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/repair:ro
+      - {{ cfg['detection-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/detection:ro
+      - {{ cfg['recycler-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/recycler:ro
+      - {{ cfg['triage-agent']['_deploy']['claude_home'] }}/projects:/mnt/transcripts/triage:ro
+      - {{ cfg['repair-agent']['_deploy']['claude_home'] }}/projects:/mnt/transcripts/repair:ro
+      - {{ cfg['recycler-agent']['_deploy']['claude_home'] }}/projects:/mnt/transcripts/recycler:ro
+      - {{ cfg['detection-agent']['_deploy']['claude_home'] }}/projects:/mnt/transcripts/detection:ro
+    depends_on:
+      agent-feedback-write:
+        condition: service_healthy
+      node-ops-feedback:
+        condition: service_healthy
+      agent-evidence:
+        condition: service_healthy
+      patrol-cron:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('repair-agent') %}
+  repair-agent:
+    image: claude-agent:repair
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/repair-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: repair-agent.env
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['repair-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['repair-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/repair-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+    depends_on:
+      node-ops-ops:
+        condition: service_healthy
+      agent-feedback-write:
+        condition: service_healthy
+      agent-evidence:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('triage-agent') %}
+  triage-agent:
+    image: claude-agent:triage
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/triage-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: triage-agent.env
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['triage-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['triage-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/triage-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+    depends_on:
+      node-ops-diagnosis:
+        condition: service_healthy
+      agent-evidence:
+        condition: service_healthy
+      patrol-cron:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('detection-agent') %}
+  detection-agent:
+    image: claude-agent:detection
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/detection-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: detection-agent.env
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['detection-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['detection-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/detection-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+      - {{ cfg['detection-agent']['_deploy']['data_dir'] }}/patrol-logs:/tmp/patrol_cron
+      - {{ cfg['detection-agent']['_deploy']['data_dir'] }}/topology:/app/workspace/topology
+    depends_on:
+      job-patrol:
+        condition: service_healthy
+      node-ops-ops:
+        condition: service_healthy
+      agent-evidence:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('recycler-agent') %}
+  recycler-agent:
+    image: claude-agent:recycler
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/recycler-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: recycler-agent.env
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['recycler-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['recycler-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/recycler-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+    depends_on:
+      node-ops-ops:
+        condition: service_healthy
+      agent-feedback-write:
+        condition: service_healthy
+      agent-evidence:
+        condition: service_healthy
+
+{% endif %}
+
+{% if cfg.get('attention-agent') %}
+  attention-agent:
+    image: claude-agent:attention
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/incidara_agents
+      dockerfile: agents/attention-agent/Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    command: ["bash", "-c", "bash /usr/local/bin/setup-mcp.sh && exec /app/entrypoint.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    env_file: attention-agent.env
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8010/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - {{ cfg['common']['ssh_socket_path'] }}:/tmp/ssh-agent.sock
+      - {{ cfg['attention-agent']['_deploy']['workspace'] }}:/app/workspace
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/skills:/app/workspace/.claude/skills
+      - {{ cfg['attention-agent']['_deploy']['claude_home'] }}:/root/.claude
+      - {{ cfg['common']['repo_dir'] }}/incidara_agents/agents/attention-agent/setup-mcp.sh:/usr/local/bin/setup-mcp.sh:ro
+      - {{ cfg['triage-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/triage:ro
+      - {{ cfg['repair-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/repair:ro
+      - {{ cfg['detection-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/detection:ro
+      - {{ cfg['recycler-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/recycler:ro
+      - {{ cfg['feedback-agent']['_deploy']['sessions_dir'] }}:/mnt/sessions/feedback:ro
+    depends_on:
+      incidara-console-api:
+        condition: service_healthy
+{% endif %}
+

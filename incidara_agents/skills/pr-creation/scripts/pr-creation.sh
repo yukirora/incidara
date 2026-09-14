@@ -19,7 +19,7 @@
 #   save-ssh-key <path>                        Copy private key + populate known_hosts
 #   save-identity <name> <email>               Manually save commit-author identity
 #   whoami                                     Probe SSH banner → user + synthesized email
-#   test-ssh                                   ssh -T git@github.com/example with scoped config
+#   test-ssh                                   ssh -T git@codeup.aliyun.com with scoped config
 #   resolve-repo [remote]                      git remote URL → numeric Codeup repo id (cached)
 #   git-push <branch>                          Push current HEAD via scoped GIT_SSH_COMMAND
 #   create-mr --source <b> --target <b> --title <t> --body-file <f>
@@ -37,7 +37,7 @@ set -euo pipefail
 # (The older devops.cn-hangzhou.aliyuncs.com endpoint requires AK+SK
 # signing, so PATs don't work there.)
 CODEUP_ENDPOINT="${CODEUP_ENDPOINT:-https://openapi-rdc.aliyuncs.com}"
-CODEUP_HOST="${CODEUP_HOST:-github.com/example}"
+CODEUP_HOST="${CODEUP_HOST:-codeup.aliyun.com}"
 CODEUP_TOKENS_DIR="${HOME}/.codeup_tokens"
 CODEUP_SECRETS_DIR="${CODEUP_SECRETS_DIR:-/run/secrets/codeup}"
 
@@ -242,7 +242,7 @@ cmd_test_ssh() {
 # Resolve the authenticated user via the SSH banner — the one identity
 # layer that is 100% determined on the server and doesn't depend on
 # Codeup's OpenAPI being enabled in the current enterprise.  Codeup
-# answers `ssh -T git@github.com/example` with the line
+# answers `ssh -T git@codeup.aliyun.com` with the line
 #   "Welcome to Codeup, <username>!"
 # which is our authoritative source for the username.  Email is not
 # exposed via SSH, so we synthesize a noreply form (overridable via
@@ -265,7 +265,7 @@ cmd_whoami() {
     # noreply email is consistent with platform convention.
     local email
     email=$(_get_email)
-    [[ -n "$email" ]] || email="${username}@users.noreply.github.com/example"
+    [[ -n "$email" ]] || email="${username}@users.noreply.codeup.aliyun.com"
 
     echo "username: $username"
     echo "email:    $email"

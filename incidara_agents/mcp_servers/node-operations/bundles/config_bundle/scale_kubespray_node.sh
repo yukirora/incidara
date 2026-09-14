@@ -16,7 +16,7 @@ CLUSTER_KEY="${CLUSTER_KEY:-./cluster_key}"
 
 if [[ ! -d "${KUBESPRAY_DIR}" ]]; then
   echo "kubespray not found at ${KUBESPRAY_DIR}" >&2
-  echo "Clone it: git clone https://github.com/example/finalsystems/kubespray/changes ${KUBESPRAY_DIR}" >&2
+  echo "Clone it: git clone https://codeup.aliyun.com/your-org/kubespray/changes ${KUBESPRAY_DIR}" >&2
   exit 1
 fi
 

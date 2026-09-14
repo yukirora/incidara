@@ -1,0 +1,157 @@
+# databases.yml.j2 — PostgreSQL instances with pgBackRest backup
+# Rendered by compose/render.py from compose/config.yaml
+#
+# BACKUP_ENABLED=true  → custom image, archive_mode=on, WAL on loop volume, cron sidecar
+# BACKUP_ENABLED=false → plain postgres:16-alpine, WAL in PGDATA
+# RESTORE_ENABLED=true → restore profile available (requires backup image)
+# RESTORE_ENABLED=false → no restore profile
+
+services:
+  # ── Agent DB ──────────────────────────────────────────────────────────
+{% if cfg.get('agent-db') %}
+  agent-db:
+{% if cfg['agent-db'].get('BACKUP_ENABLED') %}
+    image: agent-db:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/infra/postgresql/backup
+      dockerfile: Dockerfile
+    privileged: true
+{% else %}
+    image: postgres:16-alpine
+{% endif %}
+    container_name: incidara-agent-db
+    restart: unless-stopped
+    env_file: agent-db.env
+    volumes:
+      - {{ cfg['agent-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data
+{% if cfg['agent-db'].get('BACKUP_ENABLED') %}
+      - {{ cfg['agent-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:shared
+      - {{ cfg['agent-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+      - pgsocket-agent-db:/var/run/postgresql
+{% endif %}
+      - {{ cfg['common']['repo_dir'] }}/infra/postgresql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - {{ cfg['common']['repo_dir'] }}/infra/postgresql/pricing.sql:/docker-entrypoint-initdb.d/02-pricing.sql:ro
+    ports:
+      - "{{ cfg['common']['bind_host'] }}:{{ cfg['agent-db']['_deploy']['port'] }}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ cfg['agent-db']['POSTGRES_USER'] }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+{% if cfg["agent-db"].get("BACKUP_ENABLED") and cfg["agent-db"].get("BACKUP_CRON_ENABLED", True) %}
+  agent-db-cron:
+    image: agent-db:latest
+    container_name: incidara-agent-db-cron
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      agent-db:
+        condition: service_started
+    env_file: agent-db.env
+    volumes:
+      - {{ cfg['agent-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data:ro
+      - {{ cfg['agent-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:ro,slave
+      - {{ cfg['agent-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+      - pgsocket-agent-db:/var/run/postgresql
+    entrypoint: ["/usr/local/bin/run-cron.sh"]
+{% endif %}
+
+{% if cfg['agent-db']['_deploy'].get('RESTORE_ENABLED') %}
+  agent-db-restore:
+    image: agent-db:latest
+    profiles: ["restore"]
+    privileged: true
+    env_file: agent-db.env
+    environment:
+      BACKUP_ENABLED: "true"
+      RESTORE_PROMOTE: "true"
+    volumes:
+      - {{ cfg['agent-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data
+      - {{ cfg['agent-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:shared
+      - {{ cfg['agent-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+    entrypoint: ["/usr/local/bin/restore-and-promote.sh"]
+{% endif %}
+
+{% endif %}
+
+  # ── Chat UI DB ────────────────────────────────────────────────────────
+{% if cfg.get('chat-ui-db') %}
+  chat-ui-db:
+{% if cfg['chat-ui-db'].get('BACKUP_ENABLED') %}
+    image: chat-ui-db:latest
+    build:
+      context: {{ cfg['common']['repo_dir'] }}/infra/postgresql/backup
+      dockerfile: Dockerfile
+    privileged: true
+{% else %}
+    image: postgres:16-alpine
+{% endif %}
+    container_name: incidara-console-db
+    restart: unless-stopped
+    env_file: chat-ui-db.env
+    volumes:
+      - {{ cfg['chat-ui-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data
+{% if cfg['chat-ui-db'].get('BACKUP_ENABLED') %}
+      - {{ cfg['chat-ui-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:shared
+      - {{ cfg['chat-ui-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+      - pgsocket-chat-ui-db:/var/run/postgresql
+{% endif %}
+{% if cfg['chat-ui-db']['_deploy'].get('init_dir') %}
+      - {{ cfg['chat-ui-db']['_deploy']['init_dir'] }}:/docker-entrypoint-initdb.d:ro
+{% endif %}
+    ports:
+      - "{{ cfg['common']['bind_host'] }}:{{ cfg['chat-ui-db']['_deploy']['port'] }}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ cfg['chat-ui-db']['POSTGRES_USER'] }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+{% if cfg["chat-ui-db"].get("BACKUP_ENABLED") and cfg["chat-ui-db"].get("BACKUP_CRON_ENABLED", True) %}
+  chat-ui-db-cron:
+    image: chat-ui-db:latest
+    container_name: incidara-console-db-cron
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      chat-ui-db:
+        condition: service_started
+    env_file: chat-ui-db.env
+    environment:
+      PGHOST: chat-ui-db
+      PGPASSWORD: {{ cfg['chat-ui-db']['POSTGRES_PASSWORD'] }}
+    volumes:
+      - {{ cfg['chat-ui-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data:ro
+      - {{ cfg['chat-ui-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:ro,slave
+      - {{ cfg['chat-ui-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+      - pgsocket-chat-ui-db:/var/run/postgresql
+    entrypoint: ["/usr/local/bin/run-cron.sh"]
+{% endif %}
+
+{% if cfg['chat-ui-db']['_deploy'].get('RESTORE_ENABLED') %}
+  chat-ui-db-restore:
+    image: chat-ui-db:latest
+    profiles: ["restore"]
+    privileged: true
+    env_file: chat-ui-db.env
+    environment:
+      BACKUP_ENABLED: "true"
+      RESTORE_PROMOTE: "true"
+    volumes:
+      - {{ cfg['chat-ui-db']['_deploy']['data_dir'] }}:/var/lib/postgresql/data
+      - {{ cfg['chat-ui-db']['_deploy']['wal_dir'] }}:/var/lib/postgresql/wal:shared
+      - {{ cfg['chat-ui-db']['_deploy']['pgbackrest_dir'] }}:/var/lib/pgbackrest
+    entrypoint: ["/usr/local/bin/restore-and-promote.sh"]
+{% endif %}
+{% endif %}
+
+{% if (cfg.get('agent-db') and cfg['agent-db'].get('BACKUP_ENABLED')) or (cfg.get('chat-ui-db') and cfg['chat-ui-db'].get('BACKUP_ENABLED')) %}
+volumes:
+{% if cfg.get('agent-db') and cfg['agent-db'].get('BACKUP_ENABLED') %}
+  pgsocket-agent-db:
+{% endif %}
+{% if cfg.get('chat-ui-db') and cfg['chat-ui-db'].get('BACKUP_ENABLED') %}
+  pgsocket-chat-ui-db:
+{% endif %}
+{% endif %}

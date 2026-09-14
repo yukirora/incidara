@@ -1,0 +1,50 @@
+# Service → file path pattern mapping
+# Format: service_name<TAB>regex_pattern
+# Lines starting with # are comments.
+# ONLY includes services managed by Docker Compose.
+# Be precise: if a file only affects the cron sidecar, map it to the cron service only.
+
+# ── DB containers (entrypoint, init, archive-guard, wal-volume) ──
+agent-db	^infra/postgresql/backup/scripts/(entrypoint|pgbackrest-archive-guard|setup-wal-volume|setup-pgbackrest)\.sh$
+agent-db	^infra/postgresql/backup/Dockerfile$
+agent-db	^infra/postgresql/init\.sql$
+agent-db	^infra/postgresql/pricing\.sql$
+chat-ui-db	^infra/postgresql/backup/scripts/(entrypoint|pgbackrest-archive-guard|setup-wal-volume|setup-pgbackrest)\.sh$
+chat-ui-db	^infra/postgresql/backup/Dockerfile$
+
+# ── DB cron sidecars (run-cron, render-pgbackrest-conf) ──
+agent-db-cron	^infra/postgresql/backup/scripts/(run-cron|render-pgbackrest-conf)\.sh$
+agent-db-cron	^infra/postgresql/backup/Dockerfile$
+chat-ui-db-cron	^infra/postgresql/backup/scripts/(run-cron|render-pgbackrest-conf)\.sh$
+chat-ui-db-cron	^infra/postgresql/backup/Dockerfile$
+
+# ── Backup sidecar ──
+agent-backup	^infra/backup/agent/
+
+# ── Incidara Console ──
+incidara-console-api	^console/
+incidara-console-web	^console/
+
+# ── MCP servers ──
+patrol-cron	^incidara_agents/mcp_servers/patrol-cron/
+job-patrol	^incidara_agents/mcp_servers/patrol-cron/
+switch-operations	^incidara_agents/mcp_servers/switch-operations/
+agent-evidence	^incidara_agents/mcp_servers/agent-evidence/
+agent-feedback	^incidara_agents/mcp_servers/agent-feedback/
+agent-feedback-write	^incidara_agents/mcp_servers/agent-feedback/
+node-ops-ops	^incidara_agents/mcp_servers/node-operations/
+node-ops-diagnosis	^incidara_agents/mcp_servers/node-operations/
+node-ops-feedback	^incidara_agents/mcp_servers/node-operations/
+
+# ── Agents (shared claude-agent base) ──
+feedback-agent	^incidara_agents/agents/(feedback-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+repair-agent	^incidara_agents/agents/(repair-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+triage-agent	^incidara_agents/agents/(triage-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+detection-agent	^incidara_agents/agents/(detection-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+recycler-agent	^incidara_agents/agents/(recycler-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+attention-agent	^incidara_agents/agents/(attention-agent/|claude-agent/(Dockerfile|src/|tsconfig\.json|package\.json))
+
+# ── node-operations also depends on ltp-platform source ──
+node-ops-ops	^incidara_agents/ltp-platform/
+node-ops-diagnosis	^incidara_agents/ltp-platform/
+node-ops-feedback	^incidara_agents/ltp-platform/

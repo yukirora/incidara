@@ -524,7 +524,7 @@ class TestUpdateProblem:
         mock_conn, mock_cursor = _make_mock_conn()
         mock_cursor.fetchone.return_value = (
             "patch_created",
-            "https://github.com/example/incidara/change/28",
+            "https://codeup.aliyun.com/your-org/incidara/change/28",
             "gap-15-nvswitch-differential-diagnosis",  # branch name, not hash
         )
 
@@ -538,12 +538,12 @@ class TestUpdateProblem:
         patch_commit is a deployed commit hash."""
         mock_conn, mock_cursor = _make_mock_conn()
         mock_cursor.fetchone.side_effect = [
-            ("patch_created", "https://github.com/example/incidara/change/28",
+            ("patch_created", "https://codeup.aliyun.com/your-org/incidara/change/28",
              "d64bc1ad2d1b053d31f9accfb924370affc70735"),  # status check
             {"id": 71, "problem_id": 15, "status": "patch_created", "title": "test",
              "fault_type": "", "prompt": "", "case_ids": [], "diagnosis": "{}",
              "patch_summary": "fix", "patch_commit": "d64bc1ad2d1b053d31f9accfb924370affc70735",
-             "monitor_expectation": "", "pr_url": "https://github.com/example/incidara/change/28"},
+             "monitor_expectation": "", "pr_url": "https://codeup.aliyun.com/your-org/incidara/change/28"},
         ]
         mock_cursor.rowcount = 1
 
