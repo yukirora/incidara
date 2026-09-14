@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 required_agents=(claude-agent detection-agent triage-agent repair-agent recycler-agent feedback-agent attention-agent)
 required_mcp=(patrol-cron node-operations agent-evidence agent-feedback switch-operations feishu-bitable)
 required_skills=(job-incident-response job-log-triage system-evidence-diagnosis job-recovery training-reproduction rca-closeout)
-required_paths=(ci/flow.yml compose/render.py compose/config.yaml.example infra/postgresql/init.sql infra/backup/agent/agent-sync.sh incidara_agents/ltp-platform docs/incidara-agent-sre.md docs/roadmap.md)
+required_paths=(ci/flow.yml compose/render.py compose/config.yaml.example infra/postgresql/init.sql infra/backup/agent/agent-sync.sh incidara_agents/.dockerignore incidara_agents/ltp-platform docs/incidara-agent-sre.md docs/roadmap.md)
 excluded=(analyzer optimizer reproducer ltp-job-eva-agent tco ticket-replay-agent feedback-test-agent)
 
 for name in "${required_agents[@]}"; do
@@ -21,6 +21,7 @@ for path in "${required_paths[@]}"; do
   test -e "$path" || { echo "missing deployment dependency: $path" >&2; exit 1; }
 done
 test ! -e compose.yaml || { echo "misleading root compose.yaml present" >&2; exit 1; }
+test ! -e incidara_agents/skills/pr-merge || { echo "incomplete pr-merge workflow present" >&2; exit 1; }
 for name in "${excluded[@]}"; do
   test ! -e "incidara_agents/agents/$name" || { echo "excluded agent present: $name" >&2; exit 1; }
 done

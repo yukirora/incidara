@@ -88,17 +88,17 @@ Check both report categories:
 
 **Job Failure reports:**
 - `get_unprocessed_reports_tool(category="Job Failure")` — any user-submitted job failure reports?
-- If found → delegate to yourself (`detection`) with `/job-triage` skill:
+- If found → delegate to yourself (`detection`) with `/job-incident-response` skill:
 
 ```
 delegate_to_agent("detection",
   title="Job triage: {job_name} — {brief issue from report}",
-  prompt="User report: {original report text}\nJob: {job_name}\nUser: {username}\n\nUse /job-triage to investigate.",
+  prompt="User report: {original report text}\nJob: {job_name}\nUser: {username}\n\nUse /job-incident-response to investigate.",
   completion_mode="manual"
 )
 ```
 
-Do NOT investigate the job yourself — `job-triage` on the detection agent handles job failure investigation.
+Do NOT investigate the job yourself — `job-incident-response` on the detection agent handles job failure investigation.
 
 ### Step 4: Delegate
 

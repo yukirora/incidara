@@ -2,8 +2,8 @@
 
 # Feedback agent — build + deploy via Makefile.
 #
-# Build (from repo):        cd agents/feedback-agent && make build
-# Deploy (from repo):       cd agents/feedback-agent && sudo make run
+# Build (from repo):        cd incidara_agents/agents/feedback-agent && make build
+# Deploy (from repo):       cd incidara_agents/agents/feedback-agent && sudo make run
 # Restart:                  sudo make restart
 #
 # Runtime data lives in AGENT_DATA (/data/agents/feedback/):
@@ -28,7 +28,7 @@ PORT             = 8006
 
 # --- Skills this agent needs — rsync'd from repo on each make run ---
 SKILLS_SRC   ?= $(REPO_ROOT)/skills
-AGENT_SKILLS ?= analyze-rma-cases skill-optimize collect-rma-cases deploy-feedback-agent-patches pr-creation pr-merge pr-list triage-nodes
+AGENT_SKILLS ?= analyze-rma-cases skill-optimize collect-rma-cases deploy-feedback-agent-patches pr-creation pr-list triage-nodes
 
 # --- Build targets ---
 build-base:

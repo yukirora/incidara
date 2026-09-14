@@ -57,7 +57,6 @@ Completed RMAs ──► collect-rma-cases ──► case_memory DB
 | `skill-optimize` | Per-problem closed loop: case-diagnosis → patch-and-validate → human gate → commit. Orchestrates the fix. |
 | `deploy-feedback-agent-patches` | Review git branch → PR → merge → deploy (rebuild + restart affected agents on remote) |
 | `pr-creation` | Create Codeup merge requests via API |
-| `pr-merge` | Merge Codeup merge requests via API |
 | `pr-list` | Query Codeup merge requests |
 | `triage-nodes` | Re-investigation capability for case-diagnosis step (shared with triage agent) |
 
@@ -140,13 +139,13 @@ cp env.example $AGENT_DATA/.env
 vim $AGENT_DATA/.env    # fill in real credentials
 
 # 3. Deploy (run from repo root)
-cd ~/incidara && bash scripts/deploy.sh feedback
+cd ~/incidara/compose/rendered && docker compose up -d --build feedback-agent
 ```
 
 ### Manual way
 
 ```bash
-cd agents/feedback-agent
+cd incidara_agents/agents/feedback-agent
 
 # Build (from repo root)
 make build          # builds claude-agent:latest, then claude-agent:feedback

@@ -11,29 +11,42 @@ Proactive infrastructure monitoring agent. Detects switch failures, user-reporte
 
 ## Architecture
 
-Probe-based framework. Each detection source is a pluggable probe (skill + MCP tools). Adding a new source = 3 steps: add MCP tools, add skill, add to AGENT_SKILLS.
+The agent combines scheduled discovery with delegated investigation:
 
-Current probes:
-- `switch-health` — switch uptime, PSU, fans, port status, error counter trends
-- `feishu-reports` — user-reported issues from Feishu Bitable
+```text
+patrol findings + collector logs + Feishu reports
+  → scan-cluster
+  → inspect-infra-issue | job-incident-response
+  → evidence, verdict, bounded action, or rule improvement
+```
+
+Infrastructure findings follow `inspect-infra-issue`. Job-failure reports enter the staged job-incident workflow. Repeated detection gaps and rejected findings feed `automate-detection-pattern`.
 
 ## MCP Servers
 
-| Server | Purpose | Tools |
-|--------|---------|-------|
-| `switch-monitor` | Switch health checks + topology | `check_switch_tool`, `check_all_switches_tool`, `get_switch_topology_tool`, `lookup_node_switch_tool`, `list_switches_tool`, `reset_switch_tool`, `get_switch_state_tool`, `reload_topology_tool` |
-| `feishu-bitable` | Feishu Bitable user reports | `list_tables_tool`, `get_table_schema_tool`, `query_table_tool`, `get_record_tool`, `list_issue_categories_tool`, `get_unprocessed_reports_tool`, `get_node_unhealthy_reports_tool` |
-| `node-ops` | Node data reads + alert submission (diagnosis role) | Read tools + `submit_triage_alert`, `move_node_status`, `delegate_to_agent` |
-| `agent-evidence` | Evidence persistence | `save_evidence_tool`, `get_node_evidence_tool` |
+| Server | Purpose |
+|--------|---------|
+| `patrol-cron` | Collectors, rules, findings, replay, and scheduled detection |
+| `node-operations` (`node-ops`) | Node/job data, diagnosis, alert submission, and delegation |
+| `switch-operations` (`switch-ops`) | Switch inventory, collector logs, and interactive commands |
+| `feishu-bitable` | User-submitted node and job reports |
+| `agent-evidence` | Persistent investigation evidence |
+| `agent-feedback` | Outcome and learning history |
 
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
-| `detect-infrastructure` | Main cycle: run all probes → dedup → correlate → act → report |
-| `switch-health` | On-demand switch health checks |
-| `feishu-reports` | On-demand Feishu user report processing |
-| `triage-nodes` | Shared skill — for node investigation context |
+| `scan-cluster` | Find unjudged findings, collector anomalies, and user reports |
+| `inspect-infra-issue` | Investigate infrastructure findings and record evidence/verdicts |
+| `automate-detection-pattern` | Create, refine, replay, and graduate detection rules |
+| `job-check` | Read job state, events, and logs |
+| `job-incident-response` | Orchestrate the training-job incident lifecycle |
+| `job-log-triage` | Identify the first anomaly and candidate hypotheses |
+| `system-evidence-diagnosis` | Correlate cross-source infrastructure evidence |
+| `job-recovery` | Perform evidence-gated isolation and recovery |
+| `training-reproduction` | Run bounded reproduction and validation experiments |
+| `rca-closeout` | Record RCA and promote validated knowledge |
 
 ## Topology Files
 
@@ -46,7 +59,7 @@ Located at `/app/workspace/topology/` (mounted from `AGENT_DATA/topology/`):
 
 ```bash
 # Build
-cd agents/detection-agent && make build
+cd incidara_agents/agents/detection-agent && make build
 
 # Deploy (requires .env in AGENT_DATA)
 sudo make run

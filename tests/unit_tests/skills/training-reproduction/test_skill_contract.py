@@ -55,6 +55,12 @@ def test_incident_lifecycle_is_orchestrated_once():
     assert not (SKILLS / "job-triage").exists()
 
 
+def test_detection_routes_job_reports_to_the_incident_lifecycle():
+    scan = text(SKILLS / "scan-cluster" / "SKILL.md")
+    assert "/job-incident-response" in scan
+    assert "/job-triage" not in scan
+
+
 def test_failure_modes_are_split_by_major_skill_with_matching_ids():
     for mode, prefix in MODES.items():
         sets = []

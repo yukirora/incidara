@@ -105,13 +105,13 @@ cp env.example $AGENT_DATA/.env
 vim $AGENT_DATA/.env    # fill in real credentials
 
 # 3. Deploy (run from repo root)
-cd ~/incidara && bash scripts/deploy.sh triage
+cd ~/incidara/compose/rendered && docker compose up -d --build triage-agent
 ```
 
 ### Manual way
 
 ```bash
-cd agents/triage-agent
+cd incidara_agents/agents/triage-agent
 
 # Build (from repo root)
 make build          # builds claude-agent:latest, then claude-agent:triage
@@ -256,7 +256,7 @@ rsync -avz incidara_agents/mcp_servers/node-operations/ \
   -e "ssh -A" <user>@<remote>:<repo-path>/incidara_agents/mcp_servers/node-operations/
 
 # Rebuild + restart on remote:
-ssh <user>@<remote> 'cd <repo-path> && bash scripts/deploy.sh triage'
+ssh <user>@<remote> 'cd <repo-path>/compose/rendered && docker compose up -d --build triage-agent'
 ```
 
 ## Environment Variables

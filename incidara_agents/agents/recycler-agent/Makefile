@@ -2,8 +2,8 @@
 
 # Recycler agent — build + deploy via Makefile.
 #
-# Build (from repo):        cd agents/recycler-agent && make build
-# Deploy (from repo):       cd agents/recycler-agent && sudo make run
+# Build (from repo):        cd incidara_agents/agents/recycler-agent && make build
+# Deploy (from repo):       cd incidara_agents/agents/recycler-agent && sudo make run
 # Restart:                  sudo make restart
 #
 # Runtime data lives in AGENT_DATA (/data/agents/recycler/):

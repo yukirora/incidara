@@ -2,8 +2,8 @@
 
 # Repair agent — build + deploy via Makefile.
 #
-# Build (from repo):        cd agents/repair-agent && make build
-# Deploy (from repo):       cd agents/repair-agent && sudo make run
+# Build (from repo):        cd incidara_agents/agents/repair-agent && make build
+# Deploy (from repo):       cd incidara_agents/agents/repair-agent && sudo make run
 # Restart:                  sudo make restart
 #
 # Runtime data lives in AGENT_DATA (/data/agents/repair/):

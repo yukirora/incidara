@@ -31,7 +31,9 @@ PORT             = 8007
 
 # --- Skills this agent needs ---
 SKILLS_SRC   ?= $(REPO_ROOT)/skills
-AGENT_SKILLS ?= scan-cluster inspect-infra-issue automate-detection-pattern job-check
+AGENT_SKILLS ?= scan-cluster inspect-infra-issue automate-detection-pattern job-check \
+	job-incident-response job-log-triage system-evidence-diagnosis \
+	job-recovery training-reproduction rca-closeout
 
 # --- Build targets ---
 build-base:

@@ -149,13 +149,13 @@ cp env.example $AGENT_DATA/.env
 vim $AGENT_DATA/.env    # fill in real credentials
 
 # 3. Deploy (run from repo root)
-cd ~/incidara && bash scripts/deploy.sh recycler
+cd ~/incidara/compose/rendered && docker compose up -d --build recycler-agent
 ```
 
 ### Manual way
 
 ```bash
-cd agents/recycler-agent
+cd incidara_agents/agents/recycler-agent
 
 # Build (from repo root)
 make build          # builds claude-agent:latest, then claude-agent:recycler

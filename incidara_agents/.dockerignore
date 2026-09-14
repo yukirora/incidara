@@ -1,0 +1,30 @@
+# Secrets
+.env
+**/.env
+
+# Dependencies
+node_modules/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Offline deb packages — downloaded in Dockerfile from official repos, not in build context
+**/software_bundle/deb/
+
+# Pi sessions
+**/sessions/
+
+# Git data
+.git/
