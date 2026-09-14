@@ -19,19 +19,18 @@ The node reliability loop and proactive detection system are operational today. 
 
 ## Diagnostic scope
 
-| Fault domain | What Incidara can currently identify |
-|---|---|
-| **Node** | Hostname, state, SKU, management address, alert history, recent jobs, validation state, and repair lifecycle |
-| **GPU device** | GPU index, PCI address, model/serial, missing or unresponsive device, Xid history, and affected job |
-| **GPU memory** | Per-GPU volatile/aggregate ECC counts, double-bit errors, row-remap events/failures, and the associated Xid |
-| **PCIe** | Device PCI address, AER evidence, bus/device loss, and “fallen off the bus” failure |
-| **NVLink / NVSwitch** | Per-GPU link number and state, link error masks/Xids, Fabric Manager state, and NVSwitch/tray failure patterns |
-| **InfiniBand / RDMA** | HCA such as `mlx5_3`, physical port, link state/rate, error counters, and—when mapped—the affected path |
-| **Switch** | Switch identity, interfaces with growing CRC/FCS/symbol errors, whole-switch versus single-port scope, and downstream nodes from topology |
-| **Storage** | Disk/NVMe device, SMART/NVMe evidence, filesystem/mount errors, I/O failures, and disk pressure |
-| **CPU / system memory / BMC** | CPU or DIMM inventory mismatches and BMC-reported memory ECC, PSU, fan, thermal, PCIe, GPU, NVSwitch, NIC, and FRU events |
-| **Platform software** | Device-plugin registration, stale allocation state, kubelet/service failure, configuration drift, image/mount failure, and scheduler/resource conditions |
-| **Training job** | Job and attempt; the included workflow models rank → PID → GPU → node → HCA → path, but full service orchestration is still in progress |
+| Fault domain | Resolution Incidara can reach today | Closed-loop response | Maturity |
+|---|---|---|---|
+| **Node** | Hostname, state transition, SKU, management/BMC address, alert window, affected jobs, validation, and repair history | Cordon/drain → triage → repair or revalidation → recycle | Operational |
+| **GPU / PCIe** | GPU index, PCI address, model/serial, missing or unresponsive device, Xid sequence, PCIe AER/DPC evidence, and affected job | Quarantine containing node → evidence-gated GPU/RMA path → validation → recycle | Operational |
+| **GPU memory** | Specific GPU, volatile/aggregate ECC counts, DBE/SBE, row-remap event or exhaustion, and primary/secondary Xids | Cordon → GPU-memory RMA evidence → component outcome → replay | Operational |
+| **NVLink / NVSwitch** | GPU and link number/state, NVLink Xid/error mask, Fabric Manager state, and NVSwitch/tray failure pattern | Drain affected node → GPU/NVSwitch repair path → NVLink/NCCL validation | Operational at node/fabric scope |
+| **HCA / IB link** | HCA such as `mlx5_3`, PCI device, physical port, state/rate, incident-window counter deltas, and mapped switch interface when topology permits | Contain node or shared path → NIC/cable/optic/switch repair → IB/NCCL validation | Operational; optic identity is coarse |
+| **Switch / fabric** | Switch, affected interface, symbol/CRC/FCS delta, link-flap timeline, downstream nodes, and UFM/OpenSM events | Alert or cordon downstream nodes → path maintenance → verify counters and workloads | Operational for supported switch types |
+| **Storage** | Disk/NVMe device, SMART/NVMe state, media errors, filesystem/mount evidence, I/O errors, or software disk pressure | Hardware RMA or platform cleanup/mount repair → storage validation → recycle | Operational |
+| **CPU / DIMM / BMC** | Inventory mismatch and BMC/SEL/Redfish evidence for DIMM/channel, PSU, fan, thermal, PCIe, NIC, GPU, or FRU | Hardware repair or platform configuration → validation → recycle | Evidence-dependent |
+| **Platform software** | Device-plugin registration, stale allocation state, kubelet/service failure, mount/image failure, configuration drift, and scheduler conditions | Repair software/configuration without unnecessary hardware RMA → revalidate | Operational |
+| **Training job** | Job and attempt; the included workflow models rank → PID → GPU → node → HCA → path and first versus propagated errors | Job isolation/recovery → checkpoint verification → RCA → learning | Skills implemented; durable orchestration incomplete |
 
 The **diagnostic scope** may be a GPU, link, port, disk, component, path, or service. The **action scope** is deliberately conservative: Incidara acts on the smallest safe operational unit exposed by the platform, most often a job or node, and escalates when the physical boundary is uncertain.
 
@@ -126,115 +125,279 @@ MCP server names are deployment contracts and remain unchanged:
 
 ## Closed-loop case examples
 
-The following are sanitized production failure patterns represented by Incidara’s rules, investigation methods, repair workflow, and replay tests. Node and job identifiers are anonymized; the final decision always depends on the evidence observed for that incident.
+These are sanitized production failure patterns represented by Incidara’s rules, investigation methods, repair workflow, and replay tests. Identifiers are anonymized; the final decision always depends on the evidence observed for that incident.
 
-### Case 1 — Locate a failed GPU, not merely an unhealthy node
+| Case | Initial symptom | Final fault resolution | Closed-loop result |
+|---|---|---|---|
+| GPU bus failure | `nvidia-smi` timeout / Xid 79 | GPU 2, PCI `0000:ab:00.0` | Node cordoned → GPU repair → validation → recycle |
+| GPU memory failure | Validation ECC failure | GPU 4 uncorrectable ECC / Xid 48 | GPU RMA → replacement outcome → replay |
+| NVMe failure | `DiskError` / `NodeNotReady` | `/dev/nvme3n1` media failure or platform disk pressure | Hardware replacement or platform repair → storage validation |
+| IB optical-link failure | NCCL/UCX timeout | `mlx5_3` port 1 → switch `IB1/17` → optic/path | Link repair → path validation → diagnosis feedback |
 
-```text
-Signal
-  nvidia-smi becomes unresponsive and the kernel reports Xid 79
-      ↓
-Detection
-  patrol-cron creates a finding for the affected node
-      ↓
-Triage
-  node inventory + timeout-bounded nvidia-smi + dmesg
-  identify GPU index and PCI address, for example GPU 2 / 0000:ab:00.0
-      ↓
-Diagnosis
-  the GPU disappeared from the PCI bus before the workload failure
-  fault domain: GPU/PCIe hardware, contained by one node
-      ↓
-Action
-  cordon or drain the node, preserve evidence, and delegate to Repair
-      ↓
-Repair and recovery
-  confirm evidence → prepare vendor-safe RMA → human approval → submit
-  Recycler tracks completion, resets/configures the node, validates it,
-  and returns it to service
-      ↓
-Learning
-  the RMA outcome is reconciled with the original finding and diagnosis
-```
+<details>
+<summary><strong>Case 1 — Locate a failed GPU and PCIe path</strong></summary>
 
-The node is the quarantine and repair unit, but the diagnosis identifies the GPU and PCIe location responsible for the node failure.
-
-### Case 2 — Isolate a GPU memory failure
+### Initial symptom
 
 ```text
-Signal
-  validation job reports a GPU ECC failure
-      ↓
-Evidence
-  job log identifies the affected task/node
-  nvidia-smi reports per-GPU ECC counters
-  dmesg provides the corresponding Xid sequence
-      ↓
-Diagnosis
-  GPU 4 has uncorrectable ECC and an Xid 48 double-bit memory error
-  fault domain: GPU 4 memory, not every GPU in the server
-      ↓
-Action
-  cordon the containing node and create an RMA request containing
-  GPU index, PCI address, ECC count, Xid, timestamps, and reproduction
-      ↓
-Outcome
-  confirmed repair returns through Recycler;
-  NFF or misclassification enters Feedback for attribution and replay
+nvidia-smi does not complete within the bounded timeout
+NVRM Xid 79: GPU 0000:ab:00.0 has fallen off the bus
 ```
 
-Incidara distinguishes a concrete GPU-memory failure from transient or secondary Xids by checking the per-device counters and primary error sequence.
+A node-level alert alone cannot distinguish a driver issue, temporary reset, PCIe path failure, GPU failure, or broader node crash.
 
-### Case 3 — Distinguish a failed NVMe device from platform disk pressure
+### Evidence and resolution
 
 ```text
-Signal
-  DiskError, storage validation failure, or NodeNotReady
-      ↓
-Triage
-  map the alert to a device; inspect df, lsblk, nvme smart-log,
-  filesystem errors, mount state, and kernel I/O messages
-      ↓
-Decision
-  SMART/media errors on /dev/nvme3n1 → hardware disk fault
-  disk full with healthy media        → platform/storage cleanup path
-      ↓
-Hardware path
-  cordon → evidence-backed disk RMA → replacement → reset/configure
-  → storage validation → reallocate
-
-Platform path
-  clean space or repair mount/service → validate → return to service
+1. Map alert and affected workload to node-gpu-01.
+2. Compare expected GPU inventory with currently visible devices.
+3. Run timeout-bounded nvidia-smi and capture its exit status.
+4. Read incident-window dmesg for Xid, AER, DPC, PCIe, and NVLink evidence.
+5. Map PCI 0000:ab:00.0 to GPU index 2.
+6. Check whether the same workload succeeds on healthy GPUs/nodes.
 ```
 
-The same node-level symptom therefore produces different actions depending on whether evidence follows the physical NVMe device or the software/filesystem layer.
+Resolved fault object:
 
-### Case 4 — Narrow a communication failure to an IB port/path
+```yaml
+fault_domain: gpu_pcie
+node: node-gpu-01
+gpu_index: 2
+pci_address: "0000:ab:00.0"
+primary_evidence: "Xid 79 before workload failure"
+action_scope: node
+```
+
+### Action and feedback
 
 ```text
-Signal
-  a validation or training job reports NCCL/UCX timeout
-  with ibv_create_ah failure on mlx5_3
-      ↓
-Triage
-  map job → task/rank → node → HCA
-  inspect mlx5_3 port 1 state/rate and incident-window counters
-  correlate the node port with switch topology and interface errors
-      ↓
-Decision
-  port Down or growing physical counters → HCA/cable/switch-port hardware path
-  ports Active but rdma/hca missing      → device-plugin/platform path
-  several jobs/ports fail together       → shared switch/fabric scope
-      ↓
-Action
-  isolate the smallest supported job/node/path scope;
-  do not cordon unrelated nodes
-      ↓
-Recovery and learning
-  repair or platform fix → validation → job/node recovery → RCA/outcome feedback
+cordon/drain node
+→ preserve GPU inventory, Xid, PCIe, and workload-impact evidence
+→ Repair confirms the failure and prepares a vendor-safe RMA
+→ human approves reset/RMA
+→ vendor repairs GPU or motherboard path
+→ Recycler resets, configures, validates, and reallocates the node
+→ Feedback compares the replaced component with the predicted GPU/PCIe fault
 ```
 
-This is the intended diagnostic progression from a broad “NCCL timeout” symptom to a specific HCA, physical port, switch interface, or shared fabric domain when the available mapping supports it.
+A GPU replacement matching the diagnosis is `REPAIR_CONFIRMED`; a motherboard replacement may confirm the PCIe domain but refine the predicted component; no reproducible fault becomes NFF feedback.
+
+</details>
+
+<details>
+<summary><strong>Case 2 — Isolate a GPU memory failure</strong></summary>
+
+### Initial symptom
+
+```text
+validation result: ContainerMayFailDueToGpuDeviceEccError
+```
+
+### Evidence and differential diagnosis
+
+```text
+Job/validation log
+  → identify affected task and node
+
+nvidia-smi per-GPU query
+  → GPU 4 has uncorrectable ECC
+  → other GPUs do not show the same failure
+
+dmesg timeline
+  → Xid 48 double-bit ECC occurs first
+  → Xid 45/94 may appear later as secondary effects
+
+row-remap state
+  → distinguish a correctable remap event from remap exhaustion/failure
+```
+
+Resolved fault object:
+
+```yaml
+fault_domain: gpu_memory
+node: node-ecc-01
+gpu_index: 4
+pci_address: "0000:ca:00.0"
+primary_xid: 48
+ecc_type: uncorrectable_double_bit
+action_scope: node
+```
+
+### Vendor evidence
+
+```text
+GPU index and PCI address
+volatile and aggregate ECC counts
+primary/secondary Xid sequence with timestamps
+validation actual/baseline result
+nvidia-smi and dmesg excerpts
+vendor-runnable reproduction/validation commands
+```
+
+### Closed loop
+
+```text
+cordon node → evidence gate → GPU RMA approval → component repair
+→ GPU/NVLink/communication validation → recycle
+→ reconcile vendor outcome with finding
+→ create positive or negative replay evidence
+```
+
+Incidara does not treat every Xid as a GPU-memory RMA. It uses the per-device ECC state and primary error sequence to distinguish a concrete memory failure from a transient or propagated symptom.
+
+</details>
+
+<details>
+<summary><strong>Case 3 — Distinguish failed NVMe media from platform disk pressure</strong></summary>
+
+### Initial symptom
+
+```text
+DiskError, storage validation failure, or NodeNotReady
+```
+
+### Evidence
+
+```text
+alert/device mapping
+lsblk and mount layout
+df usage and inode pressure
+nvme smart-log / smartctl for the named device
+dmesg I/O, controller, timeout, and filesystem errors
+service/mount/container state
+```
+
+Differential decision:
+
+| Observation | Diagnosis | Response |
+|---|---|---|
+| `/dev/nvme3n1` reports critical warning, media errors, or repeated controller/I/O failure | Physical NVMe failure | Cordon → disk RMA → replacement → storage validation → recycle |
+| Filesystem is full but media health is clean | Platform capacity/cleanup issue | Clean safely → restart affected service if needed → validate |
+| Media is healthy but mount/service is stale | Platform mount/service failure | Repair mount/service → validate; no hardware RMA |
+| Evidence no longer reproduces and historical data is insufficient | Unknown/transient | Revalidate or escalate; do not invent a disk fault |
+
+Vendor feedback such as “NVMe replaced and storage test passed” confirms the physical diagnosis. Filesystem cleanup or remount is maintenance/configuration feedback and should not inflate hardware-diagnosis accuracy.
+
+</details>
+
+<details>
+<summary><strong>Case 4 — Narrow NCCL/UCX failure to an IB optical path</strong></summary>
+
+### Initial symptom and candidates
+
+```text
+NCCL timeout
+UCX ERROR: ibv_create_ah(...) failed: Connection timed out on mlx5_3
+```
+
+Possible causes include job/NCCL configuration, rank desynchronization, GPU/NVLink, HCA, cable/optic, switch interface, shared fabric control, or an RDMA device-plugin problem. Incidara does not classify from the error string alone.
+
+### Job-to-path mapping
+
+```text
+Job attempt → first failing rank 5 → node-ib-01 → GPU 2
+            → HCA mlx5_3 → physical port 1
+            → leaf-07 / IB1/17, only when topology is verified
+```
+
+Without verified topology, the maximum supported resolution remains `node-ib-01 / mlx5_3 / port 1`; Incidara must not claim a switch interface.
+
+### Node-side evidence
+
+```text
+$ ibstat mlx5_3
+CA 'mlx5_3'
+    Port 1:
+        State: Down
+        Physical state: Polling
+        Rate: 400
+
+Incident-window deltas:
+  LinkDowned:   +3
+  SymbolErrors: +214
+  RcvErrors:    +41
+
+Kernel:
+  mlx5_core 0000:5e:00.0: port module event
+  mlx5_3: link down
+```
+
+The workflow compares incident-window deltas. A large lifetime counter without a new delta is historical evidence, not proof of the current failure.
+
+### Switch/fabric evidence
+
+```text
+Switch: leaf-07
+Port: IB1/17
+Before incident: Active, symbol errors 0
+During incident: Down, symbol-error delta +214
+
+UFM/OpenSM controls:
+  no simultaneous ERR 1F07 burst
+  no ERR 5430 path-resolution spike
+  no multi-switch outage
+  no UFM restart
+```
+
+### Differential diagnosis
+
+| Candidate | Evidence | Result |
+|---|---|---|
+| Job/NCCL configuration | Failure follows one physical path, not a software cohort | Weakened |
+| GPU/NVLink | No relevant Xid; local NVLink checks healthy | Weakened |
+| RDMA device plugin | Physical port is actually Down, not merely absent from `Allocatable` | Rejected |
+| Shared UFM/fabric | No same-window multi-job or control-plane event | Weakened |
+| HCA/port/path hardware | Node and switch report the same link failure in the same window | Supported |
+| Optical module/cable | Physical link is supported; exact replaceable component still needs DOM data or inspection | Suspected |
+
+Resolved fault object:
+
+```yaml
+fault_domain: ib_link
+node: node-ib-01
+hca: mlx5_3
+hca_pci: "0000:5e:00.0"
+hca_port: 1
+switch: leaf-07
+switch_port: IB1/17
+suspected_component: optical_module_or_cable
+confidence: high_for_path_medium_for_exact_component
+action_scope: node_or_verified_shared_path
+```
+
+### Vendor-facing evidence
+
+```text
+HCA mlx5_3, PCI 0000:5e:00.0, port 1
+State Down / Physical state Polling / expected rate 400 Gb/s
+incident-window LinkDowned, SymbolErrors, and receive-error deltas
+matching switch-interface transition and counters
+UCX address-handle failure on mlx5_3
+approved ibstat/perfquery/ibqueryerrors and communication validation
+```
+
+User, job, model, dataset, and internal orchestration identities are removed.
+
+### Vendor outcome and learning
+
+Example sanitized response:
+
+```text
+更换光模块后链路恢复正常，IB测试通过
+Optical module replaced; link recovered; IB validation passed.
+```
+
+If the original diagnosis was the IB path, this is `REPAIR_CONFIRMED`. If Incidara called it NVLink while the vendor repaired an IB optic/NIC, it is `MISCLASSIFIED` and becomes a replay case teaching the workflow to inspect UCX/HCA evidence before labeling an NCCL or `nvlink-sharp` failure as NVLink.
+
+The current feedback vocabulary usually compresses an optical-module replacement into `cable_replace` / `IB_Cable` or `other`. A future component model should distinguish `IB_TRANSCEIVER`, `SWITCH_TRANSCEIVER`, `FIBER`, `DAC_CABLE`, `IB_NIC`, and `SWITCH_PORT` so exact-component accuracy can be measured.
+
+```text
+vendor outcome → case_memory → finding reconciliation → trajectory diagnosis
+→ taxonomy/rule/skill candidate → replay + healthy counterexample
+→ human approval → deploy → monitor recurrence
+```
+
+</details>
 
 ## Design limitations
 
