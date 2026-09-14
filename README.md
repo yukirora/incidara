@@ -261,17 +261,11 @@ incidara/
 
 ## Documentation
 
-Start with [the documentation index](docs/README.md).
+- [System architecture and production evaluation](docs/incidara-agent-sre.md)
+- [Engineering roadmap](docs/roadmap.md)
+- [Deployment, CI, backup, and restore](docs/deployment.md)
 
-- [System and production evaluation](docs/incidara-agent-sre.md)
-- [Roadmap](docs/roadmap.md)
-- [Mission and design principles](docs/mission.md)
-- [Agent workflow protocol](docs/agent-workflow-protocol.md)
-- [Detection agent](docs/detection-agent.md)
-- [Detection feedback loop](docs/detection-feedback-loop.md)
-- [Unified detection](docs/unified-detection.md)
-- [Deployment](docs/deployment.md)
-- [Backup design](docs/backup.md)
+Component-specific behavior lives beside the implementation in agent, MCP server, skill, and Console READMEs.
 
 ## Study limitations
 

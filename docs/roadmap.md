@@ -156,7 +156,7 @@ Incidara already records findings, inspector verdicts, RMA outcomes, attribution
 - A rule or skill change cannot graduate without replay, live validation, approval, and a monitored outcome.
 - Failed improvements are recorded and are not proposed again unchanged.
 
-**Design reference:** [Detection feedback loop](detection-feedback-loop.md)
+**System reference:** [Feedback agent and learning loop](incidara-agent-sre.md#225-feedback-agent)
 
 ### M5 — Unified orchestration workflow 🟡 · Next
 
@@ -214,7 +214,7 @@ Today, workflows are coordinated through skills, Console tasks, MCP delegation, 
 - Every handoff is machine-validatable and visible in the Console.
 - Stalled, duplicate, and invalid transitions create actionable attention items.
 
-**Design reference:** [Agent workflow protocol](agent-workflow-protocol.md)
+**System reference:** [Agent gateway](incidara-agent-sre.md#23-agent-gateway)
 
 ### M6 — Layered agent memory 🟡
 

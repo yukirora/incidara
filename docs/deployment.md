@@ -135,4 +135,50 @@ Do not commit that output.
 
 ## Backup and restore
 
-`agent-backup` synchronizes agent workspaces and transcripts to OSS. PostgreSQL backup services use pgBackRest, separate WAL storage, retention settings, and opt-in restore profiles. Both are disabled by default in the sanitized example. See [backup.md](backup.md).
+Backup is optional and disabled in `compose/config.yaml.example`.
+
+### Agent state
+
+The `agent-backup` service uses `infra/backup/agent/agent-sync.sh` to incrementally synchronize agent state to OSS:
+
+- gateway session events and reports under `workspace/`;
+- Claude session transcripts and task state under `claude-home/`;
+- investigation artifacts stored as files.
+
+Database directories and the Git repository are excluded because they have separate durability mechanisms. Configure `agent-backup` in `compose/config.yaml`, enable it, render again, and start it with:
+
+```bash
+cd compose/rendered
+docker compose up -d agent-backup
+docker compose logs -f agent-backup
+```
+
+Restore one agent or subdirectory with `ossutil` into a separate location, inspect it, and only then replace active state:
+
+```bash
+ossutil cp -r \
+  oss://<bucket>/<prefix>/<agent>/ \
+  /mntsys/agents/<agent>-restored/
+```
+
+### PostgreSQL
+
+`agent-db` and `chat-ui-db` support pgBackRest with:
+
+- separate PostgreSQL data, WAL, and pgBackRest repository paths;
+- full and incremental schedules;
+- retention controls;
+- archive-health checks and WAL-volume limits;
+- opt-in restore profiles.
+
+Set each database service’s `BACKUP_ENABLED` and backup credentials in `compose/config.yaml`, then render and recreate the database plus its cron sidecar. Restore services are intentionally profile-gated so a normal deployment cannot enter restore mode accidentally:
+
+```bash
+cd compose/rendered
+docker compose --profile restore config
+docker compose --profile restore up agent-db-restore
+# or
+docker compose --profile restore up chat-ui-db-restore
+```
+
+A restore is a controlled operation: stop writers, verify the selected backup, restore into the configured data path, promote, confirm database health, and only then restart dependent MCP and Console services.
