@@ -36,20 +36,6 @@ The **diagnostic scope** may be a GPU, link, port, disk, component, path, or ser
 
 > The accompanying production study is observational. Reported improvements are temporal associations, not causal estimates. See [the full system and evaluation report](docs/incidara-agent-sre.md).
 
-## Highlights
-
-- **Complete node-failure lifecycle** — proactive detection, evidence-driven triage, repair, validation, reallocation, and outcome feedback.
-- **Policy-bounded autonomy** — routine, reversible actions can run automatically; destructive or high-blast-radius actions require approval.
-- **Role-scoped MCP tools** — diagnosis agents cannot invoke operations-only tools even if the model requests them.
-- **Evidence-first handoffs** — investigation artifacts persist across agents so repair does not repeat triage work.
-- **Self-improving operations** — completed RMA outcomes are reconciled with findings and used to improve detection rules and skills.
-- **Training-job incident workflow** — log triage, cross-source evidence, controlled reproduction, recovery, and RCA closeout.
-- **Stateful agent runtime** — multi-session HTTP gateways, SSE event streaming, permission waits, interruption, and crash recovery.
-- **Human control plane** — the Incidara Console exposes tasks, transcripts, tool calls, approvals, schedules, metrics, and reports.
-- **Dependency-aware delivery** — CI maps changed paths to affected services, rebuilds only those images, deploys them, and checks health.
-
-See the [Incidara roadmap](docs/roadmap.md) for completed foundations, active milestones, dependencies, and exit criteria.
-
 ## Console demo
 
 [![Incidara Console demo](docs/demo/incidara-console.png)](docs/demo/incidara-console.mp4)
