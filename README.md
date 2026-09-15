@@ -54,9 +54,9 @@ See the [Incidara roadmap](docs/roadmap.md) for completed foundations, active mi
 
 [![Incidara Console demo](docs/demo/incidara-console.png)](docs/demo/incidara-console.mp4)
 
-[▶ Watch the 49-second Incidara Console demo](docs/demo/incidara-console.mp4)
+[▶ Watch the two-minute Incidara Console demo](docs/demo/incidara-console.mp4)
 
-The demo was recorded from the deployed Console. User identity and internal-only test agents were masked in the capture; no production state or task was changed.
+The demo follows a real historical Triage → Repair handoff through diagnosis, delegation, RMA preparation, and human approval, then shows schedules, access controls, agent metrics, and availability. Production identities and hardware details are masked; schedules use sanitized existing definitions, and Admin records use a representative browser-only view. Browser writes were blocked after login, so no production task, schedule, permission, or admin state was changed.
 
 ## Production results
 
@@ -408,7 +408,7 @@ vendor outcome → case_memory → finding reconciliation → trajectory diagnos
 | Limitation | Current boundary |
 |---|---|
 | **Component diagnosis, node/job actuation** | Incidara can identify a specific GPU, PCIe device, NVLink, HCA/IB port, switch interface, or disk, but the platform usually exposes operational actions at node or job scope. The resulting action is therefore commonly cordon, drain, reset, RMA, job recovery, or node reallocation. Physical component replacement is outside Incidara. |
-| **Environment-specific integrations** | Incidara is currently built around LTP/OpenPAI schemas and APIs, Codeup, Feishu, OSS, the ticket system, SSH/BMC access, and fleet-specific hardware conventions. Adapting it to another platform requires new integrations and hardware/runbook calibration; it is not currently a plug-and-play generic AIOps framework. |
+| **Environment-specific integrations** | Incidara is currently built around [LTP Platform](https://github.com/microsoft/ltp-platform) schemas and APIs, Codeup, Feishu, OSS, the ticket system, SSH/BMC access, and fleet-specific hardware conventions. Adapting it to another platform requires new integrations and hardware/runbook calibration; it is not currently a plug-and-play generic AIOps framework. |
 | **Bounded rather than unrestricted autonomy** | Incidara automatically handles known operations inside configured permission and blast-radius limits. Destructive, irreversible, novel, or broad actions require human approval or takeover. This safety boundary is intentional. |
 
 Implementation progress—such as unified incident orchestration, reproduction executors, node-regression detection, memory integration, and full training-job service deployment—is tracked in the [roadmap](docs/roadmap.md), not treated as a fundamental design limitation.
