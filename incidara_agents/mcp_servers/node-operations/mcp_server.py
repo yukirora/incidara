@@ -26,7 +26,8 @@ ROLE_TOOLS = {
                   "move_node_status", "submit_validation", "query_rma_cases",
                   "submit_triage_alert",
                   "delegate_to_agent", "get_agent_active_tasks",
-                  "run_kubectl", "resolve_ip", "run_database_query"},
+                  "run_kubectl", "resolve_ip", "run_database_query",
+                  "check_kubelet", "check_ib_ports", "check_ip_routing", "check_gpu_clocks"},
     "ops":       {"get_nodes_by_status", "get_node_detail", "get_node_history",
                   "get_node_status_history", "get_node_alerts", "get_node_recent_jobs",
                   "get_job_details", "get_job_events", "get_validation_job",
@@ -132,6 +133,20 @@ def _get_existing_ticket_ids() -> set:
     except Exception as e:
         logger.warning(f"Could not fetch existing ticket_ids: {e}")
         return set()
+
+
+def _resolve_ip_or_empty(hostname: str) -> str:
+    """Resolve a hostname to its IP from the node DB. Returns empty string on failure."""
+    try:
+        from node_operations.db_read import get_node_detail
+        detail = get_node_detail(hostname)
+        if detail:
+            ips = detail.get("ip", [])
+            if ips:
+                return ips[0]
+    except Exception as e:
+        logger.warning(f"Could not resolve IP for {hostname}: {e}")
+    return ""
 
 
 def _auto_save_evidence(hostname: str, source: str, content: str,
@@ -3067,6 +3082,175 @@ def create_server(role: str) -> FastMCP:
                                     summary=f"kubectl dangerous: kubectl {command[:80]} (exit={result['exit_code']})",
                                     metadata={"exit_code": result["exit_code"]})
             return json.dumps(result, indent=2)
+
+    # ---- check_kubelet ----
+    if _register("check_kubelet"):
+        @mcp.tool()
+        def check_kubelet(hostname: str, ip: str = "",
+                          include_certs: bool = False,
+                          include_logs: bool = False,
+                          log_lines: int = 20) -> str:
+            """Check kubelet service health on a node.
+
+            Combines systemd status, PKI certificate existence, and recent journal
+            entries into one diagnostic call. Use for kubelet crash, cert expiry,
+            and node-not-ready investigations.
+
+            Args:
+                hostname: Target node hostname.
+                ip: Node IP address. If empty, resolved from hostname via node DB.
+                include_certs: Check /etc/kubernetes/bootstrap-kubelet.conf and
+                    /var/lib/kubelet/pki/kubelet-client-current.pem existence.
+                include_logs: Include last N journal entries from kubelet.service.
+                log_lines: Number of journal entries when include_logs is true.
+            """
+            mock = _mock_lookup("check_kubelet", hostname)
+            if mock is not None:
+                _auto_save_evidence(hostname, "check_kubelet", mock,
+                                    category="platform", summary="kubelet check (mock)")
+                return mock
+
+            node_ip = ip or _resolve_ip_or_empty(hostname)
+            if not node_ip:
+                return f"Cannot resolve IP for {hostname}"
+
+            from node_operations.ssh import run_remote_command_capture
+            parts = []
+
+            status_cmd = f"systemctl status kubelet --no-pager -l 2>&1 | head -30"
+            parts.append(run_remote_command_capture(node_ip, ssh_user, status_cmd, ssh_timeout))
+
+            if include_certs:
+                cert_cmd = ("echo '---CERTS---'; "
+                            "ls -la /etc/kubernetes/bootstrap-kubelet.conf 2>&1; "
+                            "ls -la /var/lib/kubelet/pki/kubelet-client-current.pem 2>&1")
+                parts.append(run_remote_command_capture(node_ip, ssh_user, cert_cmd, ssh_timeout))
+
+            if include_logs:
+                log_cmd = f"journalctl -u kubelet --no-pager -n {log_lines} 2>&1 | tail -{log_lines}"
+                parts.append(run_remote_command_capture(node_ip, ssh_user, log_cmd, ssh_timeout))
+
+            result = "\n".join(parts)
+            _auto_save_evidence(hostname, "check_kubelet", result,
+                                category="platform",
+                                summary=f"kubelet check (certs={include_certs}, logs={include_logs})")
+            return result
+
+    # ---- check_ib_ports ----
+    if _register("check_ib_ports"):
+        @mcp.tool()
+        def check_ib_ports(hostname: str, ip: str = "",
+                           port: str = "",
+                           include_counters: bool = False) -> str:
+            """Check InfiniBand HCA port states and error counters.
+
+            Sweeps all mlx5 ports for link state, or inspects a specific port
+            with optional perfquery error/discard/drop counters. Use for IB link
+            flapping, port down, and fabric connectivity investigations.
+
+            Args:
+                hostname: Target node hostname.
+                ip: Node IP address. If empty, resolved from hostname via node DB.
+                port: Specific HCA port name (e.g. "mlx5_2"). Empty = sweep all ports.
+                include_counters: Include perfquery error counters for the specified port.
+            """
+            mock = _mock_lookup("check_ib_ports", hostname)
+            if mock is not None:
+                _auto_save_evidence(hostname, "check_ib_ports", mock,
+                                    category="ib", summary="IB port check (mock)")
+                return mock
+
+            node_ip = ip or _resolve_ip_or_empty(hostname)
+            if not node_ip:
+                return f"Cannot resolve IP for {hostname}"
+
+            from node_operations.ssh import run_remote_command_capture
+            if port:
+                cmd = f"ibstat {port} 2>/dev/null"
+                if include_counters:
+                    cmd += (f"; echo '---COUNTERS---'; "
+                            f"sudo perfquery -x {port} 1 2>/dev/null | "
+                            "grep -i 'error\\|discard\\|drop' || true")
+            else:
+                cmd = ("for p in $(ibstat -l 2>/dev/null); do "
+                       "echo -n \"$p: \"; "
+                       "ibstat $p | grep -E 'State:|Physical state:' | "
+                       "head -2 | tr '\\n' ' '; echo; done")
+
+            result = run_remote_command_capture(node_ip, ssh_user, cmd, ssh_timeout)
+            _auto_save_evidence(hostname, "check_ib_ports", result,
+                                category="ib",
+                                summary=f"IB ports (port={port or 'all'}, counters={include_counters})")
+            return result
+
+    # ---- check_ip_routing ----
+    if _register("check_ip_routing"):
+        @mcp.tool()
+        def check_ip_routing(hostname: str, ip: str = "",
+                             table: int = 100) -> str:
+            """Check IP policy routing rules, route table definitions, and routing table entries.
+
+            Use for IPoIB routing misconfiguration, missing policy routes, and
+            asymmetric traffic investigations.
+
+            Args:
+                hostname: Target node hostname.
+                ip: Node IP address. If empty, resolved from hostname via node DB.
+                table: Routing table number to inspect (default 100 for IB table).
+            """
+            mock = _mock_lookup("check_ip_routing", hostname)
+            if mock is not None:
+                _auto_save_evidence(hostname, "check_ip_routing", mock,
+                                    category="network", summary="IP routing check (mock)")
+                return mock
+
+            node_ip = ip or _resolve_ip_or_empty(hostname)
+            if not node_ip:
+                return f"Cannot resolve IP for {hostname}"
+
+            from node_operations.ssh import run_remote_command_capture
+            cmd = (f"ip rule list | head -20; "
+                   f"echo '==='; "
+                   f"cat /etc/iproute2/rt_tables; "
+                   f"echo '==='; "
+                   f"ip route show table {table} 2>/dev/null; "
+                   f"echo '===DONE==='")
+
+            result = run_remote_command_capture(node_ip, ssh_user, cmd, ssh_timeout)
+            _auto_save_evidence(hostname, "check_ip_routing", result,
+                                category="network", summary=f"IP routing table {table}")
+            return result
+
+    # ---- check_gpu_clocks ----
+    if _register("check_gpu_clocks"):
+        @mcp.tool()
+        def check_gpu_clocks(hostname: str, ip: str = "") -> str:
+            """Check GPU clock frequencies, throttle reasons, and power consumption.
+
+            Use for GPU performance degradation, clock throttling, and
+            ModelPerformanceDegradation investigations.
+
+            Args:
+                hostname: Target node hostname.
+                ip: Node IP address. If empty, resolved from hostname via node DB.
+            """
+            mock = _mock_lookup("check_gpu_clocks", hostname)
+            if mock is not None:
+                _auto_save_evidence(hostname, "check_gpu_clocks", mock,
+                                    category="gpu", summary="GPU clocks check (mock)")
+                return mock
+
+            node_ip = ip or _resolve_ip_or_empty(hostname)
+            if not node_ip:
+                return f"Cannot resolve IP for {hostname}"
+
+            from node_operations.ssh import run_remote_command_capture
+            cmd = "nvidia-smi -q -d CLOCK,POWER | head -120"
+
+            result = run_remote_command_capture(node_ip, ssh_user, cmd, ssh_timeout)
+            _auto_save_evidence(hostname, "check_gpu_clocks", result,
+                                category="gpu", summary="GPU clocks and power")
+            return result
 
     return mcp
 
