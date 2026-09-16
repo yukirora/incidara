@@ -17,6 +17,11 @@ type Deps = {
   queryFn?: QueryFn;
 };
 
+export type SessionRunOptions = {
+  disallowedTools?: string[];
+  appendSystemPrompt?: string;
+};
+
 export function makePreToolUseHook(session: Session, store: SessionStore, bus: EventBus) {
   return async (input: any) => {
     bus.publish(
@@ -66,14 +71,14 @@ export class ClaudeAdapter {
     return this.queryFn;
   }
 
-  startSession(session: Session, prompt: string): void {
-    this.runSessionLoop(session, prompt).catch((err) => {
+  startSession(session: Session, prompt: string, runOptions: SessionRunOptions = {}): void {
+    this.runSessionLoop(session, prompt, runOptions).catch((err) => {
       console.error(`[adapter] session ${session.id} loop crashed:`, err);
       this.emitErrorAndClose(session, String(err?.message ?? err));
     });
   }
 
-  async runSessionLoop(session: Session, prompt: string): Promise<void> {
+  async runSessionLoop(session: Session, prompt: string, runOptions: SessionRunOptions = {}): Promise<void> {
     const queryFn = await this.resolveQueryFn();
     const options: any = {
       cwd: session.workspacePath,
@@ -87,6 +92,12 @@ export class ClaudeAdapter {
       // No explicit thinking option needed — the SDK/model handles it
       permissionMode: "auto",
       settingSources: ["user", "project"],
+      disallowedTools: runOptions.disallowedTools,
+      systemPrompt: runOptions.appendSystemPrompt ? {
+        type: "preset",
+        preset: "claude_code",
+        append: runOptions.appendSystemPrompt,
+      } : undefined,
       sandbox: { enabled: false },
       hooks: {
         PreToolUse: [{

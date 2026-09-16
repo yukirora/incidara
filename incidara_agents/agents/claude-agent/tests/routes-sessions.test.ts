@@ -9,10 +9,10 @@ function mockQuery(_evts: any[] = [{ type: "system", subtype: "init", session_id
   return async function* () { for (const e of _evts) yield e; };
 }
 
-function buildApp() {
+function buildApp(queryFn: any = (() => mockQuery()()) as any) {
   const store = new SessionStore();
   const bus = new EventBus();
-  const adapter = new ClaudeAdapter(store, bus, { queryFn: (() => mockQuery()()) as any });
+  const adapter = new ClaudeAdapter(store, bus, { queryFn });
   const app = express();
   app.use(express.json());
   app.use("/sessions", sessionsRouter({ store, adapter }));
@@ -50,6 +50,24 @@ describe("routes/sessions", () => {
     const { app } = buildApp();
     const r = await request(app, "POST", "/sessions", { workspace_path: "/w" });
     expect(r.status).toBe(400);
+  });
+
+  it("POST /sessions forwards evaluation tool and prompt restrictions", async () => {
+    let options: any;
+    const queryFn = ((args: any) => {
+      options = args.options;
+      return mockQuery()();
+    }) as any;
+    const { app } = buildApp(queryFn);
+    const r = await request(app, "POST", "/sessions", {
+      prompt: "triage",
+      disallowed_tools: ["Bash", "Agent", "CronCreate"],
+      append_system_prompt: "MCP only",
+    });
+    expect(r.status).toBe(201);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(options.disallowedTools).toEqual(["Bash", "Agent", "CronCreate"]);
+    expect(options.systemPrompt.append).toBe("MCP only");
   });
 
   it("GET /sessions lists all sessions", async () => {
