@@ -24,6 +24,7 @@ __pycache__/
 *.log
 
 # Runtime state
+state/
 **/sessions/
 **/db/data/
 **/.bg-shell/

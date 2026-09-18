@@ -3,4 +3,4 @@
   members: [admin@example.com]
 - id: sre-team
   name: SRE Team
-  members: [admin@example.com]
+  members: [admin@example.com, agent-delegate@example.com]

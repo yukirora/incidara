@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createPool } from "./db/client.js";
-import { runMigrations, seedGroupsFromYaml } from "./db/migrate.js";
+import { runMigrations, seedGroupsFromYaml, seedAccounts } from "./db/migrate.js";
 import { loadAgents, enrichAgentsWithDbGroups } from "./agent-registry.js";
 import type { Agent } from "./agent-registry.js";
 import { loadGroups, resolveUserGroupsWithDb, listCustomGroups } from "./groups.js";
@@ -106,6 +106,18 @@ async function main() {
   const scheduleStore = new ScheduleStore(pool);
   const usageStore = new UsageStore(pool, new PricingStore(pool));
   const permStore = new PermissionStore(pool);
+
+  // Accounts from the deployment config, so a fresh Console has a sign-in.
+  // Run before group seeding: memberships reference these users.
+  try {
+    await seedAccounts(pool, [
+      { email: process.env.ADMIN_EMAIL ?? "", password: process.env.ADMIN_PASSWORD ?? "", name: "Admin" },
+      { email: process.env.CHAT_UI_USER ?? "", password: process.env.CHAT_UI_PASSWORD ?? "", name: "Delegate" },
+    ]);
+  } catch (err) {
+    console.error("Account seeding failed:", err);
+    // Non-fatal — the deployment still serves the Console
+  }
 
   // Seed groups from YAML if custom_groups table is empty
   try {

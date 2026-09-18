@@ -8,7 +8,7 @@ services:
     build:
       context: {{ cfg['common']['repo_dir'] }}/infra/backup/agent
       dockerfile: Dockerfile
-    container_name: incidara-agent-backup
+    container_name: {{ cfg['common'].get('name_prefix', 'incidara') }}-agent-backup
 {% if not cfg["agent-backup"].get("enabled", True) %}
     profiles: ["backup"]
 {% endif %}

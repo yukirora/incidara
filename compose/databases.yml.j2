@@ -19,7 +19,7 @@ services:
 {% else %}
     image: postgres:16-alpine
 {% endif %}
-    container_name: incidara-agent-db
+    container_name: {{ cfg['common'].get('name_prefix', 'incidara') }}-agent-db
     restart: unless-stopped
     env_file: agent-db.env
     volumes:
@@ -42,7 +42,7 @@ services:
 {% if cfg["agent-db"].get("BACKUP_ENABLED") and cfg["agent-db"].get("BACKUP_CRON_ENABLED", True) %}
   agent-db-cron:
     image: agent-db:latest
-    container_name: incidara-agent-db-cron
+    container_name: {{ cfg['common'].get('name_prefix', 'incidara') }}-agent-db-cron
     restart: unless-stopped
     privileged: true
     depends_on:
@@ -87,7 +87,7 @@ services:
 {% else %}
     image: postgres:16-alpine
 {% endif %}
-    container_name: incidara-console-db
+    container_name: {{ cfg['common'].get('name_prefix', 'incidara') }}-console-db
     restart: unless-stopped
     env_file: chat-ui-db.env
     volumes:
@@ -99,6 +99,8 @@ services:
 {% endif %}
 {% if cfg['chat-ui-db']['_deploy'].get('init_dir') %}
       - {{ cfg['chat-ui-db']['_deploy']['init_dir'] }}:/docker-entrypoint-initdb.d:ro
+{% else %}
+      - {{ cfg['common']['chat_ui_dir'] }}/db/init:/docker-entrypoint-initdb.d:ro
 {% endif %}
     ports:
       - "{{ cfg['common']['bind_host'] }}:{{ cfg['chat-ui-db']['_deploy']['port'] }}:5432"
@@ -111,7 +113,7 @@ services:
 {% if cfg["chat-ui-db"].get("BACKUP_ENABLED") and cfg["chat-ui-db"].get("BACKUP_CRON_ENABLED", True) %}
   chat-ui-db-cron:
     image: chat-ui-db:latest
-    container_name: incidara-console-db-cron
+    container_name: {{ cfg['common'].get('name_prefix', 'incidara') }}-console-db-cron
     restart: unless-stopped
     privileged: true
     depends_on:

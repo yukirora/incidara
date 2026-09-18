@@ -1,36 +1,36 @@
 - id: detection
   name: Detection Agent
   description: Finds and correlates infrastructure incidents.
-  gateway_url: http://host.docker.internal:8007
+  gateway_url: http://127.0.0.1:8007
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }
 - id: triage
   name: Triage Agent
   description: Investigates and classifies incidents.
-  gateway_url: http://host.docker.internal:8001
+  gateway_url: http://127.0.0.1:8001
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }
 - id: repair
   name: Repair Agent
   description: Coordinates safety-gated remediation.
-  gateway_url: http://host.docker.internal:8003
+  gateway_url: http://127.0.0.1:8003
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }
 - id: recycler
   name: Recycler Agent
   description: Validates repaired resources and returns them to service.
-  gateway_url: http://host.docker.internal:8004
+  gateway_url: http://127.0.0.1:8004
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }
 - id: feedback
   name: Feedback Agent
   description: Learns from operational outcomes.
-  gateway_url: http://host.docker.internal:8006
+  gateway_url: http://127.0.0.1:8006
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }
 - id: attention
   name: Attention Agent
   description: Reports blocked and approval-required work.
-  gateway_url: http://host.docker.internal:8010
+  gateway_url: http://127.0.0.1:8010
   backend: claude_code
-  access: { groups: [sre-team] }
+  access: { owners: [agent-delegate@example.com], groups: [sre-team] }

@@ -55,3 +55,10 @@ describe("resolveUserGroups", () => {
     expect(result).toEqual([]);
   });
 });
+
+describe("shipped example groups", () => {
+  it("loads console/config/groups.yaml.example", () => {
+    const example = path.join(__dirname, "..", "..", "config", "groups.yaml.example");
+    expect(loadGroups(example).length).toBeGreaterThan(0);
+  });
+});

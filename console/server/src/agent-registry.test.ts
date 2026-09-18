@@ -76,3 +76,17 @@ describe("loadAgents", () => {
     fs.unlinkSync(f);
   });
 });
+
+describe("shipped example registry", () => {
+  // The deployment mounts config/agents.yaml.example until an operator creates
+  // the real file, so the example must satisfy this schema.
+  it("loads console/config/agents.yaml.example", () => {
+    const example = path.join(__dirname, "..", "..", "config", "agents.yaml.example");
+    const agents = loadAgents(example);
+    expect(agents.length).toBeGreaterThan(0);
+    for (const agent of agents) {
+      expect(agent.gateway_url).toMatch(/^https?:\/\/\S+:\d+$/);
+      expect(agent.access.owners.length + agent.access.groups.length).toBeGreaterThan(0);
+    }
+  });
+});

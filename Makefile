@@ -3,8 +3,10 @@ PYTHON ?= python3.12
 VENV_PY := $(CURDIR)/.venv/bin/python
 RUNTIME := $(CURDIR)/incidara_agents/agents/claude-agent
 MCP := $(CURDIR)/incidara_agents/mcp_servers
+# Shift all service ports when another deployment already owns them.
+PORT_OFFSET ?= 0
 
-.PHONY: install test build config services check verify up down
+.PHONY: install test build config services check verify up down fresh-deploy-check
 
 install:
 	cd console && $(PNPM) install --frozen-lockfile
@@ -29,12 +31,15 @@ build:
 
 config:
 	test -f compose/config.yaml || cp compose/config.yaml.example compose/config.yaml
-	$(VENV_PY) compose/render.py --check
-	$(VENV_PY) compose/render.py
+	$(VENV_PY) compose/render.py --check --port-offset $(PORT_OFFSET)
+	$(VENV_PY) compose/render.py --port-offset $(PORT_OFFSET)
 	cd compose/rendered && docker compose -f docker-compose.yml config -q
 
 services: config
 	@cd compose/rendered && docker compose -f docker-compose.yml config --services
+
+fresh-deploy-check:
+	bash scripts/check-fresh-deploy.sh
 
 check: config
 	bash scripts/check-public.sh

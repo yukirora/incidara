@@ -18,6 +18,7 @@ Usage:
 """
 
 import os
+import re
 import sys
 import difflib
 
@@ -34,6 +35,107 @@ RENDERED_DIR = os.path.join(SCRIPT_DIR, "rendered")
 _DEPLOY_KEY = "_deploy"  # namespace for template-only keys (excluded from env dump)
 
 REQUIRED_SERVICES = []  # No required services — config drives what gets deployed
+
+_TOKENS = re.compile(r"\{(repo|state|service)\}")
+
+
+def apply_deploy_defaults(config: dict, port_offset: int = 0) -> dict:
+    """Resolve host locations, ports and internal database URLs.
+
+    Every agent, MCP server and console service runs with network_mode: host, so
+    ports and database URLs are host addresses. Host paths use {repo}, {state}
+    and {service} tokens so config.yaml stays readable without hardcoding
+    directories that only exist on one machine. Internal URLs are derived from
+    the two database sections, so changing a password or a port cannot leave a
+    service pointing at the wrong address.
+
+    Values set explicitly in config.yaml are never overwritten.
+    """
+    common = config.setdefault("common", {})
+    state_root = os.path.abspath(os.path.expanduser(str(common.get("state_root") or os.path.join(REPO_DIR, "state"))))
+    common["state_root"] = state_root
+    common.setdefault("repo_dir", REPO_DIR)
+    common.setdefault("chat_ui_dir", os.path.join(REPO_DIR, "console"))
+
+    for name, svc in config.items():
+        if not isinstance(svc, dict):
+            continue
+        tokens = {"repo": common["repo_dir"], "state": state_root, "service": name}
+        for value in [svc, svc.get(_DEPLOY_KEY) or {}]:
+            for key, item in value.items():
+                if isinstance(item, str) and _TOKENS.search(item):
+                    value[key] = _TOKENS.sub(lambda m: tokens[m.group(1)], item)
+        deploy = svc.get(_DEPLOY_KEY)
+        if isinstance(deploy, dict):
+            if name == "incidara-console":
+                # The Console API is reached by the web container over loopback.
+                deploy.setdefault("api_port", 3456)
+            for key in ("port", "api_port"):
+                if port_offset and isinstance(deploy.get(key), int):
+                    deploy[key] += port_offset
+
+    def db_url(section: str) -> Optional[str]:
+        db = config.get(section) or {}
+        user, password = db.get("POSTGRES_USER"), db.get("POSTGRES_PASSWORD")
+        port = (db.get(_DEPLOY_KEY) or {}).get("port")
+        if not (user and password and port and db.get("POSTGRES_DB")):
+            return None
+        return f"postgresql://{user}:{password}@127.0.0.1:{port}/{db['POSTGRES_DB']}"
+
+    console_port = ((config.get("incidara-console") or {}).get(_DEPLOY_KEY) or {}).get("port")
+    derived = {
+        "EVIDENCE_DB_URL": db_url("agent-db"),
+        "CHAT_UI_DB_URL": db_url("chat-ui-db"),
+        "CHAT_UI_DATABASE_URL": db_url("chat-ui-db"),
+        "CHAT_UI_URL": f"http://{common.get('bind_host', '127.0.0.1')}:{console_port}" if console_port else None,
+        "CHAT_UI_API_URL": f"http://{common.get('bind_host', '127.0.0.1')}:{console_port}" if console_port else None,
+    }
+    for key, value in derived.items():
+        if value and key not in common:
+            common[key] = value
+        for name, svc in config.items():
+            if isinstance(svc, dict) and key not in svc:
+                svc[key] = value
+
+    # The backup service syncs every agent directory, so its root is state_root.
+    for section in ("common", "agent-backup"):
+        svc = config.setdefault(section, {})
+        if isinstance(svc, dict) and svc.get("agent_data_root") in (None, "", "CHANGE_ME"):
+            svc["agent_data_root"] = state_root
+
+    # The Console reads its agent and group registries from files. Fall back to
+    # the shipped examples so a fresh deployment starts without a copy step, and
+    # never hand Docker a missing path (it creates a directory and the Console
+    # fails on EISDIR).
+    for key, name in (("agents_config_path", "agents.yaml"), ("groups_config_path", "groups.yaml")):
+        registry = os.path.join(common["chat_ui_dir"], "config", name)
+        # isfile, not exists: Docker creates a directory when a bind source is missing.
+        common.setdefault(key, registry if os.path.isfile(registry) else registry + ".example")
+
+    return config
+
+
+def prepare_state_dirs(config: dict) -> tuple[list[str], list[str]]:
+    """Create host state directories as the current user.
+
+    Docker creates missing bind-mount sources as root, which then need root to
+    clean up. Creating them here keeps a deployment removable by its operator.
+    Rendering does not depend on this, so an unwritable path is a warning.
+
+    Returns (created, failed).
+    """
+    created, failed = [], []
+    for name, svc in config.items():
+        if not isinstance(svc, dict):
+            continue
+        for key, path in (svc.get(_DEPLOY_KEY) or {}).items():
+            if key != "ssh_key" and isinstance(path, str) and path.startswith("/") and not os.path.exists(path):
+                try:
+                    os.makedirs(path, exist_ok=True)
+                    created.append(path)
+                except OSError as err:
+                    failed.append(f"{path} ({err.strerror})")
+    return created, failed
 
 
 def find_template(svc_name: str, svc_config: dict) -> Optional[str]:
@@ -131,11 +233,19 @@ def check_diff(config: dict) -> bool:
 
 
 def main():
+    global CONFIG_PATH, RENDERED_DIR
     import argparse
     parser = argparse.ArgumentParser(description="Render compose files from config.yaml")
     parser.add_argument("--check", action="store_true", help="Validate config without rendering")
     parser.add_argument("--diff", action="store_true", help="Validate + show diff vs current rendered")
+    parser.add_argument("--config", default=CONFIG_PATH, help="config file to read (default: compose/config.yaml)")
+    parser.add_argument("--rendered-dir", default=RENDERED_DIR, help="output directory (default: compose/rendered)")
+    parser.add_argument("--port-offset", type=int, default=0,
+                        help="shift every service port; use when another deployment already owns the defaults")
     args = parser.parse_args()
+
+    CONFIG_PATH = os.path.abspath(args.config)
+    RENDERED_DIR = os.path.abspath(args.rendered_dir)
 
     if not os.path.exists(CONFIG_PATH):
         print(f"ERROR: {CONFIG_PATH} not found.\n  cp compose/config.yaml.example compose/config.yaml", file=sys.stderr)
@@ -146,8 +256,9 @@ def main():
     # Auto-inject repo_dir from repo location only if not set in config.yaml
     if "common" not in config:
         config["common"] = {}
-    if "repo_dir" not in config["common"]:
-        config["common"]["repo_dir"] = REPO_DIR
+    config["common"].setdefault("repo_dir", REPO_DIR)
+    config["common"].setdefault("chat_ui_dir", os.path.join(REPO_DIR, "console"))
+    apply_deploy_defaults(config, args.port_offset)
 
     # --- Validate ---
     errors = validate_config(config)
@@ -163,6 +274,12 @@ def main():
     if args.check:
         print("Check passed. No files written.")
         return
+
+    state_dirs, unwritable = prepare_state_dirs(config)
+    if state_dirs:
+        print(f"Created {len(state_dirs)} state directories under {config['common']['state_root']}")
+    if unwritable:
+        print(f"WARNING: could not create state directories: {'; '.join(unwritable)}", file=sys.stderr)
 
     os.makedirs(RENDERED_DIR, exist_ok=True)
 

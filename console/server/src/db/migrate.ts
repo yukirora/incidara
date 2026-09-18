@@ -4,6 +4,40 @@ import type pg from "pg";
 import type { Group } from "../groups.js";
 import type { Agent } from "../agent-registry.js";
 import { DASHBOARD_IDS } from "../dashboard-registry.js";
+import { hashPassword } from "../auth.js";
+
+export interface SeedAccount {
+  email: string;
+  password: string;
+  name: string;
+}
+
+/**
+ * Create the accounts named in the deployment config on startup.
+ *
+ * A fresh deployment has an empty users table, so nobody can sign in until an
+ * account exists. Accounts that already exist are never modified. An empty
+ * email or a password shorter than the signup minimum is skipped.
+ */
+export async function seedAccounts(pool: pg.Pool, accounts: SeedAccount[]): Promise<void> {
+  for (const account of accounts) {
+    const email = account.email.toLowerCase().trim();
+    if (!email || !account.password) continue;
+    if (account.password.length < 8) {
+      console.warn(`Skipping account ${email}: password must be at least 8 characters`);
+      continue;
+    }
+    const existing = await pool.query("SELECT 1 FROM users WHERE email = $1", [email]);
+    if (existing.rows.length > 0) continue;
+
+    await pool.query(
+      `INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3)
+       ON CONFLICT (email) DO NOTHING`,
+      [email, await hashPassword(account.password), account.name]
+    );
+    console.log(`Created account: ${email}`);
+  }
+}
 
 export async function runMigrations(pool: pg.Pool, migrationsDir: string): Promise<void> {
   await pool.query(`
@@ -93,8 +127,13 @@ export async function seedGroupsFromYaml(
 
     // Insert members
     for (const email of group.members) {
+      // Only for accounts that exist: on a fresh database the YAML members have
+      // not signed up yet, and the foreign key rejects them. resolveUserGroups()
+      // still grants their access from YAML in the meantime.
       await pool.query(
-        `INSERT INTO group_memberships (group_id, user_email) VALUES ($1, $2) ON CONFLICT (group_id, user_email) DO NOTHING`,
+        `INSERT INTO group_memberships (group_id, user_email)
+         SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM users WHERE email = $2)
+         ON CONFLICT (group_id, user_email) DO NOTHING`,
         [group.id, email]
       );
     }

@@ -11,6 +11,7 @@
 {% set chat_ui = cfg['incidara-console'] %}
 {% set common = cfg['common'] %}
 {% set port = chat_ui['_deploy']['port'] %}
+{% set api_port = chat_ui['_deploy']['api_port'] %}
 services:
   # --- Static frontend (nginx) — fast rebuild, zero-downtime client deploys ---
   incidara-console-web:
@@ -20,6 +21,9 @@ services:
       dockerfile: Dockerfile.web
     restart: unless-stopped
     network_mode: host
+    environment:
+      - PORT={{ port }}
+      - API_PORT={{ api_port }}
     logging:
       driver: json-file
       options:
@@ -49,17 +53,17 @@ services:
         max-size: "50m"
         max-file: "3"
     environment:
-      - PORT=3456
+      - PORT={{ api_port }}
     env_file: incidara-console.env
     volumes:
       - {{ chat_ui['_deploy']['data_dir'] }}/sessions:/app/data/sessions
-      - {{ common['chat_ui_dir'] }}/config/agents.yaml:/app/config/agents.yaml:ro
-      - {{ common['chat_ui_dir'] }}/config/groups.yaml:/app/config/groups.yaml:ro
+      - {{ common['agents_config_path'] }}:/app/config/agents.yaml:ro
+      - {{ common['groups_config_path'] }}:/app/config/groups.yaml:ro
     depends_on:
       chat-ui-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3456/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:{{ api_port }}/health', r => { process.exit(r.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
       interval: 30s
       timeout: 5s
       retries: 3

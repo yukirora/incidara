@@ -1,6 +1,7 @@
+# Optional agent-state backup. Disabled for a clean deployment; enable it only
+# after OSS credentials below are real and the agents have produced state.
 agent-backup:
   enabled: false
-  agent_data_root: /mntsys/agents
   agents: attention,detection,feedback,recycler,repair,triage-unknown
   sync_interval_minutes: 60
   OSS_ACCESS_KEY_ID: CHANGE_ME
@@ -11,7 +12,10 @@ agent-backup:
   _deploy:
     _template: infra/backup/agent/env.j2
 agent-db:
-  BACKUP_ENABLED: true
+  # pgBackRest is opt-in. A clean deployment has no database and no repository
+  # yet, so leave backup off for the first boot and enable it afterwards.
+  # See docs/deployment.md#backup-and-restore.
+  BACKUP_ENABLED: false
   BACKUP_CRON_ENABLED: false
   FULL_BACKUP_SCHEDULE: 0 20 * * *
   HEALTH_CHECK_SCHEDULE: '*/1 * * * *'
@@ -24,18 +28,18 @@ agent-db:
   OSS_REPO_PATH: /postgresql/incidara-agent
   OSS_URI_STYLE: host
   POSTGRES_DB: incidara_agent
-  POSTGRES_PASSWORD: CHANGE_ME
+  POSTGRES_PASSWORD: incidara-demo
   POSTGRES_USER: incidara_agent
   RETENTION_DIFF: 30
   RETENTION_FULL: 7
   WAL_BYPASS_PCT: 70
   WAL_VOLUME_MAX_MB: 16384
   _deploy:
+    data_dir: "{state}/agent-db/pgdata"
+    pgbackrest_dir: "{state}/agent-db/pgbackrest"
+    wal_dir: "{state}/agent-db/pgwal"
     RESTORE_ENABLED: false
-    data_dir: /data/agents/pgdata
-    pgbackrest_dir: /mntsys/db/agents/pgbackrest
     port: 5434
-    wal_dir: /mntsys/db/agents/pgwal
 agent-evidence:
   AGENT_NAME: detection
   MCP_HOST: 127.0.0.1
@@ -63,14 +67,14 @@ agent-feedback-write:
     port: 8093
 attention-agent:
   AGENT_NAME: attention
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills
   _deploy:
-    claude_home: /mntsys/agents/attention/claude-home
+    claude_home: "{state}/attention-agent/claude-home"
+    workspace: "{state}/attention-agent/workspace"
     port: 8010
-    workspace: /mntsys/agents/attention/workspace
 chat-ui-db:
-  BACKUP_ENABLED: true
+  # Opt-in for the same reason as agent-db above.
+  BACKUP_ENABLED: false
   BACKUP_CRON_ENABLED: false
   FULL_BACKUP_SCHEDULE: 0 20 * * *
   HEALTH_CHECK_SCHEDULE: '*/1 * * * *'
@@ -83,34 +87,34 @@ chat-ui-db:
   OSS_REPO_PATH: /postgresql/incidara-console
   OSS_URI_STYLE: host
   POSTGRES_DB: incidara_console
-  POSTGRES_PASSWORD: CHANGE_ME
+  POSTGRES_PASSWORD: incidara-demo
   POSTGRES_USER: incidara_console
   RETENTION_DIFF: 30
   RETENTION_FULL: 7
   WAL_BYPASS_PCT: 70
   WAL_VOLUME_MAX_MB: 4096
   _deploy:
+    data_dir: "{state}/chat-ui-db/pgdata"
+    pgbackrest_dir: "{state}/chat-ui-db/pgbackrest"
+    wal_dir: "{state}/chat-ui-db/pgwal"
     RESTORE_ENABLED: false
-    data_dir: /data/agents/incidara-work/incidara-console/db/data
-    init_dir: /data/agents/incidara/console/db/init
-    pgbackrest_dir: /mntsys/db/chat-ui/pgbackrest
     port: 5433
-    wal_dir: /mntsys/db/chat-ui/pgwal
 common:
+  # Container name prefix. Change it to run a second stack on the same host.
+  name_prefix: incidara
   ALERT_MANAGER_URL: http://192.0.2.10:9093
   ANTHROPIC_AUTH_TOKEN: CHANGE_ME
   ANTHROPIC_BASE_URL: http://192.0.2.10:8006/
   AUTH_GATEWAY_URL: http://192.0.2.10:8200
-  CHAT_UI_PASSWORD: CHANGE_ME
-  CHAT_UI_URL: http://127.0.0.1:80
+  # Delegate account, created at first start. See docs/deployment.md#console-access.
+  CHAT_UI_PASSWORD: incidara-demo
   CHAT_UI_USER: agent-delegate@example.com
   CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS: '1'
   CLAUDE_CODE_FORCE_SANDBOX: 'false'
   CLAUDE_CODE_SANDBOXED: 'false'
   CLAUDE_CWD: /app/workspace
   CLUSTER_ID: ltp
-  EVIDENCE_DB_URL: postgresql://incidara_agent:CHANGE_ME@127.0.0.1:5434/incidara_agent
-  INTERNAL_SECRET: CHANGE_ME
+  INTERNAL_SECRET: incidara-demo-internal
   LTP_HOST: http://192.0.2.10
   LTP_STORAGE_BACKEND_DEFAULT: postgresql
   LTP_TOKEN: CHANGE_ME
@@ -124,18 +128,13 @@ common:
   SSH_PASSWORD: CHANGE_ME
   SSH_TIMEOUT: '30'
   SSH_USER: operator
-  agent_data_root: /mntsys/agents
   bind_host: 127.0.0.1
-  chat_ui_dir: /data/agents/incidara/console
-  repo_dir: /data/agents/incidara
   ssh_socket_path: /tmp/ssh-agent.sock
 detection-agent:
   AGENT_NAME: detection
   BMC_PASSWORD: CHANGE_ME
   BMC_USER: root
   BUNDLES_ROOT: /opt/node-operations/bundles
-  CHAT_UI_API_URL: http://127.0.0.1:80
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills
   FEISHU_APP_ID: CHANGE_ME
   FEISHU_APP_SECRET: CHANGE_ME
@@ -162,15 +161,14 @@ detection-agent:
   SWITCH_UFM_PREFIX: UFM
   SWITCH_UPTIME_THRESHOLD_MIN: '2.0'
   _deploy:
-    claude_home: /mntsys/agents/detection/claude-home
-    data_dir: /mntsys/agents/detection
+    claude_home: "{state}/detection-agent/claude-home"
+    data_dir: "{state}/detection-agent"
+    sessions_dir: "{state}/detection-agent/workspace/sessions"
+    workspace: "{state}/detection-agent/workspace"
     port: 8007
-    sessions_dir: /mntsys/agents/detection/workspace/sessions
-    workspace: /mntsys/agents/detection/workspace
 feedback-agent:
   AGENT_NAME: feedback
   BUILD_ROOT: /data/agents/incidara-work
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills
   CODEUP_ORG_ID: CHANGE_ME
   CODEUP_TOKEN: CHANGE_ME
@@ -183,15 +181,14 @@ feedback-agent:
   MAX_TURNS: '9999'
   MCP_SERVER_ROLE: feedback
   _deploy:
-    claude_home: /mntsys/agents/feedback/claude-home
+    claude_home: "{state}/feedback-agent/claude-home"
+    sessions_dir: "{state}/feedback-agent/workspace/sessions"
+    ssh_key: "{state}/feedback-agent/ssh/deploy_key"
+    workspace: "{state}/feedback-agent/workspace"
     port: 8006
-    sessions_dir: /mntsys/agents/feedback/workspace/sessions
-    ssh_key: /mntsys/agents/feedback/ssh/deploy_key
-    workspace: /mntsys/agents/feedback/workspace
 job-patrol:
   AGENT_NAME: job-detection
   AGENT_SKILLS: job-scan job-inspect job-automate
-  CHAT_UI_API_URL: http://127.0.0.1:80
   LOG_MANAGER_PASSWORD: CHANGE_ME
   LOG_MANAGER_USERNAME: admin
   MCP_HOST: 127.0.0.1
@@ -206,7 +203,6 @@ job-patrol:
     port: 8082
 node-ops-diagnosis:
   AGENT_NAME: triage
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills/triage-nodes
   DB_HOST: 192.0.2.10
   DB_NAME: openpai
@@ -229,7 +225,6 @@ node-ops-diagnosis:
 node-ops-feedback:
   AGENT_NAME: feedback
   BUILD_ROOT: /data/agents/incidara-work
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills
   CODEUP_ORG_ID: CHANGE_ME
   CODEUP_TOKEN: CHANGE_ME
@@ -255,7 +250,6 @@ node-ops-ops:
   BMC_PASSWORD: CHANGE_ME
   BMC_USER: root
   BUNDLES_ROOT: /opt/node-operations/bundles
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   CLAUDE_SKILL_DIR: /app/workspace/.claude/skills/repair-nodes
   DATA_MOUNT: /mnt/md0
   EXT_MOUNT: /mntext
@@ -286,8 +280,6 @@ node-ops-ops:
     port: 8083
 patrol-cron:
   AGENT_NAME: detection
-  CHAT_UI_API_URL: http://127.0.0.1:80
-  CHAT_UI_DB_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   LOG_MANAGER_PASSWORD: CHANGE_ME
   LOG_MANAGER_USERNAME: admin
   MCP_HOST: 127.0.0.1
@@ -298,10 +290,10 @@ patrol-cron:
   SWITCH_SSH_USER: switch-operator
   SWITCH_TOPOLOGY_PATH: /app/workspace/topology/switch_topology.yaml
   _deploy:
+    data_dir: "{state}/patrol-cron"
+    topology_dir: "{state}/detection-agent/topology"
     _port_env_key: MCP_PORT
-    data_dir: /mntsys/agents/patrol-cron
     port: 8080
-    topology_dir: /mntsys/agents/detection/topology
 recycler-agent:
   AGENT_NAME: recycler
   APT_MIRROR: 192.0.2.10
@@ -330,10 +322,10 @@ recycler-agent:
   TICKET_BASE_URL: https://tickets.example.com
   TICKET_TIMEOUT: '15'
   _deploy:
-    claude_home: /mntsys/agents/recycler/claude-home
+    claude_home: "{state}/recycler-agent/claude-home"
+    sessions_dir: "{state}/recycler-agent/workspace/sessions"
+    workspace: "{state}/recycler-agent/workspace"
     port: 8004
-    sessions_dir: /mntsys/agents/recycler/workspace/sessions
-    workspace: /mntsys/agents/recycler/workspace
 repair-agent:
   AGENT_NAME: repair
   APT_MIRROR: 192.0.2.10
@@ -362,11 +354,11 @@ repair-agent:
   TICKET_BASE_URL: https://tickets.example.com
   TICKET_TIMEOUT: '60'
   _deploy:
-    claude_home: /mntsys/agents/repair/claude-home
+    claude_home: "{state}/repair-agent/claude-home"
+    sessions_dir: "{state}/repair-agent/workspace/sessions"
+    ssh_key: "{state}/repair-agent/ssh/deploy_key"
+    workspace: "{state}/repair-agent/workspace"
     port: 8003
-    sessions_dir: /mntsys/agents/repair/workspace/sessions
-    ssh_key: /mntsys/agents/repair/ssh/deploy_key
-    workspace: /mntsys/agents/repair/workspace
 switch-operations:
   MCP_HOST: 127.0.0.1
   MCP_SERVER_ROLE: diagnosis
@@ -391,17 +383,21 @@ triage-agent:
   MAX_TURNS: 9999
   MCP_SERVER_ROLE: diagnosis
   _deploy:
-    claude_home: /mntsys/agents/triage-unknown/claude-home
+    claude_home: "{state}/triage-agent/claude-home"
+    sessions_dir: "{state}/triage-agent/workspace/sessions"
+    workspace: "{state}/triage-agent/workspace"
     port: 8001
-    sessions_dir: /mntsys/agents/triage-unknown/workspace/sessions
-    workspace: /mntsys/agents/triage-unknown/workspace
 incidara-console:
+  # Admin account, created at first start. Give both accounts a real password
+  # before exposing the deployment; clear a password to skip creating it.
+  ADMIN_EMAIL: admin@example.com
+  ADMIN_PASSWORD: incidara-demo
   AGENTS_CONFIG_PATH: /app/config/agents.yaml
-  CHAT_UI_DATABASE_URL: postgresql://incidara_console:CHANGE_ME@127.0.0.1:5433/incidara_console
   GROUPS_CONFIG_PATH: /app/config/groups.yaml
   RECONCILER_INTERVAL_MS: '60000'
   SCHEDULER_INTERVAL_MS: '30000'
-  SESSION_SECRET: CHANGE_ME
+  SESSION_SECRET: incidara-demo-console-session-secret-0001
   _deploy:
-    data_dir: /data/agents/chat-ui
-    port: 80
+    data_dir: "{state}/incidara-console"
+    port: 3001
+    api_port: 3456

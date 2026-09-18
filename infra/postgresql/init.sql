@@ -64,7 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_case_memory_hostname
 
 CREATE TABLE IF NOT EXISTS analysis_problems (
     id                  SERIAL PRIMARY KEY,
-    problem_id          INT NOT NULL,           -- stable problem key; first row uses same value as id
+    problem_id          INT NOT NULL UNIQUE,    -- stable problem key; first row uses same value as id
     title               TEXT,
     fault_type          TEXT,
     prompt              TEXT NOT NULL,
@@ -88,6 +88,13 @@ CREATE INDEX IF NOT EXISTS idx_problems_fault_type
 
 ALTER TABLE analysis_problems
     ADD COLUMN IF NOT EXISTS patch_deployed BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- Repairs databases initialized before problem_id was declared UNIQUE.
+-- rejected_proposals.problem_id below is a foreign key, and PostgreSQL requires
+-- the referenced column to be unique; without this the CREATE TABLE fails on a
+-- fresh database and the feedback agent loses its table.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_analysis_problems_problem_id
+    ON analysis_problems(problem_id);
 
 -- Auto-set updated_at on every INSERT/UPDATE
 CREATE OR REPLACE FUNCTION update_updated_at()
