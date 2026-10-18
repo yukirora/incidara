@@ -69,8 +69,8 @@ This workflow processes nodes in **batches of 10** to prevent context overflow.
 Each batch goes through the full cycle independently.
 Results are written to a persistent working file after each batch, so context can be released.
 
-**Working file:** `/app/workspace/triage_nodes_working.md`
-**Report file:** `/app/workspace/reports/triage_nodes_<YYYY-MM-DD>.md`
+**Working file:** `triage_nodes_working.md` in the current workspace root (the deployed workspace is `/app/workspace`)
+**Report file:** `reports/triage_nodes_<YYYY-MM-DD>.md` relative to the workspace root
 
 The working file is the source of truth for progress. If the session is interrupted or context
 gets full, the next batch reads the working file to know what's already done.
@@ -145,7 +145,7 @@ Load `investigation-methodology.md`. Follow the decision tree for each issue gro
 
 #### Step 2.5: DIAGNOSIS CHECKPOINT
 
-Immediately after the branch-specific investigation establishes a candidate, and before deciding or taking any status/delegation/repair action, record one **Diagnosis Checkpoint per node** in the existing `/app/workspace/triage_nodes_working.md` batch results:
+Immediately after the branch-specific investigation establishes a candidate, and before deciding or taking any status/delegation/repair action, record one **Diagnosis Checkpoint per node** in the existing `triage_nodes_working.md` batch results (relative to the current workspace root):
 
 | Field | Required content |
 |-------|------------------|
@@ -221,10 +221,22 @@ Format per batch:
 | Hostname | Evidence Collected | Key Findings |
 
 #### Diagnosis Checkpoints
-| Hostname | Primary mechanism | Affected object | Strongest causal evidence/source | Secondary/competing evidence | Missing discriminator | Confidence |
 
-Checkpoint update log (append a line only when evidence changes a field):
-`HOST rev N: previous FIELD=value → new FIELD=value; evidence/source=...; why stronger or contradictory=...`
+Write a block per node in the existing working file. Create revision 1 after the candidate is established; when a field changes, append a full new revision and never overwrite earlier evidence. The last revision for a node is the current checkpoint.
+
+##### Diagnosis Checkpoint: <hostname> — revision <n>
+- **Primary mechanism**: ...
+- **Affected object**: ...
+- **Strongest causal evidence/source**: ...
+- **Secondary/competing evidence**: ...
+- **Missing discriminator**: ...
+- **Confidence**: ...
+
+#### Checkpoint Update Log
+Append one line for every revision after the first:
+`<hostname> revision N: previous FIELD=value → new FIELD=value; exact evidence/source=...; why stronger or contradictory=...`
+
+Append revisions; never overwrite earlier evidence.
 
 #### Decisions
 | Hostname | Current Status | Action | Reason | Annotation Summary |

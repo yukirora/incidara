@@ -129,8 +129,16 @@ def test_checkpoint_has_all_fields_and_uses_existing_working_file():
     skill = text("triage-nodes")
     for field in CHECKPOINT_FIELDS:
         assert field in skill
-    assert "triage_nodes_working.md" in skill
+    assert "**Working file:** `triage_nodes_working.md`" in skill
     assert "checkpoint update log" in skill.lower()
+
+
+def test_checkpoint_blocks_are_append_only_and_machine_auditable():
+    skill = text("triage-nodes")
+    assert "##### Diagnosis Checkpoint: <hostname> — revision <n>" in skill
+    for field in CHECKPOINT_FIELDS:
+        assert "- **%s**:" % field in skill
+    assert "append revisions; never overwrite earlier evidence" in skill.lower()
 
 
 def test_checkpoint_updates_are_monotonic_and_require_cited_evidence():
