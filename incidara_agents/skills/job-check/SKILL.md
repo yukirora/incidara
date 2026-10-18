@@ -70,3 +70,7 @@ Then go back and read the full section around those lines.
 3. `bash ${CLAUDE_SKILL_DIR}/scripts/ltp.sh logs <user>~<job>` — read the actual logs
 4. Look for infrastructure error patterns (IB, GPU, NCCL) vs user code errors (AssertionError, OOM)
 5. If infrastructure errors found → this supports the finding. Record as evidence.
+
+## Return Findings to the Calling Skill
+
+Report in order: **Primary mechanism**, **Affected object**, **Primary evidence**, **Secondary/competing signals**, **Action + verification/gaps**. Name the narrowest supported object and preserve mapped GPU index/UUID/PCI, NIC/port, disk/controller, pod/container, or job. The node/job is context, not a substitute. If logs are missing, unsupported, or null, say `primary mechanism unknown`, name the missing discriminator, and do not promote a visible competing symptom. Separate historical failures from current or recovered state; put follow-up action after diagnosis.

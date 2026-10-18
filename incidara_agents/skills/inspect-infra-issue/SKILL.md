@@ -338,14 +338,17 @@ If gaps found → go back to Step 3. Loop until confident.
 
 ### Step 6: Present to Human — Investigation + Pattern + Action
 
-Present ALL three together. Don't split them into separate steps:
+Present the diagnosis, pattern decision, and recommended action together. Distinguish the finding under investigation from any independent workload cause; do not conflate the two or another unrelated fault on the same node. If evidence identifies both, state which cause the finding supports.
+
+Use this report order:
 
 ```
 ## Investigation Result
-**Target**: {target_id} ({target_type})
-**Symptom**: {description}
-**Root Cause**: {hardware | platform | user code | transient | cable}
-**Evidence**: {summary}
+**Primary mechanism**: {narrowest supported cause/code}
+**Affected object**: {specific component/resource; node or job as context}
+**Primary evidence**: {causal signal and source}
+**Secondary/competing signals**: {contradictory, secondary, or unrelated observations}
+**Action + verification/gaps**: {action, verification, remaining unknowns}
 
 ## Pattern Decision
 - Rule: {rule_id}
@@ -398,6 +401,10 @@ Present the signal as: "Signal: `{exact command or path}` → normal: `{value fo
 - `watching` — 1-2 confirmed, not enough to automate yet
 
 **Do NOT act until approved.** Present, wait, then execute.
+
+## Final Diagnostic Report Contract
+
+The primary mechanism is the narrowest evidence-supported causal mechanism. Raw tool evidence is not automatically the diagnosis. Before using a broad category or `primary mechanism unknown`, reconcile each surfaced precise mechanism and object mapping. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, NVLink peer, and PCIe switch/retimer; never fabricate a mapping. If decisive evidence is missing, unsupported, null, or historical only, say `primary mechanism unknown`, name the missing discriminator, and do not promote a visible competing symptom. Separate historical and recovered evidence from current state. Put workflow/session/task details after the diagnosis fields.
 
 ### Step 7: Execute (after human approval)
 

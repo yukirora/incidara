@@ -1,8 +1,8 @@
 ---
 name: repair-nodes
-description: Autonomous repair agent for nodes in triaged_hardware and triaged_platform status. Hardware: collect evidence, generate RMA ticket, get approval, then execute repair pipeline. Platform: diagnose, fix, verify, send to revalidation. All node categories: h200, b300, cpu, ctrl/master, storage. GPU-specific steps only apply to h200/b300.
+description: "Autonomous repair agent for nodes in triaged_hardware and triaged_platform status. Hardware: collect evidence, generate RMA ticket, get approval, then execute repair pipeline. Platform: diagnose, fix, verify, send to revalidation. All node categories: h200, b300, cpu, ctrl/master, storage. GPU-specific steps only apply to h200/b300."
 allowed-tools: Agent Bash Read Write Edit Grep Glob
-argument-hint: [--hostname <hostname>] [--category hardware|platform] [--hardware] [--platform]
+argument-hint: "[--hostname <hostname>] [--category hardware|platform] [--hardware] [--platform]"
 ---
 
 # Repair Nodes
@@ -124,6 +124,8 @@ For each platform node, follow `platform-repair-flow.md`:
 7. **If all remediations exhausted** → escalate to human
 
 ### Phase 3: REPORT
+
+For each node, present diagnosis before repair/workflow status: **Primary mechanism**, **Affected object** (narrowest supported component/index/address/port/pod/controller), **Primary evidence**, **Secondary/competing signals**, **Action + verification/gaps**. Reconcile mapped objects from triage, history, alerts, and live tools. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, PCIe switch/retimer, disk/controller, and pod/container/controller; never invent a mapping. If decisive evidence is missing, unsupported, null, or historical only, state `primary mechanism unknown`, name the missing discriminator, and do not promote a visible competing symptom. Separate historical evidence from current/recovered state. Approval, reset, RMA, delegation, and task details follow the diagnosis fields.
 
 Write a summary report to `reports/repair_nodes_<YYYY-MM-DD>.md`:
 

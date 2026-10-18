@@ -1,8 +1,8 @@
 ---
 name: triage-nodes
-description: Triage nodes in triaged_unknown and triaged_hardware status. For unknown: categorize, investigate, decide. For hardware: verify issue still present, fill evidence gaps, then decide action or delegate to repair. Processes nodes in small batches to avoid context overflow.
+description: "Triage nodes in triaged_unknown and triaged_hardware status. For unknown: categorize, investigate, decide. For hardware: verify issue still present, fill evidence gaps, then decide action or delegate to repair. Processes nodes in small batches to avoid context overflow."
 allowed-tools: Agent Bash Read Write Edit Grep Glob
-argument-hint: [unknown|hardware|node <hostname>] [--execute|--dry-run] [--exclude node1,node2]
+argument-hint: "[unknown|hardware|node <hostname>] [--execute|--dry-run] [--exclude node1,node2]"
 ---
 
 # Triage Nodes
@@ -236,6 +236,14 @@ Present to user.
 
 ---
 
+## Final Diagnosis Contract
+
+Apply to each node in the report and final response. Use this order: **Primary mechanism** (narrowest supported cause/code), **Affected object** (exact component/index/address/port/pod where mapped), **Primary evidence** (causal signal and source), **Secondary/competing signals**, **Action + verification/gaps**.
+
+Reconcile precise mappings before using a broad category or `primary mechanism unknown`. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, NVLink peer, and switch/retimer mappings; do not invent them. Do not broaden a precise supported mapping to a broader category. If decisive evidence is missing, unsupported, null, or historical only, say `primary mechanism unknown`, name the missing discriminator, and do not promote a visible symptom. Distinguish historical and recovered evidence from current state. If a precise mapping is supported, carry it into the diagnosis; action or delegation details follow the diagnosis.
+
+When any Xid appears, **MUST read `references/xid-reference.md`**, identify the primary Xid and distinguish secondary Xids; do not infer this from the number alone. For example, Xid 48 is a primary DBE signal while Xid 94/95 may be secondary; apply the reference.
+
 ### Phase 3: EXECUTE
 
 1. Present the report file to user
@@ -286,6 +294,7 @@ Present to user.
    - If validation passed → `available`, done
 
 5. **Append "Part 4 — Execution Log"** to the same report: timestamp, actions taken, delegations, verification results
+6. Present each execution result using the **Final Diagnosis Contract** before action/session/task details.
 
 ---
 

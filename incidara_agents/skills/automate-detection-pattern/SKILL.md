@@ -113,7 +113,7 @@ For each flagged rule from Step 2, answer: **WHY** is it flagged? Output one roo
 | Structural | What structural issue? | `duplicate collectors`, `wrong cadence`, `missing source` | `references/structural-diagnosis.md` |
 | ⚪ Fine | (No diagnosis needed) | `fine` | — |
 
-**Output per flagged rule:** one root cause label, e.g., `large_job_failure_v1: cascade contamination`
+**Output per flagged rule:** one root cause label, e.g., `large_job_failure_v1: cascade contamination`. Preserve the underlying mechanism and specific object when evidence maps them; the detection target is not automatically the workload's cause. If a mapping or discriminator is unavailable, report that gap rather than inferring a broader cause.
 
 ### Step 4: Act — Execute in Priority Order
 

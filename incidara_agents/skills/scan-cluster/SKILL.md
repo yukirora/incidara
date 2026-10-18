@@ -112,7 +112,7 @@ delegate_to_agent("detection",
 )
 ```
 
-**Include raw evidence in the prompt.** The investigator needs the original error messages, timestamps, log lines — not your summary of them. A summary like "Xid 31 on 6 GPUs" is useless compared to actual dmesg lines showing which PCI addresses, when, and what fault type. Paste what you found.
+**Include raw evidence in the prompt.** Preserve precise finding targets, timestamps, and supported object mappings. The finding is a signal to investigate, not a confirmed cause; pass independent workload errors as separate evidence instead of conflating them. The investigator needs the original logs, not a summary like "Xid 31 on 6 GPUs".
 
 **Always delegate to `detection` (yourself).** Never delegate to `repair` or any other agent. The investigation skill (`inspect-infra-issue`) runs on the detection agent. Even if the problem seems already diagnosed from a previous session, the investigation must run again to confirm the current state before any repair action. Skipping investigation and delegating directly to repair is always wrong — repair without fresh investigation is dangerous.
 
