@@ -143,9 +143,30 @@ Load `investigation-methodology.md`. Follow the decision tree for each issue gro
 - **Never skip because a tool/token is missing.** Attempt it, report what couldn't be done, flag as incomplete.
 - **Do NOT read source code or trace code bugs** — report findings, file bugs separately.
 
+#### Step 2.5: DIAGNOSIS CHECKPOINT
+
+Immediately after the branch-specific investigation establishes a candidate, and before deciding or taking any status/delegation/repair action, record one **Diagnosis Checkpoint per node** in the existing `/app/workspace/triage_nodes_working.md` batch results:
+
+| Field | Required content |
+|-------|------------------|
+| Primary mechanism | Narrowest causal mechanism supported by evidence, or `primary mechanism unknown` |
+| Affected object | Narrowest mapped component/index/address/port/pod; use unknown plus the missing mapping when unresolved |
+| Strongest causal evidence/source | Exact result or excerpt and its tool/source; preserve the timestamp/window when relevant |
+| Secondary/competing evidence | Symptoms, status, historical or unrelated signals; label their scope and time |
+| Missing discriminator | Exact observation/query needed to distinguish the candidate, or `none known` |
+| Confidence | High/moderate/low with a brief evidence-based reason |
+
+Treat the checkpoint as **monotonic evidence state**, not prose to rewrite from full context. A later generic status or reachability symptom, action result, delegation, or task state cannot replace a supported mechanism or exact object. A later generic status (including `NodeCrash`) cannot replace a specific mechanism. An exact component mapping survives a node-level action; action detail must retain the checkpoint object. Preserve the exact peer in the affected object; action verification results cannot replace it. Update a field only when new evidence narrows it or directly contradicts it; every checkpoint update must record the previous and new value, the exact new evidence/source, and why it is stronger or contradictory. Keep historical/recovered signals secondary unless current evidence reconnects them to this incident.
+
+Examples of preservation rules: an exact GPU/PCI mapping survives a later generic `NodeCrash` status; a mapped DIMM/component survives a node-level status transition; an explicit `peer0` error remains the affected object even if the GPU inventory probe times out. If a decisive discriminator is null, unsupported, or historical only, set the mechanism/object to unknown as appropriate, name the exact missing discriminator, and do not promote a visible competing symptom.
+
+#### Step 2.6: PRE-ACTION DIAGNOSIS GATE
+
+Before `DECIDE`, and again immediately before any status transition, delegation, reset, ticket, platform fix, or revalidation, verify that the checkpoint is complete: it exists and all six fields are filled; mappings are reconciled; the mechanism/object are the narrowest supported; and no status/action output silently replaced the causal evidence. If any check fails, **no status transition, delegation, reset, ticket, platform fix, or revalidation is allowed** until the checkpoint is corrected or explicitly records `primary mechanism unknown` plus the missing discriminator. An unknown checkpoint may still lead to an uncertainty-appropriate action (for example, revalidation), but never to promoting an unsupported symptom as the cause.
+
 #### Step 3: DECIDE
 
-Determine each node's action based on its current status and investigation findings:
+Use current status to select a permitted action, but derive its cause/reason from the gated checkpoint, not the most recent symptom or full-context reconstruction. If a candidate cause is unknown, choose only an action consistent with that uncertainty and record the missing discriminator.
 
 **For `triaged_unknown` nodes:**
 
@@ -199,6 +220,12 @@ Format per batch:
 #### Investigation Findings
 | Hostname | Evidence Collected | Key Findings |
 
+#### Diagnosis Checkpoints
+| Hostname | Primary mechanism | Affected object | Strongest causal evidence/source | Secondary/competing evidence | Missing discriminator | Confidence |
+
+Checkpoint update log (append a line only when evidence changes a field):
+`HOST rev N: previous FIELD=value → new FIELD=value; evidence/source=...; why stronger or contradictory=...`
+
 #### Decisions
 | Hostname | Current Status | Action | Reason | Annotation Summary |
 ```
@@ -214,6 +241,8 @@ After ALL batches are complete, read the full working file and verify:
 
 - [ ] Every node from Phase 0 assigned to an issue — none missed
 - [ ] Every node has a decided action (target status + reason or delegation)
+- [ ] Every node has a complete Diagnosis Checkpoint and update log before any action
+- [ ] Each action is gated by the latest checkpoint; unsupported evidence remains unknown with its discriminator
 - [ ] Every action has an annotation with **specific evidence**
 - [ ] All issue types investigated — no "known issue, skipped"
 - [ ] Incomplete investigations flagged to user
@@ -238,7 +267,7 @@ Present to user.
 
 ## Final Diagnosis Contract
 
-Apply to each node in the report and final response. Use this order: **Primary mechanism** (narrowest supported cause/code), **Affected object** (exact component/index/address/port/pod where mapped), **Primary evidence** (causal signal and source), **Secondary/competing signals**, **Action + verification/gaps**.
+Apply to each node in the report and final response. Use this order: **Primary mechanism** (narrowest supported cause/code), **Affected object** (exact component/index/address/port/pod where mapped), **Primary evidence** (causal signal and source), **Secondary/competing signals**, **Action + verification/gaps**. Copy the latest checkpoint's mechanism, object, causal evidence, competing signals, and missing discriminator into the final response; do not reconstruct them from full context. Action and verification fields may be added only from actual action results, which cannot revise the diagnosis without new causal evidence.
 
 Reconcile precise mappings before using a broad category or `primary mechanism unknown`. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, NVLink peer, and switch/retimer mappings; do not invent them. Do not broaden a precise supported mapping to a broader category. If decisive evidence is missing, unsupported, null, or historical only, say `primary mechanism unknown`, name the missing discriminator, and do not promote a visible symptom. Distinguish historical and recovered evidence from current state. If a precise mapping is supported, carry it into the diagnosis; action or delegation details follow the diagnosis.
 
@@ -266,8 +295,9 @@ When any Xid appears, **MUST read `references/xid-reference.md`**, identify the 
    3. Revalidation is NOT delegated — the platform handles it automatically
 
    **Status transition details:**
+   - Re-run the pre-action diagnosis gate against the latest checkpoint before each mutation.
    - `from_status` is auto-corrected from DB — pass the expected status, the tool will use the actual current status
-   - `detail` should contain the evidence summary (benchmark values, GPU indices, etc.)
+   - `detail` must carry the checkpoint mechanism, exact affected object, and strongest evidence/source; a broad status label must not replace them.
    - After each transition, verify: `get_node_history` should show the new action
 
    **Revalidation MUST use `execute_triage.py validate`** — NOT `move_node_status` and NOT `execute_triage.py triage`.

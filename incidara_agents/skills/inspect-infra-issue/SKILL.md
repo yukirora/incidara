@@ -297,6 +297,10 @@ Common "no impact" patterns to reject:
 - Single-port CRC errors on idle port with no connected workload
 - BMC watchdog reset where node came back clean and jobs unaffected
 
+### Step 4.5: Diagnosis Checkpoint — Before Action Selection
+
+Before selecting or executing any action, record the latest checkpoint in the existing investigation report/draft with: **Primary mechanism**, **Affected object**, **Strongest causal evidence/source**, **Secondary/competing evidence**, **Missing discriminator**, and **Confidence**. Use the narrowest supported mapping. Treat it as monotonic: later status, reachability, workflow, or action results cannot replace a supported mechanism/object; every change must cite the exact new evidence and explain why it is stronger or contradictory. If decisive evidence is missing, unsupported, null, or historical only, record `primary mechanism unknown` and the exact missing discriminator rather than promoting a competing symptom. Do not act until the checkpoint gate passes. Copy the checkpoint into the final report; do not reconstruct diagnosis fields from full context.
+
 ### Step 5: Self-Review — Before Presenting to Human
 
 Ask yourself before presenting:
@@ -322,6 +326,8 @@ Ask yourself before presenting:
 If gaps found → go back to Step 3. Loop until confident.
 
 ### Step 5: Select Action — Cordon vs Drain vs Alert vs Create Task
+
+Select actions only after the Diagnosis Checkpoint is complete and its mechanism/object are reconciled. A status/action outcome cannot revise that checkpoint unless new causal evidence is explicitly cited.
 
 | Symptom | Action | Why |
 |---------|--------|-----|

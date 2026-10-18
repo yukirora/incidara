@@ -104,3 +104,91 @@ def test_router_skills_preserve_exact_evidence_and_scope():
     rules = text("automate-detection-pattern").lower()
     assert "raw evidence" in scan and "precise" in scan and "finding" in scan
     assert "underlying mechanism" in rules and "specific object" in rules
+
+
+CHECKPOINT_FIELDS = (
+    "Primary mechanism",
+    "Affected object",
+    "Strongest causal evidence/source",
+    "Secondary/competing evidence",
+    "Missing discriminator",
+    "Confidence",
+)
+
+
+def test_triage_checkpoint_is_after_investigation_and_before_decision():
+    skill = text("triage-nodes").lower()
+    investigation = skill.index("#### step 2: investigate")
+    checkpoint = skill.index("diagnosis checkpoint")
+    gate = skill.index("pre-action diagnosis gate")
+    decide = skill.index("#### step 3: decide")
+    assert investigation < checkpoint < gate < decide
+
+
+def test_checkpoint_has_all_fields_and_uses_existing_working_file():
+    skill = text("triage-nodes")
+    for field in CHECKPOINT_FIELDS:
+        assert field in skill
+    assert "triage_nodes_working.md" in skill
+    assert "checkpoint update log" in skill.lower()
+
+
+def test_checkpoint_updates_are_monotonic_and_require_cited_evidence():
+    skill = text("triage-nodes").lower()
+    assert "monotonic evidence state" in skill
+    assert "new evidence narrows it or directly contradicts it" in skill
+    assert "source" in skill and "why it is stronger or contradictory" in skill
+    assert "generic status or reachability symptom" in skill
+    assert "action result" in skill and "cannot replace" in skill
+
+
+def test_action_gate_blocks_mutations_until_checkpoint_is_complete():
+    skill = text("triage-nodes").lower()
+    gate = skill.index("pre-action diagnosis gate")
+    decide = skill.index("#### step 3: decide")
+    execute = skill.index("### phase 3: execute")
+    assert gate < decide < execute
+    assert "no status transition, delegation, reset, ticket, platform fix, or revalidation" in skill
+    assert "checkpoint is complete" in skill
+
+
+def test_final_diagnosis_is_copied_from_latest_checkpoint():
+    skill = text("triage-nodes").lower()
+    assert "copy the latest checkpoint" in skill
+    assert "do not reconstruct" in skill
+    assert "final response" in skill
+
+
+def test_specific_mechanism_survives_later_generic_status():
+    skill = text("triage-nodes").lower()
+    assert "later generic status" in skill and "reachability symptom" in skill
+    assert "cannot replace a supported mechanism" in skill
+
+
+def test_dimensional_object_survives_node_level_action():
+    skill = text("triage-nodes").lower()
+    assert "exact component mapping survives a node-level action" in skill
+    assert "action detail must retain the checkpoint object" in skill
+
+
+def test_missing_discriminator_blocks_competing_symptom_promotion():
+    skill = text("triage-nodes").lower()
+    assert "primary mechanism unknown" in skill
+    assert "name the exact missing discriminator" in skill
+    assert "do not promote a visible competing symptom" in skill
+
+
+def test_peer_mapping_survives_action_and_verification():
+    skill = text("triage-nodes").lower()
+    assert "nvlink peer" in skill
+    assert "preserve the exact peer in the affected object" in skill
+    assert "action verification results cannot replace it" in skill
+
+
+def test_inspection_and_repair_reports_use_checkpoint_before_action():
+    inspect = text("inspect-infra-issue").lower()
+    repair = text("repair-nodes").lower()
+    assert inspect.index("diagnosis checkpoint") < inspect.index("### step 5: select action")
+    assert "copy the checkpoint into the final report" in inspect
+    assert repair.index("diagnosis checkpoint") < repair.index("manual approval checkpoint")
+    assert "copy the latest diagnosis checkpoint into the repair report and ticket" in repair

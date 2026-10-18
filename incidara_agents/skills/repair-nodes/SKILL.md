@@ -103,11 +103,12 @@ Write the node inventory to the working file.
 For each hardware node, follow `hardware-repair-flow.md`:
 
 1. **Collect evidence** → `investigation-methodology.md`
-2. **Pass evidence gate** → `repair-ticket-summary-methodology`
-3. **Generate ticket content** → `repair-ticket-summary-methodology`
-4. **Build ticket description** → `hardware-repair-flow.md` Step 4
-5. **Manual approval checkpoint** → ALWAYS pause here
-6. After approval → execute the pipeline (deallocated_ua → reset → RMA → ua)
+2. **Record a Diagnosis Checkpoint in the existing node working/report record before ticketing or action:** primary mechanism, affected object, strongest causal evidence/source, secondary/competing evidence, missing discriminator, confidence. Keep it monotonic; every change cites the stronger/contradictory evidence. If a discriminator is unavailable, record `primary mechanism unknown` and the exact missing query rather than promoting a symptom.
+3. **Pass evidence gate** → `repair-ticket-summary-methodology`
+4. **Generate ticket content** → `repair-ticket-summary-methodology`
+5. **Build ticket description** → `hardware-repair-flow.md` Step 4
+6. **Manual approval checkpoint** → ALWAYS pause here
+7. After approval → execute the pipeline (deallocated_ua → reset → RMA → ua)
 
 #### Phase 2b: Platform Repair (`triaged_platform`)
 
@@ -117,15 +118,16 @@ For each platform node, follow `platform-repair-flow.md`:
 
 1. **Read triage diagnosis** → understand reason + existing evidence
 2. **Re-verify** → is the issue still present? (Layer 1 + 2 + 3)
-3. **Attempt fix** → by reason (restart device plugin, kill zombie pod, renew certs, etc.)
-4. **Verify fix** → re-run Layer 2/3 checks
-5. **If all layers healthy** → send to revalidation (`validating`)
-6. **If fix didn't help** → try next remediation → loop back to step 3
-7. **If all remediations exhausted** → escalate to human
+3. **Update the Diagnosis Checkpoint in the existing node working/report record before a fix:** retain the narrowest mechanism/object and cite any evidence that changes them. Missing/null discriminators remain unknown; status or fix outcomes cannot silently replace diagnosis. Before any mutating fix, verify the checkpoint is complete; if not, do not fix until it is corrected or explicitly records `primary mechanism unknown` and its missing discriminator.
+4. **Attempt fix** → by reason (restart device plugin, kill zombie pod, renew certs, etc.)
+5. **Verify fix** → re-run Layer 2/3 checks
+6. **If all layers healthy** → send to revalidation (`validating`)
+7. **If fix didn't help** → update the checkpoint from the verification evidence, then try the next remediation → loop back to step 4
+8. **If all remediations exhausted** → escalate to human
 
 ### Phase 3: REPORT
 
-For each node, present diagnosis before repair/workflow status: **Primary mechanism**, **Affected object** (narrowest supported component/index/address/port/pod/controller), **Primary evidence**, **Secondary/competing signals**, **Action + verification/gaps**. Reconcile mapped objects from triage, history, alerts, and live tools. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, PCIe switch/retimer, disk/controller, and pod/container/controller; never invent a mapping. If decisive evidence is missing, unsupported, null, or historical only, state `primary mechanism unknown`, name the missing discriminator, and do not promote a visible competing symptom. Separate historical evidence from current/recovered state. Approval, reset, RMA, delegation, and task details follow the diagnosis fields.
+For each node, copy the latest Diagnosis Checkpoint into the repair report and ticket before workflow status. Present fields in this order: **Primary mechanism**, **Affected object** (narrowest supported component/index/address/port/pod/controller), **Primary evidence** (the checkpoint's strongest causal evidence/source), **Secondary/competing signals**, **Action + verification/gaps**. Include the checkpoint's **Missing discriminator** and **Confidence** in the evidence/gap fields. Action + verification/gaps follow the diagnosis fields. Reconcile mapped objects from triage, history, alerts, and live tools. Preserve supported crosswalks such as GPU index/UUID/PCI, DIMM slot, NIC/port, PCIe switch/retimer, disk/controller, and pod/container/controller; never invent a mapping. If decisive evidence is missing, unsupported, null, or historical only, state `primary mechanism unknown`, name the missing discriminator exactly, and do not promote a visible competing symptom. Separate historical evidence from current/recovered state. Approval, reset, RMA, delegation, and task details follow the diagnosis fields. Hardware actions still require the existing explicit-approval gate.
 
 Write a summary report to `reports/repair_nodes_<YYYY-MM-DD>.md`:
 
