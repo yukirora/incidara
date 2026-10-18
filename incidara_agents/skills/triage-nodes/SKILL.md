@@ -143,9 +143,42 @@ Load `investigation-methodology.md`. Follow the decision tree for each issue gro
 - **Never skip because a tool/token is missing.** Attempt it, report what couldn't be done, flag as incomplete.
 - **Do NOT read source code or trace code bugs** — report findings, file bugs separately.
 
+#### Step 2.4: CANDIDATE-EVIDENCE ADJUDICATION
+
+Before selecting a checkpoint diagnosis, build a candidate table for each node. Do not treat the latest output as automatically strongest.
+
+| Candidate field | Record |
+|---|---|
+| Mechanism | Candidate cause or mechanism |
+| Object | Narrowest mapped component, index, address, port, pod, or job |
+| Source | Exact tool/result or excerpt |
+| Observation time/window | Timestamp, incident window, or explicitly unknown |
+| Direct vs. indirect | Direct component/error evidence, or indirect symptom/status/workload evidence |
+| Scope | What object/fact and time period the observation actually describes |
+| Contradiction | Whether it contradicts another candidate; explain the specific conflict |
+| Confidence | Evidence-based confidence and its limitation |
+
+Adjudicate candidates using these precedence rules:
+
+- **Incident-window direct component/error evidence** (for example, per-device ECC/Xid, BMC mapped-component error, NVLink Rx Detect peer, or an exact device-plugin allocatable mismatch) **outranks reachability/status/downstream workload symptoms**.
+- A **current healthy/zero/recovered state is verification of current state, not automatic contradiction of the incident cause**. It may overturn an incident candidate only when it measures the same object and fact, has clear reset/provenance, and includes evidence that invalidates the incident attribution. Keep the timestamp and scope of both observations explicit; a live zero counter does not erase a separately sourced aggregate/historical count.
+- **Reachability failure is a symptom unless no narrower causal evidence exists**. Do not replace a mapped device mechanism with `NodeCrash` merely because SSH is unavailable.
+- A **bus address is context/evidence; a mapped component remains the affected object when explicitly named**. Preserve a BMC-mapped DIMM/component and its timestamp even when a later node-level action mentions only the bus or node. If its link to the current incident is unproven, retain that limitation and name the evidence needed to connect it; do not silently discard or overstate the mapping.
+- **Historical workload allocation cannot be called currently active without current pod/allocation evidence**. Workload ownership and resource usage from an earlier interval do not prove a present scheduling block.
+
+Before deciding, query the known discriminator when the tools expose it:
+
+- **GPU vs. device-plugin branch:** compare live GPU count/inventory with `Allocatable.nvidia.com/gpu` from `get_validation_job`/node description. If plain description omits the value and the supported environment permits it, query the node's capacity and allocatable GPU values using JSONPath. Match GPU index to PCI address and distinguish volatile from aggregate ECC; retain source and timestamp for each.
+- **NVLink branch:** use `probe_ssh` and inspect/filter incident-window kernel evidence for `Rx Detect` and the named peer. Preserve the exact peer when present; a GPU inventory timeout does not negate that kernel evidence.
+- **DIMM/BMC branch:** reconcile the relevant BMC health log and IPMI SEL entries, including the exact mapped component and timestamp. Keep historical mapping distinct from incident-window SERR/MCERR evidence and state whether the causal link is established.
+
+If a required discriminator is null, unsupported, unavailable, or not queried, the checkpoint's **Primary mechanism must remain `primary mechanism unknown` for that branch**, the **Missing discriminator** must name the exact query/observation, and indirect workload/status evidence must not be promoted to fill the gap.
+
+A later candidate may replace the current primary only when it has **higher precedence** and the update **explicitly states why the prior candidate is contradicted**. Append a full checkpoint revision with the new source, scope/time, and rationale; **never silently overwrite** a candidate or its history.
+
 #### Step 2.5: DIAGNOSIS CHECKPOINT
 
-Immediately after the branch-specific investigation establishes a candidate, and before deciding or taking any status/delegation/repair action, record one **Diagnosis Checkpoint per node** in the existing `triage_nodes_working.md` batch results (relative to the current workspace root):
+Immediately after candidate-evidence adjudication and the branch-specific investigation establish a candidate, and before deciding or taking any status/delegation/repair action, record one **Diagnosis Checkpoint per node** in the existing `triage_nodes_working.md` batch results (relative to the current workspace root):
 
 | Field | Required content |
 |-------|------------------|

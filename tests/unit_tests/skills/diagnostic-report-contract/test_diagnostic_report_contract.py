@@ -200,3 +200,89 @@ def test_inspection_and_repair_reports_use_checkpoint_before_action():
     assert "copy the checkpoint into the final report" in inspect
     assert repair.index("diagnosis checkpoint") < repair.index("manual approval checkpoint")
     assert "copy the latest diagnosis checkpoint into the repair report and ticket" in repair
+
+
+def test_checkpoint_adjudicates_candidates_before_selecting_primary():
+    skill = text("triage-nodes").lower()
+    adjudication = skill.index("candidate-evidence adjudication")
+    checkpoint = skill.index("#### step 2.5: diagnosis checkpoint", adjudication)
+    assert adjudication < checkpoint
+    for field in ("mechanism", "object", "source", "observation time/window", "direct vs. indirect", "scope", "contradiction", "confidence"):
+        assert field in skill[adjudication:checkpoint]
+
+
+def test_incident_direct_evidence_beats_reachability_and_current_zero_is_not_automatic_refutation():
+    skill = text("triage-nodes").lower()
+    for clause in (
+        "incident-window direct component/error evidence",
+        "outranks reachability/status/downstream workload symptoms",
+        "current healthy/zero/recovered state is verification of current state",
+        "not automatic contradiction of the incident cause",
+        "same object and fact",
+        "clear reset/provenance",
+    ):
+        assert clause in skill
+
+
+def test_component_mapping_survives_bus_context_and_historical_evidence_is_labeled():
+    skill = text("triage-nodes").lower()
+    for clause in (
+        "bus address is context/evidence",
+        "mapped component remains the affected object",
+        "when explicitly named",
+        "bmc-mapped dimm/component",
+        "keep historical mapping distinct",
+        "causal link is established",
+        "historical workload allocation",
+        "cannot be called currently active",
+        "current pod/allocation evidence",
+    ):
+        assert clause in skill
+
+
+def test_required_discriminators_are_queried_before_checkpoint_and_action():
+    skill = text("triage-nodes").lower()
+    adjudication = skill.index("candidate-evidence adjudication")
+    gate = skill.index("#### step 2.6: pre-action diagnosis gate", adjudication)
+    section = skill[adjudication:gate]
+    for query in (
+        "allocatable.nvidia.com/gpu",
+        "plain description",
+        "jsonpath",
+        "incident-window kernel evidence",
+        "rx detect",
+        "bmc health log",
+        "mapped component",
+    ):
+        assert query in section
+
+
+def test_unavailable_discriminator_keeps_branch_unknown_and_names_query():
+    skill = text("triage-nodes").lower()
+    adjudication = skill.index("candidate-evidence adjudication")
+    gate = skill.index("#### step 2.6: pre-action diagnosis gate", adjudication)
+    section = skill[adjudication:gate]
+    for clause in (
+        "null, unsupported, unavailable",
+        "primary mechanism unknown",
+        "missing discriminator",
+        "indirect workload/status evidence must not be promoted",
+    ):
+        assert clause in section
+
+
+def test_candidate_replacement_requires_higher_precedence_and_explicit_contradiction():
+    skill = text("triage-nodes").lower()
+    adjudication = skill.index("candidate-evidence adjudication")
+    gate = skill.index("#### step 2.6: pre-action diagnosis gate", adjudication)
+    section = skill[adjudication:gate]
+    assert "higher precedence" in section
+    assert "explicitly states why the prior candidate is contradicted" in section
+    assert "append a full checkpoint revision" in section and "never silently overwrite" in section
+
+
+def test_nvlink_positive_control_keeps_rx_detect_peer_through_action():
+    skill = text("triage-nodes").lower()
+    assert "nvlink" in skill and "rx detect" in skill and "peer" in skill
+    assert "preserve the exact peer in the affected object" in skill
+    assert "action verification results cannot replace it" in skill
