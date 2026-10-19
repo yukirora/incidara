@@ -281,6 +281,56 @@ def test_candidate_replacement_requires_higher_precedence_and_explicit_contradic
     assert "append a full checkpoint revision" in section and "never silently overwrite" in section
 
 
+def test_bmc_discriminator_gate_precedes_checkpoint_and_requires_exact_queries():
+    skill = text("triage-nodes").lower()
+    investigation = skill.index("#### step 2: investigate")
+    bmc_gate = skill.index("#### hardware/bmc discriminator gate", investigation)
+    checkpoint = skill.index("#### step 2.5: diagnosis checkpoint", bmc_gate)
+    pre_action_gate = skill.index("#### step 2.6: pre-action diagnosis gate", checkpoint)
+    decide = skill.index("#### step 3: decide", pre_action_gate)
+    assert investigation < bmc_gate < checkpoint < pre_action_gate < decide
+    for clause in (
+        "when a bmc ip is available",
+        'bmc_health_log(hostname=host, bmc_ip=ip, category=category, severity="all")',
+        'bmc_query(hostname=host, bmc_ip=ip, command="sel_list")',
+        'bmc_query(hostname=host, bmc_ip=ip, command="chassis_status")',
+        "record that exact gap",
+    ):
+        assert clause in skill[bmc_gate:checkpoint]
+
+
+def test_empty_or_ambiguous_bmc_calls_do_not_satisfy_the_gate():
+    skill = text("triage-nodes").lower()
+    start = skill.index("#### hardware/bmc discriminator gate")
+    end = skill.index("#### step 2.5: diagnosis checkpoint", start)
+    section = skill[start:end]
+    for clause in (
+        "missing/default `command`",
+        "empty result",
+        "does not satisfy the gate",
+        "retry once with the exact command argument",
+    ):
+        assert clause in section
+
+
+def test_bmc_checkpoint_preserves_bus_context_and_current_state_action_gate():
+    skill = text("triage-nodes").lower()
+    start = skill.index("#### hardware/bmc discriminator gate")
+    end = skill.index("#### step 2.5: diagnosis checkpoint", start)
+    section = skill[start:end]
+    for clause in (
+        "cite the incident-window source, timestamp, and exact supported mechanism",
+        "exact supported mechanism",
+        "bus/device-function as object context",
+        "never infer a gpu, dimm, or other component mapping",
+        "authoritative crosswalk",
+        "current or recovered state",
+        "does not erase a supported incident-window cause",
+        "choose an action that fits both the current state and the checkpoint's uncertainty",
+    ):
+        assert clause in section
+
+
 def test_nvlink_positive_control_keeps_rx_detect_peer_through_action():
     skill = text("triage-nodes").lower()
     assert "nvlink" in skill and "rx detect" in skill and "peer" in skill

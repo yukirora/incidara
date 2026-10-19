@@ -143,6 +143,16 @@ Load `investigation-methodology.md`. Follow the decision tree for each issue gro
 - **Never skip because a tool/token is missing.** Attempt it, report what couldn't be done, flag as incomplete.
 - **Do NOT read source code or trace code bugs** — report findings, file bugs separately.
 
+#### Hardware/BMC Discriminator Gate
+
+For a node crash, sudden power loss, or hardware-unreachable incident, run this gate before the diagnosis checkpoint or any action:
+
+- When a BMC IP is available, query all three discriminators using complete arguments: `bmc_health_log(hostname=HOST, bmc_ip=IP, category=CATEGORY, severity="all")`, `bmc_query(hostname=HOST, bmc_ip=IP, command="sel_list")`, and `bmc_query(hostname=HOST, bmc_ip=IP, command="chassis_status")`. Use the node's actual category. If no BMC IP exists or access is denied (for example, credentials are unavailable), record that exact gap and response; do not imply the query succeeded.
+- Every required argument must be present and correctly scoped. A missing/default `command`, empty/ambiguous request, or empty result from such a request does not satisfy the gate. Retry once with the exact command argument; if it still returns empty, null, unsupported, or unavailable, record the exact result as a gap. Do not retry valid empty results.
+- Compare returned event timestamps with the incident window. The checkpoint must cite the incident-window source, timestamp, and exact supported mechanism. Keep older BMC findings as historical candidates unless evidence links them to this incident.
+- Preserve an explicit BMC bus/device-function as object context. Never infer a GPU, DIMM, or other component mapping without an authoritative crosswalk; if no crosswalk is available, name the bus/device-function and record the missing mapping.
+- Current or recovered state determines the safe next action, but does not erase a supported incident-window cause. Choose an action that fits both the current state and the checkpoint's uncertainty.
+
 #### Step 2.4: CANDIDATE-EVIDENCE ADJUDICATION
 
 Before selecting a checkpoint diagnosis, build a candidate table for each node. Do not treat the latest output as automatically strongest.
